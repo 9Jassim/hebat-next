@@ -1,38 +1,5 @@
 {
-  "node": {
-    "b378d7be2d6f603611fa4fda9e98afc925bf74b8": {
-      "workers": {
-        "app/admin/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cjassi%5C%5CDesktop%5C%5CProjects%5C%5Chebat-next%5C%5Clib%5C%5Cauth.js%22%2C%5B%22CheckSession%22%2C%22LogOutUser%22%2C%22RegisterUser%22%2C%22LogInUser%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/admin/page": "action-browser"
-      }
-    },
-    "647794b40e508c11cef63f02bfc7c4fa69e62426": {
-      "workers": {
-        "app/admin/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cjassi%5C%5CDesktop%5C%5CProjects%5C%5Chebat-next%5C%5Clib%5C%5Cauth.js%22%2C%5B%22CheckSession%22%2C%22LogOutUser%22%2C%22RegisterUser%22%2C%22LogInUser%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/admin/page": "action-browser"
-      }
-    },
-    "b06b7cc61fe99b40e4e73eade06304f20da15ef5": {
-      "workers": {
-        "app/admin/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cjassi%5C%5CDesktop%5C%5CProjects%5C%5Chebat-next%5C%5Clib%5C%5Cauth.js%22%2C%5B%22CheckSession%22%2C%22LogOutUser%22%2C%22RegisterUser%22%2C%22LogInUser%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/admin/page": "action-browser"
-      }
-    },
-    "a842614e2319433db874f14490725cffbf9c1da4": {
-      "workers": {
-        "app/admin/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cjassi%5C%5CDesktop%5C%5CProjects%5C%5Chebat-next%5C%5Clib%5C%5Cauth.js%22%2C%5B%22CheckSession%22%2C%22LogOutUser%22%2C%22RegisterUser%22%2C%22LogInUser%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/admin/page": "action-browser"
-      }
-    }
-  },
+  "node": {},
   "edge": {},
-  "encryptionKey": "+I5wLBPa7fuj4ZS+/+zcEwcv6ULcJ076hhTgWkeRJPo="
+  "encryptionKey": "X+CShi+brsmRjgjrKjnGSwZ4UR9/zutAbf1U1BqCIKg="
 }
