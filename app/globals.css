@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small defaults */
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply bg-white text-gray-900;
+}
+
+/* brand helpers */
+.text-brand-yellow { color: #fcbb17; }
+.bg-brand-yellow { background-color: #fcbb17; }
