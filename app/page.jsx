@@ -6,9 +6,22 @@ export default function Home() {
   return (
     <div className="overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:py-20 lg:max-w-none lg:grid-cols-2">
+        <div
+          className="
+            mx-auto
+            grid 
+            max-w-2xl 
+            grid-cols-1 
+            gap-y-16 
+            lg:max-w-none 
+            lg:grid-cols-2 
+            lg:gap-x-12
+            items-center
+            sm:py-20
+          "
+        >
           {/* Text Section */}
-          <div className="lg:pr-8">
+          <div className="flex flex-col justify-center lg:pr-8">
             <div className="lg:max-w-lg">
               <p className="mt-2 text-3xl font-bold tracking-tight text-yellow-500">HEBAT</p>
               <p className="mt-6 text-lg leading-8 text-gray-800">
@@ -49,12 +62,12 @@ export default function Home() {
           <div className="flex justify-center items-center">
             <Link
               href="/products"
-              className="my-6 w-[28rem] md:w-[36rem] lg:w-[48rem] rounded-xl shadow-xl ring-1 ring-gray-400/10 hover:scale-105 transition-transform duration-300 ease-in-out"
+              className="my-6 block rounded-xl shadow-xl ring-1 ring-gray-400/10 hover:scale-105 transition-transform duration-300 ease-in-out"
             >
               <img
-                src="\hebat_cover.png"
+                src="/hebat_cover.png"
                 alt="Hebat Product Showcase"
-                className="w-full rounded-xl"
+                className="w-full max-w-[32rem] max-h-[28rem] object-contain rounded-xl"
               />
             </Link>
           </div>
