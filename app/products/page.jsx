@@ -24,7 +24,7 @@ const Products = () => {
     }
     getCategories()
   }, [])
-  const handleMouseDown = (e) => {
+  const handleMouseDown = e => {
     setIsDragging(true)
     setStartX(e.pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
@@ -35,19 +35,19 @@ const Products = () => {
   const handleMouseUp = () => {
     setIsDragging(false)
   }
-  const handleMouseMove = (e) => {
+  const handleMouseMove = e => {
     if (!isDragging) return
     e.preventDefault()
     const x = e.pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 1.5 // scroll speed
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
-  const handleTouchStart = (e) => {
+  const handleTouchStart = e => {
     setIsDragging(true)
     setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
   }
-  const handleTouchMove = (e) => {
+  const handleTouchMove = e => {
     if (!isDragging) return
     const x = e.touches[0].pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 1.5
@@ -56,9 +56,9 @@ const Products = () => {
   const handleTouchEnd = () => {
     setIsDragging(false)
   }
-  const filter = (categoryName) => {
+  const filter = categoryName => {
     const temp = products.filter(
-      (product) => product.category && product.category.name === categoryName
+      product => product.category && product.category.name === categoryName
     )
     setShowing(temp)
   }
@@ -69,10 +69,8 @@ const Products = () => {
     if (searchRef.current.value === "") {
       setShowing(products)
     } else {
-      const result = products.filter((product) =>
-        product.name
-          .toLowerCase()
-          .includes(searchRef.current.value.toLowerCase())
+      const result = products.filter(product =>
+        product.name.toLowerCase().includes(searchRef.current.value.toLowerCase())
       )
       setShowing(result)
     }
@@ -112,7 +110,7 @@ const Products = () => {
           >
             All categories
           </button>
-          {categories.map((category) => (
+          {categories.map(category => (
             <button
               key={category.name}
               onClick={() => filter(category.name)}
@@ -126,8 +124,8 @@ const Products = () => {
         </div>
         <span className="">Total {showing.length} products</span>
         <div className="grid grid-cols-2 md-cols-5 gap-4 w-3/4">
-          {showing.map((product) => (
-            <Link href="#" key={product.slug} to={`/products/${product.slug}`}>
+          {showing.map(product => (
+            <Link href={`/products/${product.slug}`} key={product.slug}>
               <div className="h-full max-w-full border border-yellow-500 bg-yellow-500 rounded-lg hover-125 transition duration-300 ease-in-out hover-lg hover-yellow-500">
                 <img className="rounded-t-lg" src={product.image.s3Url} alt="" />
                 <div className="p-5">
