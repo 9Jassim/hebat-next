@@ -4,26 +4,27 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-gray-50">
+      {/* Subtle yellow accent background that blends */}
+      <div className="absolute right-0 top-0 w-full h-full bg-gradient-to-l from-yellow-50 via-white to-white -z-10"></div>
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-20 relative">
         <div
           className="
-            mx-auto
+            mx-auto 
             grid 
             max-w-2xl 
             grid-cols-1 
-            gap-y-16 
             lg:max-w-none 
             lg:grid-cols-2 
-            lg:gap-x-12
+            lg:gap-x-20 
             items-center
-            sm:py-20
           "
         >
           {/* Text Section */}
           <div className="flex flex-col justify-center lg:pr-8">
             <div className="lg:max-w-lg">
-              <p className="mt-2 text-3xl font-bold tracking-tight text-yellow-500">HEBAT</p>
+              <p className="text-3xl font-bold tracking-tight text-yellow-500 sm:text-4xl">HEBAT</p>
               <p className="mt-6 text-lg leading-8 text-gray-800">
                 Our products are selected for quality, variety, and customer satisfaction.
                 <br />
@@ -42,7 +43,7 @@ export default function Home() {
               <button
                 onClick={() => window.open("https://morslon.com/", "_blank")}
                 type="button"
-                className="mt-6 text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+                className="mt-6 text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center shadow-md"
               >
                 <svg
                   className="w-4 h-4 mr-2"
@@ -59,20 +60,51 @@ export default function Home() {
           </div>
 
           {/* Image Section */}
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center relative mt-12 lg:mt-0">
             <Link
               href="/products"
-              className="my-6 block rounded-xl shadow-xl ring-1 ring-gray-400/10 hover:scale-105 transition-transform duration-300 ease-in-out"
+              className="
+                relative
+                block
+                w-[90%]
+                md:w-[34rem]
+                lg:w-[38rem]
+                transition-transform 
+                duration-500 
+                ease-in-out
+                hover:scale-105
+              "
             >
+              {/* Yellow accent behind image */}
+              <div
+                className="
+                  absolute 
+                  inset-0 
+                  bg-yellow-400 
+                  rounded-3xl 
+                  -rotate-3 
+                  translate-x-3 
+                  translate-y-3 
+                  opacity-20
+                "
+              ></div>
+
               <img
                 src="/hebat_cover.png"
                 alt="Hebat Product Showcase"
-                className="w-full max-w-[32rem] max-h-[28rem] object-contain rounded-xl"
+                className="
+                  relative 
+                  w-full 
+                  rounded-3xl 
+                  shadow-2xl 
+                  object-contain 
+                  max-h-[28rem]
+                "
               />
             </Link>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
