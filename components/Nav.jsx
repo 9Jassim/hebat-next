@@ -61,7 +61,7 @@ export default function Nav() {
               <li>
                 <Link
                   href="/"
-                  className="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
+                  className="block py-2 px-3 text-white rounded-sm hover:bg-yellow-500 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
                 >
                   Home
                 </Link>
@@ -70,7 +70,7 @@ export default function Nav() {
               <li>
                 <Link
                   href="/products"
-                  className="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
+                  className="block py-2 px-3 text-white rounded-sm hover:bg-yellow-500 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
                 >
                   Products
                 </Link>
@@ -81,7 +81,7 @@ export default function Nav() {
                   <li>
                     <Link
                       href="/newproduct"
-                      className="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
+                      className="block py-2 px-3 text-white rounded-sm hover:bg-yellow-500 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
                     >
                       New Product
                     </Link>
@@ -91,7 +91,7 @@ export default function Nav() {
                   <li>
                     <button
                       onClick={() => setShowCategories(true)}
-                      className="block py-2 px-3 text-left text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
+                      className="block py-2 px-3 text-left text-white rounded-sm hover:bg-yellow-500 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
                     >
                       Categories
                     </button>
@@ -100,7 +100,7 @@ export default function Nav() {
                   <li>
                     <button
                       onClick={logout}
-                      className="block py-2 px-3 text-left text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
+                      className="block py-2 px-3 text-left text-white rounded-sm hover:bg-yellow-500 md:hover:bg-transparent md:border-0 md:hover:text-yellow-500 md:p-0"
                     >
                       Logout
                     </button>
