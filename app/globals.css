@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* small defaults */
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -12,5 +13,20 @@ body {
 }
 
 /* brand helpers */
-.text-brand-yellow { color: #fcbb17; }
-.bg-brand-yellow { background-color: #fcbb17; }
+.text-brand-yellow {
+  color: #fcbb17;
+}
+.bg-brand-yellow {
+  background-color: #fcbb17;
+}
+
+/* Hide scrollbar (works for Chrome, Edge, Safari) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

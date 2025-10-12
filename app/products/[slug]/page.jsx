@@ -12,14 +12,13 @@ import EditProductForm from "@/components/EditProductForm"
 
 export default function ProductDetails({ params }) {
   const router = useRouter()
-  const { slug } = params // ✅ Next.js App Router way to get slug
+  const { slug } = params
 
   const [product, setProduct] = useState(null)
   const [clamped, setClamped] = useState(true)
   const [openRemove, setOpenRemove] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
 
-  // Fetch product by slug
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -53,6 +52,7 @@ export default function ProductDetails({ params }) {
     <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Admin controls */}
       <div className="mb-6 flex flex-wrap gap-3">
+        {/* Edit Button */}
         <Fragment>
           <button
             onClick={() => setOpenEdit(true)}
@@ -99,6 +99,7 @@ export default function ProductDetails({ params }) {
           </Dialog>
         </Fragment>
 
+        {/* Remove Button */}
         <Fragment>
           <button
             onClick={() => setOpenRemove(true)}
@@ -138,8 +139,26 @@ export default function ProductDetails({ params }) {
       </div>
 
       {/* Product Content */}
-      <div className="grid lg:grid-cols-2 gap-10 items-start">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        {/* Image (Top on mobile, Right on desktop) */}
+        <div className="order-1 lg:order-2">
+          {product.image?.s3Url ? (
+            <img
+              src={product.image.s3Url}
+              alt={product.name}
+              className="w-full rounded-lg shadow-md"
+            />
+          ) : (
+            <img
+              src="/hebat_product_fill.png"
+              alt={product.name}
+              className="w-full rounded-lg shadow-md"
+            />
+          )}
+        </div>
+
+        {/* Details (Below on mobile, Left on desktop) */}
+        <div className="order-2 lg:order-1">
           <h1 className="block text-2xl font-bold text-yellow-500 mb-3">{product.name}</h1>
           <p className="text-gray-700 text-sm mb-2">
             <strong>Barcode:</strong> {product.barcode || "N/A"}
@@ -171,20 +190,6 @@ export default function ProductDetails({ params }) {
             </a>
           ) : (
             <p className="text-gray-600 text-sm">No manual available</p>
-          )}
-        </div>
-
-        <div>
-          {product.image?.s3Url ? (
-            <img
-              src={product.image.s3Url}
-              alt={product.name}
-              className="w-full rounded-lg shadow"
-            />
-          ) : (
-            <div className="bg-gray-200 h-64 flex items-center justify-center text-gray-500 rounded-lg">
-              No image available
-            </div>
           )}
         </div>
       </div>

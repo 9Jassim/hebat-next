@@ -1,8 +1,10 @@
 "use client"
+
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Client from "@/lib/api"
-const Products = () => {
+
+export default function Products() {
   const scrollRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -11,136 +13,133 @@ const Products = () => {
   const [categories, setCategories] = useState([])
   const [showing, setShowing] = useState([])
   const searchRef = useRef("")
+
   useEffect(() => {
-    const getProducts = async () => {
-      const response = await Client.get("/products")
-      setProducts(response.data.products)
-      setShowing(response.data.products)
+    const fetchData = async () => {
+      try {
+        const [prodRes, catRes] = await Promise.all([
+          Client.get("/products"),
+          Client.get("/products/category"),
+        ])
+        setProducts(prodRes.data.products)
+        setShowing(prodRes.data.products)
+        setCategories(catRes.data.categories)
+      } catch (err) {
+        console.error("Error loading products:", err)
+      }
     }
-    getProducts()
-    const getCategories = async () => {
-      const response = await Client.get("/products/category")
-      setCategories(response.data.categories)
-    }
-    getCategories()
+    fetchData()
   }, [])
-  const handleMouseDown = e => {
+
+  // --- Category Scroll Logic ---
+  const handleStart = e => {
+    const pageX = e.pageX || e.touches[0].pageX
     setIsDragging(true)
-    setStartX(e.pageX - scrollRef.current.offsetLeft)
+    setStartX(pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
   }
-  const handleMouseLeave = () => {
-    setIsDragging(false)
-  }
-  const handleMouseUp = () => {
-    setIsDragging(false)
-  }
-  const handleMouseMove = e => {
+  const handleMove = e => {
     if (!isDragging) return
-    e.preventDefault()
-    const x = e.pageX - scrollRef.current.offsetLeft
-    const walk = (x - startX) * 1.5 // scroll speed
-    scrollRef.current.scrollLeft = scrollLeft - walk
-  }
-  const handleTouchStart = e => {
-    setIsDragging(true)
-    setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft)
-    setScrollLeft(scrollRef.current.scrollLeft)
-  }
-  const handleTouchMove = e => {
-    if (!isDragging) return
-    const x = e.touches[0].pageX - scrollRef.current.offsetLeft
+    const pageX = e.pageX || e.touches[0].pageX
+    const x = pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 1.5
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
-  const handleTouchEnd = () => {
-    setIsDragging(false)
+  const handleEnd = () => setIsDragging(false)
+
+  // --- Filtering & Search ---
+  const filter = name => {
+    const filtered = products.filter(p => p.category?.name === name)
+    setShowing(filtered)
   }
-  const filter = categoryName => {
-    const temp = products.filter(
-      product => product.category && product.category.name === categoryName
-    )
-    setShowing(temp)
-  }
-  const resetFilter = () => {
-    setShowing(products)
-  }
+  const resetFilter = () => setShowing(products)
   const handleSearch = () => {
-    if (searchRef.current.value === "") {
-      setShowing(products)
-    } else {
-      const result = products.filter(product =>
-        product.name.toLowerCase().includes(searchRef.current.value.toLowerCase())
-      )
-      setShowing(result)
-    }
+    const query = searchRef.current.value.toLowerCase()
+    if (!query) return setShowing(products)
+    const result = products.filter(p => p.name.toLowerCase().includes(query))
+    setShowing(result)
   }
+
   return (
-    <div className="flex flex-col justify-center">
-      <div className="flex flex-col items-center mb-9">
-        <form className="flex items-center max-w-sm mx-auto w-full">
-          <div className="w-full">
-            <input
-              type="text"
-              id="simple-search"
-              className="bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus-yellow-500 focus-yellow-500 block w-full ps-10 p-2.5 "
-              placeholder="Search product name..."
-              ref={searchRef}
-              onChange={handleSearch}
-              required
-            />
-          </div>
-        </form>
-        <div
-          ref={scrollRef}
-          className="inline-flex justify-center rounded-md overflow-auto w-2/3 p-4"
-          role="group"
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+    <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10">
+      {/* Search */}
+      <div className="w-full max-w-lg mb-6">
+        <input
+          type="text"
+          placeholder="Search product name..."
+          ref={searchRef}
+          onChange={handleSearch}
+          className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
+        />
+      </div>
+
+      {/* Category Scroll */}
+      <div
+        ref={scrollRef}
+        className="flex space-x-3 overflow-x-auto scrollbar-hide w-full max-w-3xl px-2 pb-4 cursor-grab active:cursor-grabbing"
+        onMouseDown={handleStart}
+        onMouseMove={handleMove}
+        onMouseUp={handleEnd}
+        onMouseLeave={handleEnd}
+        onTouchStart={handleStart}
+        onTouchMove={handleMove}
+        onTouchEnd={handleEnd}
+      >
+        <button
+          onClick={resetFilter}
+          className="flex-shrink-0 px-5 py-2.5 bg-yellow-500 text-black border border-yellow-400 rounded-full text-sm font-medium hover:bg-yellow-600 transition"
         >
+          All categories
+        </button>
+        {categories.map(cat => (
           <button
-            onClick={resetFilter}
-            type="button"
-            className="text-black hover-black border border-yellow-400 bg-yellow-500 hover-yellow-600 focus-4 focus-none focus-yellow-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
+            key={cat._id}
+            onClick={() => filter(cat.name)}
+            className="flex-shrink-0 px-5 py-2.5 bg-yellow-500 text-black border border-yellow-400 rounded-full text-sm font-medium hover:bg-yellow-600 transition"
           >
-            All categories
+            {cat.name}
           </button>
-          {categories.map(category => (
-            <button
-              key={category.name}
-              onClick={() => filter(category.name)}
-              name={category.name}
-              type="button"
-              className="text-black hover-black border border-yellow-400 bg-yellow-500 hover-yellow-600 focus-4 focus-none focus-yellow-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-        <span className="">Total {showing.length} products</span>
-        <div className="grid grid-cols-2 md-cols-5 gap-4 w-3/4">
-          {showing.map(product => (
-            <Link href={`/products/${product.slug}`} key={product.slug}>
-              <div className="h-full max-w-full border border-yellow-500 bg-yellow-500 rounded-lg hover-125 transition duration-300 ease-in-out hover-lg hover-yellow-500">
-                <img className="rounded-t-lg" src={product.image.s3Url} alt="" />
-                <div className="p-5">
-                  <a href="#">
-                    <h5 className="mb-2 text-xl font-semibold tracking-tight text-gray-900">
-                      {product.name}
-                    </h5>
-                  </a>
+        ))}
+      </div>
+
+      <p className="text-gray-600 mt-4 mb-6 text-sm">
+        Showing {showing.length} product{showing.length !== 1 && "s"}
+      </p>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full max-w-6xl">
+        {showing.map(product => (
+          <Link href={`/products/${product.slug}`} key={product.slug}>
+            <div className="h-[300px] sm:h-[320px] md:h-[340px] border border-yellow-500 bg-yellow-500 rounded-lg overflow-hidden shadow hover:shadow-xl transform hover:scale-105 transition duration-300 flex flex-col">
+              {/* Image */}
+              {product.image?.s3Url ? (
+                <div className="flex-shrink-0">
+                  <img
+                    src={product.image?.s3Url}
+                    alt={product.name}
+                    className="w-full h-48 sm:h-52 md:h-56 object-cover"
+                  />
                 </div>
+              ) : (
+                <div className="flex-shrink-0">
+                  <img
+                    src="/hebat_product_fill.png"
+                    alt="Product Image"
+                    className="w-full h-48 sm:h-52 md:h-56 object-cover"
+                  />
+                </div>
+              )}
+
+              {/* Text (Full Name Visible, Scroll Hidden) */}
+              <div className="p-3 sm:p-4 flex-1 overflow-y-auto text-center hide-scrollbar">
+                <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug break-words">
+                  {product.name}
+                </h5>
               </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   )
 }
-export default Products
