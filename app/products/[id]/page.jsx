@@ -8,7 +8,7 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import Button from "@mui/material/Button"
-import EditForm from "@/components/EditForm"
+import EditForm from "@/components/EditCategoryForm"
 const ProductDetails = ({ user }) => {
   let { slug } = /* NOTE. Consider using usePathname or dynamic segments. */ null
   let navigate = useNavigate()
@@ -78,9 +78,7 @@ const ProductDetails = ({ user }) => {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
               >
-                <DialogTitle id="alert-dialog-title">
-                  {"Edit Product Details"}
-                </DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"Edit Product Details"}</DialogTitle>
                 <DialogContent>
                   <EditForm
                     product={product}
@@ -143,20 +141,11 @@ const ProductDetails = ({ user }) => {
             <span>Barcode</span>
             <span>Model</span>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">
-                Description
-              </h1>
-              <p
-                className={`mt-3 text-lg text-gray-800 ${
-                  clamped ? "line-clamp-3" : ""
-                }`}
-              >
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Description</h1>
+              <p className={`mt-3 text-lg text-gray-800 ${clamped ? "line-clamp-3" : ""}`}>
                 {product.description}
               </p>
-              <a
-                onClick={() => setClamped(!clamped)}
-                className="font-semibold cursor-pointer"
-              >
+              <a onClick={() => setClamped(!clamped)} className="font-semibold cursor-pointer">
                 {" "}
                 {clamped ? "read more" : "read Less"}{" "}
               </a>
@@ -188,19 +177,13 @@ const ProductDetails = ({ user }) => {
                   />
                 </svg>
                 <span className="w-full">
-                  {product.manual
-                    ? "Manual pdf file"
-                    : "Manual is not available"}
+                  {product.manual ? "Manual pdf file" : "Manual is not available"}
                 </span>
               </a>
             </div>
           </div>
           <div className="lg-span-4 mt-10 lg-0">
-            <img
-              className="w-full rounded-xl"
-              src={product.image?.s3Url}
-              alt="product image"
-            />
+            <img className="w-full rounded-xl" src={product.image?.s3Url} alt="product image" />
           </div>
         </div>
       </div>
