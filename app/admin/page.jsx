@@ -4,9 +4,11 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogInUser } from "@/lib/auth"
 import { useRef } from "react"
+import { useAuth } from "@/context/AuthContext"
 
 export default function Admin() {
   const router = useRouter()
+  const { setUser } = useAuth()
 
   // Properly define refs for form fields
   const emailRef = useRef(null)
@@ -22,6 +24,7 @@ export default function Admin() {
     const payload = await LogInUser({ email, password })
 
     if (payload) {
+      setUser(payload)
       router.push("/products")
     } else {
       if (passwordRef.current) passwordRef.current.value = ""
