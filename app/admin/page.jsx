@@ -3,79 +3,99 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogInUser } from "@/lib/auth"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useAuth } from "@/context/AuthContext"
 
 export default function Admin() {
   const router = useRouter()
   const { setUser } = useAuth()
+  const [loading, setLoading] = useState(false)
 
-  // Properly define refs for form fields
   const emailRef = useRef(null)
   const passwordRef = useRef(null)
 
   const handleSubmit = async e => {
     e.preventDefault()
-
     const email = emailRef.current?.value
     const password = passwordRef.current?.value
 
-    // Call your login function
-    const payload = await LogInUser({ email, password })
+    setLoading(true)
+    try {
+      const payload = await LogInUser({ email, password })
 
-    if (payload) {
-      setUser(payload)
-      router.push("/products")
-    } else {
-      if (passwordRef.current) passwordRef.current.value = ""
-      alert("Invalid email or password")
+      if (payload) {
+        setUser(payload)
+        router.push("/products")
+      } else {
+        if (passwordRef.current) passwordRef.current.value = ""
+        alert("Invalid email or password")
+      }
+    } catch (error) {
+      console.error("Login failed:", error)
+      alert("Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="w-full max-w-md bg-yellow-500 rounded-lg shadow p-6 space-y-4">
-        <h1 className="text-xl font-bold text-gray-900 text-center">Sign in</h1>
+    <section className="flex flex-col items-center px-4 py-16 min-h-[70vh]">
+      <div className="w-full max-w-md bg-yellow-500 rounded-2xl shadow-2xl p-8 space-y-6 border border-yellow-400">
+        {/* Logo + Title */}
+        <div className="flex flex-col items-center space-y-2">
+          <img
+            src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
+            alt="Hebat Logo"
+            className="w-20 h-auto"
+          />
+          <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-              Your email
+            <label htmlFor="email" className="block mb-1 text-sm font-medium text-gray-900">
+              Email
             </label>
             <input
               ref={emailRef}
               type="email"
-              name="email"
               id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
-              placeholder="name@company.com"
+              placeholder="admin@hebat.com"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-black focus:border-black block w-full p-2.5"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
+            <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-900">
               Password
             </label>
             <input
               ref={passwordRef}
               type="password"
-              name="password"
               id="password"
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 block w-full p-2.5"
               placeholder="••••••••"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-black focus:border-black block w-full p-2.5"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full text-white bg-black hover:bg-gray-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            disabled={loading}
+            className="w-full bg-black hover:bg-gray-800 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-200"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
+
+        <div className="text-center pt-2">
+          <Link href="/" className="text-sm font-medium text-gray-900 hover:underline">
+            ← Back to Home
+          </Link>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
