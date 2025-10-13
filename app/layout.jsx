@@ -29,11 +29,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <AuthProvider>
-          <header className="sticky top-0 z-50 bg-black shadow-md">
+          <header>
             <Nav />
           </header>
 
-          <main className="flex-grow">{children}</main>
+          <main className="pt-[72px] flex-grow">{children}</main>
 
           <Footer />
         </AuthProvider>

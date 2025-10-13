@@ -11,6 +11,7 @@ export async function generateMetadata({ params }) {
     return {
       title: `${product.name}`,
       description: product.description || "Premium product from Hebat.",
+      keywords: [product.name, product.description, "arabvape", "hebat", "morslon", "products"],
       openGraph: {
         title: product.name,
         description: product.description,

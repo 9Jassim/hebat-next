@@ -13,7 +13,7 @@ export default function Nav() {
   return (
     <>
       {/* Navbar */}
-      <nav className="bg-black border-gray-200 sticky top-0 z-50 shadow-md">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           {/* Left: logo & brand */}
           <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
