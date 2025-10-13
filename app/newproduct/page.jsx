@@ -81,7 +81,7 @@ export default function NewProduct() {
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full pt-10">
       <form
         onSubmit={addProduct}
         className="flex flex-col my-2 gap-3 p-2.5 shadow-lg border border-gray-300 rounded-lg w-full max-w-sm mx-auto pt-5 bg-yellow-500"

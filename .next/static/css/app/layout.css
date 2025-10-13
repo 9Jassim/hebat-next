@@ -522,11 +522,11 @@ video {
 .relative {
   position: relative;
 }
-.sticky {
-  position: sticky;
-}
 .inset-0 {
   inset: 0px;
+}
+.left-0 {
+  left: 0px;
 }
 .right-0 {
   right: 0px;
@@ -539,9 +539,6 @@ video {
 }
 .top-3 {
   top: 0.75rem;
-}
-.left-0 {
-  left: 0px;
 }
 .-z-10 {
   z-index: -10;
@@ -1037,6 +1034,9 @@ video {
 }
 .pt-\[72px\] {
   padding-top: 72px;
+}
+.pt-10 {
+  padding-top: 2.5rem;
 }
 .text-left {
   text-align: left;
