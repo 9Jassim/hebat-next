@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, Fragment } from "react"
+import { useEffect, useState, Fragment, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Client from "@/lib/api"
 import { useAuth } from "@/context/AuthContext" // ✅ use your auth context
@@ -20,6 +20,8 @@ export default function ProductDetails({ params }) {
   const [clamped, setClamped] = useState(true)
   const [openRemove, setOpenRemove] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
+  const descRef = useRef(null)
+  const [isClamped, setIsClamped] = useState(false)
 
   // Fetch product data
   useEffect(() => {
@@ -33,6 +35,21 @@ export default function ProductDetails({ params }) {
     }
     getProduct()
   }, [slug])
+
+  useEffect(() => {
+    // Wait for the DOM to render before checking
+    const checkClamp = () => {
+      if (descRef.current) {
+        const el = descRef.current
+        // If scroll height > client height → it’s overflowing (clamped)
+        setIsClamped(el.scrollHeight > el.clientHeight + 1)
+      }
+    }
+
+    checkClamp()
+    window.addEventListener("resize", checkClamp)
+    return () => window.removeEventListener("resize", checkClamp)
+  }, [product?.description])
 
   const handleRemove = async () => {
     try {
@@ -173,15 +190,24 @@ export default function ProductDetails({ params }) {
           </p>
 
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Description</h2>
-          <p className={`text-gray-800 mb-4 ${clamped ? "line-clamp-3" : ""}`}>
+          <p
+            ref={descRef}
+            className={`text-gray-800 mb-4 transition-all duration-300 ${
+              clamped ? "line-clamp-3" : ""
+            }`}
+          >
             {product.description}
           </p>
-          <button
-            onClick={() => setClamped(!clamped)}
-            className="text-yellow-600 hover:underline text-sm font-medium"
-          >
-            {clamped ? "Read more" : "Read less"}
-          </button>
+
+          {/* ✅ Only show if it's actually clamped */}
+          {isClamped && (
+            <button
+              onClick={() => setClamped(!clamped)}
+              className="text-yellow-600 hover:underline text-sm font-medium"
+            >
+              {clamped ? "Read more" : "Read less"}
+            </button>
+          )}
 
           <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-2">Manual</h2>
           {product.manual ? (
