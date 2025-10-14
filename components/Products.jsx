@@ -56,7 +56,14 @@ export default function Products() {
   const handleSearch = () => {
     const query = searchRef.current.value.toLowerCase()
     if (!query) return setShowing(products)
-    const result = products.filter(p => p.name.toLowerCase().includes(query))
+
+    const result = products.filter(
+      p =>
+        p.name.toLowerCase().includes(query) ||
+        p.barcode?.toLowerCase().includes(query) ||
+        p.model?.toLowerCase().includes(query)
+    )
+
     setShowing(result)
   }
 
@@ -66,7 +73,7 @@ export default function Products() {
       <div className="w-full max-w-lg mb-6">
         <input
           type="text"
-          placeholder="Search product name..."
+          placeholder="Search product name, barcode, model..."
           ref={searchRef}
           onChange={handleSearch}
           className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
