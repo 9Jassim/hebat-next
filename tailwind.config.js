@@ -6,7 +6,13 @@ module.exports = {
     "./pages/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        yellow: {
+          500: "#fcbb17", // override the default yellow-500
+        },
+      },
+    },
+    plugins: [],
   },
-  plugins: [],
 }
