@@ -30,7 +30,12 @@ export default function Footer() {
           <div className="flex mt-4 sm:mt-0 space-x-2">
             {/* Instagram */}
             <button
-              onClick={() => window.open("https://www.instagram.com/morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.instagram.com/morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
@@ -52,7 +57,12 @@ export default function Footer() {
 
             {/* YouTube */}
             <button
-              onClick={() => window.open("https://www.youtube.com/@morslon_bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.youtube.com/@morslon_bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
@@ -72,7 +82,12 @@ export default function Footer() {
 
             {/* TikTok */}
             <button
-              onClick={() => window.open("https://www.tiktok.com/@morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.tiktok.com/@morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
@@ -88,7 +103,12 @@ export default function Footer() {
 
             {/* Snapchat */}
             <button
-              onClick={() => window.open("https://www.snapchat.com/@morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.snapchat.com/@morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
