@@ -9,20 +9,16 @@ import Head from "next/head"
 export default function Products() {
   const searchParams = useSearchParams()
   const selectedCategory = searchParams.get("category")
+  const searchQuery = searchParams.get("search")?.trim() || ""
 
   const [products, setProducts] = useState([])
   const [showing, setShowing] = useState([])
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("All Products")
 
-  // 🔧 normalize text: lower, trim, remove extra spaces, replace & with and
+  // 🔧 normalize helper
   const normalize = str =>
-    str
-      ?.toLowerCase()
-      .replace(/&/g, "and")
-      .replace(/\s+/g, "") // remove all spaces
-      .normalize("NFKC")
-      .trim() || ""
+    str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -31,17 +27,27 @@ export default function Products() {
         const fetched = res.data.products || []
         setProducts(fetched)
 
+        // ✅ Case 1: Category filter
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
-
-          const filtered = fetched.filter(p => {
-            const name = normalize(p.category?.name)
-            return name === normalizedQuery
-          })
-
+          const filtered = fetched.filter(p => normalize(p.category?.name) === normalizedQuery)
           setShowing(filtered)
           setDisplayCategory(selectedCategory)
-        } else {
+        }
+        // ✅ Case 2: Search filter
+        else if (searchQuery) {
+          const query = searchQuery.toLowerCase()
+          const filtered = fetched.filter(
+            p =>
+              p.name.toLowerCase().includes(query) ||
+              p.model?.toLowerCase().includes(query) ||
+              p.barcode?.toLowerCase().includes(query)
+          )
+          setShowing(filtered)
+          setDisplayCategory(`Search results for "${searchQuery}"`)
+        }
+        // ✅ Case 3: Default (all products)
+        else {
           setShowing(fetched)
           setDisplayCategory("All Products")
         }
@@ -53,7 +59,7 @@ export default function Products() {
     }
 
     fetchProducts()
-  }, [selectedCategory])
+  }, [selectedCategory, searchQuery])
 
   if (loading)
     return (
@@ -62,23 +68,13 @@ export default function Products() {
       </div>
     )
 
-  // ✅ Breadcrumb structured data (SEO)
+  // ✅ Breadcrumb JSON-LD for SEO
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://hebat.com/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Products",
-        item: "https://hebat.com/products",
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hebat.com/" },
+      { "@type": "ListItem", position: 2, name: "Products", item: "https://hebat.com/products" },
       ...(selectedCategory
         ? [
             {
@@ -88,15 +84,27 @@ export default function Products() {
               item: `https://hebat.com/products?category=${encodeURIComponent(selectedCategory)}`,
             },
           ]
-        : []),
+        : searchQuery
+          ? [
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: `Search: ${searchQuery}`,
+                item: `https://hebat.com/products?search=${encodeURIComponent(searchQuery)}`,
+              },
+            ]
+          : []),
     ],
   }
 
-  // ✅ Dynamic metadata for SEO
-  const pageTitle = selectedCategory ? `${displayCategory} | Hebat` : "All Products | Hebat"
+  // ✅ SEO title & description
+  const pageTitle =
+    selectedCategory || searchQuery ? `${displayCategory} | Hebat` : "All Products | Hebat"
   const pageDescription = selectedCategory
     ? `Explore ${displayCategory} products from Hebat — premium quality and top performance.`
-    : "Explore all premium products from Hebat — trusted quality and style."
+    : searchQuery
+      ? `Search results for "${searchQuery}" from Hebat — explore our premium range.`
+      : "Explore all premium products from Hebat — trusted quality and style."
 
   return (
     <>
@@ -109,7 +117,7 @@ export default function Products() {
         />
       </Head>
 
-      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10 mt-20 w-full">
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 mt-20 w-full">
         {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">
@@ -120,7 +128,7 @@ export default function Products() {
             <Link href="/products" className="hover:text-yellow-600 font-medium">
               Products
             </Link>
-            {selectedCategory && (
+            {(selectedCategory || searchQuery) && (
               <>
                 <span>/</span>
                 <span className="text-gray-800 font-semibold">{displayCategory}</span>
@@ -152,7 +160,7 @@ export default function Products() {
                     />
                   </div>
 
-                  {/* Text */}
+                  {/* Name */}
                   <div className="p-3 sm:p-4 flex-1 overflow-y-auto text-center hide-scrollbar">
                     <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug break-words">
                       {product.name}
@@ -162,7 +170,11 @@ export default function Products() {
               </Link>
             ))
           ) : (
-            <p className="text-gray-600 text-sm text-center">No products found in this category.</p>
+            <p className="text-gray-600 text-sm text-center">
+              {searchQuery
+                ? `No products found matching "${searchQuery}".`
+                : "No products found in this category."}
+            </p>
           )}
         </div>
       </div>

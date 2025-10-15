@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
             <Nav />
           </header>
 
-          <main className="pt-[72px] flex-grow">{children}</main>
+          <main className="pt-[128px] flex-grow">{children}</main>
 
           <Footer />
         </AuthProvider>

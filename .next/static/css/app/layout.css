@@ -1036,8 +1036,8 @@ video {
 .pt-5 {
   padding-top: 1.25rem;
 }
-.pt-\[72px\] {
-  padding-top: 72px;
+.pt-\[128px\] {
+  padding-top: 128px;
 }
 .text-left {
   text-align: left;
@@ -1337,14 +1337,6 @@ body {
 }
 @media (min-width: 640px) {
 
-  .sm\:mt-0 {
-    margin-top: 0px;
-  }
-
-  .sm\:flex {
-    display: flex;
-  }
-
   .sm\:h-52 {
     height: 13rem;
   }
@@ -1363,10 +1355,6 @@ body {
 
   .sm\:justify-end {
     justify-content: flex-end;
-  }
-
-  .sm\:justify-between {
-    justify-content: space-between;
   }
 
   .sm\:p-4 {
@@ -1504,16 +1492,6 @@ body {
 
   .lg\:pr-8 {
     padding-right: 2rem;
-  }
-}
-.rtl\:space-x-reverse:where([dir="rtl"], [dir="rtl"] *) > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 1;
-}
-@media (prefers-color-scheme: dark) {
-
-  .dark\:text-white {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity, 1));
   }
 }
 

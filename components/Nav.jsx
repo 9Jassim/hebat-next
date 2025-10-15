@@ -5,9 +5,10 @@ import { useEffect, useState, useRef } from "react"
 import { useAuth } from "@/context/AuthContext"
 import Client from "@/lib/api"
 import EditCategories from "@/components/EditCategories"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 
 export default function Nav() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const activeCategory = decodeURIComponent(searchParams.get("category") || "")
   const { user, logout } = useAuth()
@@ -24,12 +25,10 @@ export default function Nav() {
   const searchRef = useRef(null)
   const resultsRef = useRef(null)
 
-  // ✅ Wait for client hydration
-  useEffect(() => {
-    setHydrated(true)
-  }, [])
+  // ✅ Wait for hydration
+  useEffect(() => setHydrated(true), [])
 
-  // ✅ Fetch categories and products only after hydration
+  // ✅ Fetch categories & products
   useEffect(() => {
     if (!hydrated) return
     const fetchData = async () => {
@@ -40,7 +39,6 @@ export default function Nav() {
         ])
         setCategories(catRes.data.categories || [])
         setProducts(prodRes.data.products || [])
-        console.log("Categories response:", catRes.data)
       } catch (err) {
         console.error("❌ Error fetching categories/products:", err)
         setCategories([])
@@ -49,12 +47,12 @@ export default function Nav() {
     fetchData()
   }, [hydrated])
 
-  // ✅ Search functionality
+  // ✅ Search input logic
   const handleSearch = e => {
     const value = e.target.value
     setSearch(value)
 
-    if (value.trim() === "") {
+    if (!value.trim()) {
       setFiltered([])
       setShowDropdown(false)
       return
@@ -73,26 +71,38 @@ export default function Nav() {
     setActiveIndex(-1)
   }
 
-  // ✅ Keyboard navigation
+  // ✅ Keyboard navigation & Enter key behavior
   const handleKeyDown = e => {
-    if (!showDropdown || filtered.length === 0) return
+    if (e.key === "Enter") {
+      e.preventDefault()
+      // If user pressed Enter with dropdown open and an active item selected
+      if (showDropdown && activeIndex >= 0) {
+        const selected = filtered[activeIndex]
+        window.location.href = `/products/${selected.slug}`
+        setShowDropdown(false)
+        setSearch("")
+        return
+      }
 
+      // Otherwise redirect to products search results page
+      if (search.trim()) {
+        router.push(`/products?search=${encodeURIComponent(search.trim())}`)
+        setShowDropdown(false)
+      }
+    }
+
+    // Dropdown navigation
+    if (!showDropdown || filtered.length === 0) return
     if (e.key === "ArrowDown") {
       e.preventDefault()
       setActiveIndex(prev => (prev < filtered.length - 1 ? prev + 1 : 0))
     } else if (e.key === "ArrowUp") {
       e.preventDefault()
       setActiveIndex(prev => (prev > 0 ? prev - 1 : filtered.length - 1))
-    } else if (e.key === "Enter" && activeIndex >= 0) {
-      e.preventDefault()
-      const selected = filtered[activeIndex]
-      window.location.href = `/products/${selected.slug}`
-      setShowDropdown(false)
-      setSearch("")
     }
   }
 
-  // ✅ Close dropdown when clicking outside
+  // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = e => {
       if (
@@ -107,7 +117,7 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // ✅ Reload categories when admin updates them
+  // ✅ Reload categories after admin update
   const reloadCategories = async () => {
     try {
       const res = await Client.get("/products/category")
@@ -131,7 +141,7 @@ export default function Nav() {
             />
           </Link>
 
-          {/* Center Search Bar */}
+          {/* Search Bar */}
           <div
             className="relative flex-1 max-w-md mx-auto w-full"
             ref={searchRef}
@@ -252,7 +262,7 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* ✅ Category Bar (non-scrollable) */}
+        {/* Category Bar */}
         <div className="bg-black border-t border-gray-800">
           <div className="max-w-screen-xl mx-auto px-4 flex flex-wrap justify-center md:justify-start">
             {categories.length > 0 ? (
