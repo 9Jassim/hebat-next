@@ -117,7 +117,7 @@ export default function Products() {
         />
       </Head>
 
-      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 mt-20 w-full">
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8  w-full">
         {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">

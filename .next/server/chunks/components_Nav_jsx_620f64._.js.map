@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sections": [
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/components/Nav.jsx/proxy.ts"],"sourcesContent":["import { createProxy } from 'next/dist/build/webpack/loaders/next-flight-loader/module-proxy'\n\nconst proxy = createProxy(\"[project]/components/Nav.jsx\")\n\n// Accessing the __esModule property and exporting $$typeof are required here.\n// The __esModule getter forces the proxy target to create the default export\n// and the $$typeof value is for rendering logic to determine if the module\n// is a client boundary.\nconst { __esModule, $$typeof } = proxy;\n\nexport { __esModule, $$typeof };\nexport default proxy;\n"],"names":[],"mappings":";;;;;;;;AAEA,MAAM,QAAQ,mNAAY;AAE1B,8EAA8E;AAC9E,6EAA6E;AAC7E,2EAA2E;AAC3E,wBAAwB;AACxB,MAAM,EAAE,UAAU,EAAE,QAAQ,EAAE,GAAG;;uCAGlB"}},
+    {"offset": {"line": 21, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 26, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 31, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
