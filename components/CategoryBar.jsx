@@ -32,8 +32,8 @@ export default function CategoryBar({ refreshTrigger }) {
   }, [refreshTrigger])
 
   return (
-    <div className="bg-black border-t border-gray-800">
-      <div className="max-w-screen-xl mx-auto px-4 flex flex-wrap justify-center md:justify-start">
+    <div className="fixed top-[72px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm overflow-x-auto no-scrollbar">
+      <div className="max-w-screen-xl mx-auto px-2 flex items-center space-x-3 md:space-x-4 py-2">
         {loading ? (
           <p className="text-gray-400 text-sm py-3">Loading categories...</p>
         ) : categories.length ? (
@@ -43,7 +43,7 @@ export default function CategoryBar({ refreshTrigger }) {
               <Link
                 key={c._id}
                 href={`/products?category=${encodeURIComponent(c.name)}`}
-                className={`block py-3 px-4 ${
+                className={`whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
                   isActive
                     ? "text-yellow-500 font-semibold underline underline-offset-4"
                     : "text-white hover:text-yellow-500"

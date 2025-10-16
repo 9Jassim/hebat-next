@@ -23,7 +23,7 @@ export default function Nav() {
   const searchRef = useRef(null)
   const resultsRef = useRef(null)
 
-  // ✅ fetch once on mount
+  // ✅ Fetch products
   useEffect(() => {
     let active = true
     const fetchProducts = async () => {
@@ -42,7 +42,7 @@ export default function Nav() {
     }
   }, [refreshTrigger])
 
-  // ✅ search logic
+  // ✅ Search logic
   const handleSearch = e => {
     const value = e.target.value
     setSearch(value)
@@ -63,19 +63,19 @@ export default function Nav() {
     setActiveIndex(-1)
   }
 
-  // ✅ keyboard
+  // ✅ Keyboard navigation
   const handleKeyDown = e => {
     if (e.key === "Enter") {
       e.preventDefault()
       if (showDropdown && activeIndex >= 0) {
         router.push(`/products/${filtered[activeIndex].slug}`)
-        setShowDropdown(false)
+        handleCloseMenus()
         setSearch("")
         return
       }
       if (search.trim()) {
         router.push(`/products?search=${encodeURIComponent(search.trim())}`)
-        setShowDropdown(false)
+        handleCloseMenus()
       }
     }
     if (!showDropdown || !filtered.length) return
@@ -83,7 +83,7 @@ export default function Nav() {
     else if (e.key === "ArrowUp") setActiveIndex(i => (i > 0 ? i - 1 : filtered.length - 1))
   }
 
-  // ✅ close dropdown outside
+  // ✅ Close dropdown on outside click
   useEffect(() => {
     const close = e => {
       if (
@@ -97,22 +97,32 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", close)
   }, [])
 
+  // ✅ Reload categories
   const reloadCategories = () => setRefreshTrigger(x => x + 1)
+
+  // ✅ Close dropdown + mobile menu
+  const handleCloseMenus = () => {
+    setShowDropdown(false)
+    setOpen(false)
+  }
 
   return (
     <>
+      {/* Fixed Navbar */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
-        <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4 gap-4">
-          <Link href="/" className="flex items-center space-x-3">
+        <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4 gap-3">
+          {/* Logo (Left) */}
+          <Link href="/" onClick={handleCloseMenus} className="flex items-center space-x-3">
             <img
               src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
-              className="h-12"
+              className="h-10 sm:h-12"
               alt="Hebat Logo"
             />
           </Link>
 
+          {/* Search (Center) */}
           <div
-            className="relative flex-1 max-w-md mx-auto w-full"
+            className="relative flex-1 max-w-md mx-2 w-full"
             ref={searchRef}
             onKeyDown={handleKeyDown}
           >
@@ -125,23 +135,21 @@ export default function Nav() {
               className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
             />
 
+            {/* 🔥 Dropdown — same width as search bar */}
             {showDropdown && (
               <div
                 ref={resultsRef}
-                className="absolute top-11 left-0 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-64 overflow-y-auto"
+                className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[60] max-h-72 overflow-y-auto"
               >
                 {filtered.length ? (
                   filtered.map((p, i) => (
                     <Link
                       key={p._id}
                       href={`/products/${p.slug}`}
-                      className={`flex items-center gap-3 px-3 py-2 text-sm ${
+                      onClick={handleCloseMenus}
+                      className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md ${
                         i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
                       }`}
-                      onClick={() => {
-                        setShowDropdown(false)
-                        setSearch("")
-                      }}
                     >
                       <img
                         src={p.image?.s3Url || "/hebat_product_fill.png"}
@@ -150,7 +158,7 @@ export default function Nav() {
                       />
                       <div>
                         <p className="font-medium text-gray-900">{p.name}</p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-gray-600 truncate">
                           {p.model || "No model"} — {p.barcode || "No barcode"}
                         </p>
                       </div>
@@ -163,15 +171,45 @@ export default function Nav() {
             )}
           </div>
 
-          <div className={`${open ? "block" : "hidden"} w-full md:block md:w-auto`}>
-            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-700 rounded-lg bg-black md:flex-row md:space-x-6 md:mt-0 md:border-0">
+          {/* Hamburger (Right) */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          {/* Links */}
+          <div
+            className={`${
+              open ? "block" : "hidden"
+            } absolute md:static top-[72px] right-0 w-full md:w-auto bg-black md:bg-transparent border-t md:border-0 border-gray-700 md:flex md:items-center transition-all duration-300 z-[70]`}
+          >
+            <ul className="font-medium flex flex-col md:flex-row text-center md:text-left p-4 md:p-0 md:space-x-6">
               <li>
-                <Link href="/" className="block py-2 px-3 text-white hover:text-yellow-500">
+                <Link
+                  href="/"
+                  onClick={handleCloseMenus}
+                  className="block py-2 px-3 text-white hover:text-yellow-500"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="block py-2 px-3 text-white hover:text-yellow-500">
+                <Link
+                  href="/products"
+                  onClick={handleCloseMenus}
+                  className="block py-2 px-3 text-white hover:text-yellow-500"
+                >
                   Products
                 </Link>
               </li>
@@ -180,6 +218,7 @@ export default function Nav() {
                   <li>
                     <Link
                       href="/newproduct"
+                      onClick={handleCloseMenus}
                       className="block py-2 px-3 text-white hover:text-yellow-500"
                     >
                       New Product
@@ -187,16 +226,22 @@ export default function Nav() {
                   </li>
                   <li>
                     <button
-                      onClick={() => setShowCategories(true)}
-                      className="block py-2 px-3 text-white hover:text-yellow-500"
+                      onClick={() => {
+                        handleCloseMenus()
+                        setShowCategories(true)
+                      }}
+                      className="block py-2 px-3 text-white hover:text-yellow-500 w-full text-left"
                     >
                       Manage Categories
                     </button>
                   </li>
                   <li>
                     <button
-                      onClick={logout}
-                      className="block py-2 px-3 text-white hover:text-yellow-500"
+                      onClick={() => {
+                        logout()
+                        handleCloseMenus()
+                      }}
+                      className="block py-2 px-3 text-white hover:text-yellow-500 w-full text-left"
                     >
                       Logout
                     </button>
@@ -206,14 +251,14 @@ export default function Nav() {
             </ul>
           </div>
         </div>
+
+        {/* Category Bar */}
+        <CategoryBar refreshTrigger={refreshTrigger} />
       </nav>
 
-      <div className="mt-[72px]">
-        <CategoryBar refreshTrigger={refreshTrigger} />
-      </div>
-
+      {/* Admin Category Modal */}
       {showCategories && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 relative">
             <h2 className="text-xl font-bold mb-4 text-gray-800">Manage Categories</h2>
             <EditCategories onUpdated={reloadCategories} />

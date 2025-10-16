@@ -2,8 +2,10 @@ import "@/app/globals.css"
 import { AuthProvider } from "@/context/AuthContext"
 import Footer from "@/components/Footer"
 import dynamic from "next/dynamic"
+import Nav from "@/components/Nav"
+import CategoryBar from "@/components/CategoryBar"
 
-const Nav = dynamic(() => import("@/components/Nav"), { ssr: false })
+// const Nav = dynamic(() => import("@/components/Nav"), { ssr: false })
 
 export const metadata = {
   title: {
@@ -33,9 +35,10 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <header>
             <Nav />
+            <CategoryBar />
           </header>
 
-          <main className="pt-[50px] flex-grow">{children}</main>
+          <main className="pt-[135px] flex-grow">{children}</main>
 
           <Footer />
         </AuthProvider>
