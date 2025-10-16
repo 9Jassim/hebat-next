@@ -6,36 +6,42 @@ export default function Footer() {
   return (
     <footer className="bg-black border-gray-200 mt-10 text-white">
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-        <div className="sm:flex sm:items-center sm:justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-            <img
-              src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
-              className="h-12"
-              alt="Hebat Logo"
-            />
-          </Link>
-
-          {/* Contact Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center text-center sm:text-left">
+          {/* Left: Contact Info */}
           <div>
-            <p className="text-white">
-              <label className="mb-6 text-sm font-semibold text-white uppercase">WhatsApp: </label>
+            <p className="text-white text-sm">
+              <span className="font-semibold uppercase">WhatsApp: </span>
               +973 33176767, +973 33115656 <br />
-              <label className="mb-6 text-sm font-semibold text-white uppercase">Email: </label>
+              <span className="font-semibold uppercase">Email: </span>
               support@morslon.com
             </p>
           </div>
 
-          {/* Social Media Buttons */}
-          <div className="flex mt-4 sm:mt-0 space-x-2">
+          {/* Middle: About + Contact */}
+          <div className="flex flex-col items-center sm:items-center space-y-2">
+            <Link href="/about" className="text-white hover:text-yellow-500 text-sm font-medium">
+              About Us
+            </Link>
+            <Link href="/contact" className="text-white hover:text-yellow-500 text-sm font-medium">
+              Contact Us
+            </Link>
+          </div>
+
+          {/* Right: Social Media */}
+          <div className="flex justify-center sm:justify-end space-x-2">
             {/* Instagram */}
             <button
-              onClick={() => window.open("https://www.instagram.com/morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.instagram.com/morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -52,12 +58,17 @@ export default function Footer() {
 
             {/* YouTube */}
             <button
-              onClick={() => window.open("https://www.youtube.com/@morslon_bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.youtube.com/@morslon_bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
                 viewBox="0 0 24 24"
@@ -72,12 +83,17 @@ export default function Footer() {
 
             {/* TikTok */}
             <button
-              onClick={() => window.open("https://www.tiktok.com/@morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.tiktok.com/@morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -88,12 +104,17 @@ export default function Footer() {
 
             {/* Snapchat */}
             <button
-              onClick={() => window.open("https://www.snapchat.com/@morslon.bh", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://www.snapchat.com/@morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink",
+                  "_blank"
+                )
+              }
               type="button"
               className="text-white bg-yellow-500 hover:bg-yellow-600 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center"
             >
               <svg
-                className="w-6 h-6 text-gray-800 dark:text-white"
+                className="w-6 h-6"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
                 fill="currentColor"
@@ -103,6 +124,13 @@ export default function Footer() {
             </button>
           </div>
         </div>
+
+        {/* Bottom Line */}
+        <hr className="my-4 border-gray-700" />
+        <p className="text-center text-sm text-gray-400">
+          © {new Date().getFullYear()} <span className="text-yellow-500 font-semibold">Hebat</span>
+          . All Rights Reserved.
+        </p>
       </div>
     </footer>
   )

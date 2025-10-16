@@ -4,11 +4,11 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <section className="relative overflow-hidden bg-gray-50">
+    <section className="relative overflow-hidden bg-gray-50 pt-10">
       {/* Subtle yellow accent background that blends */}
       <div className="absolute right-0 top-0 w-full h-full bg-gradient-to-l from-yellow-50 via-white to-white -z-10"></div>
 
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-20 relative">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-10 relative">
         <div
           className="
             mx-auto 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Client from "@/lib/api"
 import EditForm from "./EditCategoryForm" // optional - skip if not yet built
 
-export default function EditCategories({ onClose }) {
+export default function EditCategories({ onClose, onUpdated }) {
   const [categories, setCategories] = useState([])
   const [editingCategory, setEditingCategory] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -47,6 +47,7 @@ export default function EditCategories({ onClose }) {
       const res = await Client.get("/products/category", { withCredentials: true })
       setCategories(res.data.categories || [])
       setEditingCategory(null)
+      if (onUpdated) onUpdated()
     } catch (error) {
       console.error("Failed to save category:", error)
     }
@@ -57,6 +58,7 @@ export default function EditCategories({ onClose }) {
     try {
       await Client.delete(`/products/category/${id}`, { withCredentials: true })
       setCategories(prev => prev.filter(c => c._id !== id))
+      if (onUpdated) onUpdated()
     } catch (error) {
       console.error("Failed to delete category:", error)
     }

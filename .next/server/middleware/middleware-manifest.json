@@ -1,0 +1,26 @@
+{
+  "sorted_middleware": [],
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/_291278._.js",
+        "server/edge/chunks/middleware_1ef45d.js",
+        "server/edge/chunks/edge-wrapper_390db6.js",
+        "server/edge/chunks/edge-wrapper_bfdb38.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "locale": false,
+          "originalSource": "/admin/:path*"
+        },
+        {
+          "locale": false,
+          "originalSource": "/new-product/:path*"
+        }
+      ]
+    }
+  },
+  "functions": {}
+}
