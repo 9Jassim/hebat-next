@@ -3,18 +3,34 @@
 import { useEffect, useState, Fragment, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Client from "@/lib/api"
-import { useAuth } from "@/context/AuthContext" // ✅ use your auth context
+import { useAuth } from "@/context/AuthContext"
 import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import Button from "@mui/material/Button"
 import EditProductForm from "@/components/EditProductForm"
+import Link from "next/link"
+
+// ✅ Helper functions
+const slugify = str =>
+  str
+    ?.toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-") || ""
+
+const deslugify = str =>
+  str
+    ?.replace(/-/g, " ")
+    .replace(/\band\b/gi, "&")
+    .replace(/\b\w/g, c => c.toUpperCase()) || ""
 
 export default function ProductDetails({ params }) {
   const router = useRouter()
-  const { slug } = params
-  const { user } = useAuth() // ✅ access logged-in user
+  const { slug, category } = params
+  const { user } = useAuth()
 
   const [product, setProduct] = useState(null)
   const [clamped, setClamped] = useState(true)
@@ -23,29 +39,27 @@ export default function ProductDetails({ params }) {
   const descRef = useRef(null)
   const [isClamped, setIsClamped] = useState(false)
 
-  // Fetch product data
+  // ✅ Fetch product data
   useEffect(() => {
     const getProduct = async () => {
       try {
         const res = await Client.get(`/products/${slug}`, { withCredentials: true })
         setProduct(res.data.product)
       } catch (err) {
-        console.error("Failed to fetch product:", err)
+        console.error("❌ Failed to fetch product:", err)
       }
     }
     getProduct()
   }, [slug])
 
+  // ✅ Detect clamping
   useEffect(() => {
-    // Wait for the DOM to render before checking
     const checkClamp = () => {
       if (descRef.current) {
         const el = descRef.current
-        // If scroll height > client height → it’s overflowing (clamped)
         setIsClamped(el.scrollHeight > el.clientHeight + 1)
       }
     }
-
     checkClamp()
     window.addEventListener("resize", checkClamp)
     return () => window.removeEventListener("resize", checkClamp)
@@ -55,7 +69,7 @@ export default function ProductDetails({ params }) {
     try {
       await Client.delete(`/products/${product._id}`, { withCredentials: true })
       setOpenRemove(false)
-      router.push("/products")
+      router.push(`/products/${slugify(product.category?.name || category) || ""}`)
     } catch (err) {
       console.error("Error deleting product:", err)
     }
@@ -68,45 +82,82 @@ export default function ProductDetails({ params }) {
       </div>
     )
 
+  // ✅ Build breadcrumb with proper slugified links
+  const categorySlug = slugify(product.category?.name || category)
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://hebat.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Products",
+        item: "https://hebat.com/products",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.category?.name || deslugify(category),
+        item: `https://hebat.com/products/${categorySlug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: product.name,
+        item: `https://hebat.com/products/${categorySlug}/${slug}`,
+      },
+    ],
+  }
+
   return (
     <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* ✅ Show Admin Controls only if user is logged in */}
+      {/* ✅ SEO JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
+      {/* ✅ Breadcrumb Navigation */}
+      <nav className="text-sm text-gray-600 mb-6 flex items-center flex-wrap gap-1">
+        <Link href="/" className="hover:text-yellow-600 font-medium">
+          Home
+        </Link>
+        <span>/</span>
+        <Link href="/products" className="hover:text-yellow-600 font-medium">
+          Products
+        </Link>
+        <span>/</span>
+        <Link
+          href={`/products/${slugify(product.category?.name || category)}`}
+          className="hover:text-yellow-600 font-medium capitalize"
+        >
+          {product.category?.name || deslugify(category)}
+        </Link>
+        <span>/</span>
+        <span className="text-gray-800 font-semibold">{product.name}</span>
+      </nav>
+
+      {/* ✅ Admin Controls */}
       {user && (
         <div className="mb-6 flex flex-wrap gap-3">
-          {/* Edit Button */}
+          {/* Edit */}
           <Fragment>
             <button
               onClick={() => setOpenEdit(true)}
               type="button"
               className="text-white bg-green-700 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
             >
-              <svg
-                className="w-5 h-5 mr-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z"
-                  clipRule="evenodd"
-                />
-                <path
-                  fillRule="evenodd"
-                  d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Edit
+              ✏️ Edit
             </button>
-
-            <Dialog
-              open={openEdit}
-              onClose={() => setOpenEdit(false)}
-              aria-labelledby="edit-dialog-title"
-            >
-              <DialogTitle id="edit-dialog-title">Edit Product Details</DialogTitle>
+            <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
+              <DialogTitle>Edit Product Details</DialogTitle>
               <DialogContent>
                 <EditProductForm
                   product={product}
@@ -120,35 +171,17 @@ export default function ProductDetails({ params }) {
             </Dialog>
           </Fragment>
 
-          {/* Remove Button */}
+          {/* Remove */}
           <Fragment>
             <button
               onClick={() => setOpenRemove(true)}
               type="button"
               className="text-white bg-red-700 hover:bg-red-600 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
             >
-              <svg
-                className="w-5 h-5 mr-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Remove
+              🗑️ Remove
             </button>
-
-            <Dialog
-              open={openRemove}
-              onClose={() => setOpenRemove(false)}
-              aria-labelledby="remove-dialog-title"
-            >
-              <DialogTitle id="remove-dialog-title">Remove Product From Inventory?</DialogTitle>
+            <Dialog open={openRemove} onClose={() => setOpenRemove(false)}>
+              <DialogTitle>Remove Product From Inventory?</DialogTitle>
               <DialogActions>
                 <Button onClick={() => setOpenRemove(false)}>Cancel</Button>
                 <Button onClick={handleRemove} color="error">
@@ -160,23 +193,15 @@ export default function ProductDetails({ params }) {
         </div>
       )}
 
-      {/* Product Content */}
+      {/* ✅ Product Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Image */}
         <div className="order-1 lg:order-2">
-          {product.image?.s3Url ? (
-            <img
-              src={product.image.s3Url}
-              alt={product.name}
-              className="w-full rounded-lg shadow-md"
-            />
-          ) : (
-            <img
-              src="/hebat_product_fill.png"
-              alt={product.name}
-              className="w-full rounded-lg shadow-md"
-            />
-          )}
+          <img
+            src={product.image?.s3Url || "/hebat_product_fill.png"}
+            alt={product.name}
+            className="w-full rounded-lg shadow-md"
+          />
         </div>
 
         {/* Details */}
@@ -199,7 +224,6 @@ export default function ProductDetails({ params }) {
             {product.description}
           </p>
 
-          {/* ✅ Only show if it's actually clamped */}
           {isClamped && (
             <button
               onClick={() => setClamped(!clamped)}

@@ -8,6 +8,15 @@ import Client from "@/lib/api"
 import EditCategories from "@/components/EditCategories"
 import CategoryBar from "@/components/CategoryBar"
 
+// ✅ Slugify helper
+const slugify = str =>
+  str
+    ?.toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-") || ""
+
 export default function Nav() {
   const router = useRouter()
   const { user, logout } = useAuth()
@@ -68,7 +77,9 @@ export default function Nav() {
     if (e.key === "Enter") {
       e.preventDefault()
       if (showDropdown && activeIndex >= 0) {
-        router.push(`/products/${filtered[activeIndex].slug}`)
+        const product = filtered[activeIndex]
+        const catSlug = slugify(product.category?.name || "")
+        router.push(`/products/${catSlug}/${product.slug}`)
         handleCloseMenus()
         setSearch("")
         return
@@ -111,7 +122,7 @@ export default function Nav() {
       {/* Fixed Navbar */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4 gap-3">
-          {/* Logo (Left) */}
+          {/* Logo */}
           <Link href="/" onClick={handleCloseMenus} className="flex items-center space-x-3">
             <img
               src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
@@ -120,7 +131,7 @@ export default function Nav() {
             />
           </Link>
 
-          {/* Search (Center) */}
+          {/* Search */}
           <div
             className="relative flex-1 max-w-md mx-2 w-full"
             ref={searchRef}
@@ -135,35 +146,38 @@ export default function Nav() {
               className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
             />
 
-            {/* 🔥 Dropdown — same width as search bar */}
+            {/* Dropdown */}
             {showDropdown && (
               <div
                 ref={resultsRef}
                 className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[60] max-h-72 overflow-y-auto"
               >
                 {filtered.length ? (
-                  filtered.map((p, i) => (
-                    <Link
-                      key={p._id}
-                      href={`/products/${p.slug}`}
-                      onClick={handleCloseMenus}
-                      className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md ${
-                        i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
-                      }`}
-                    >
-                      <img
-                        src={p.image?.s3Url || "/hebat_product_fill.png"}
-                        alt={p.name}
-                        className="w-10 h-10 object-cover rounded-md border border-gray-200"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900">{p.name}</p>
-                        <p className="text-xs text-gray-600 truncate">
-                          {p.model || "No model"} — {p.barcode || "No barcode"}
-                        </p>
-                      </div>
-                    </Link>
-                  ))
+                  filtered.map((p, i) => {
+                    const catSlug = slugify(p.category?.name || "")
+                    return (
+                      <Link
+                        key={p._id}
+                        href={`/products/${catSlug}/${p.slug}`}
+                        onClick={handleCloseMenus}
+                        className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md ${
+                          i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
+                        }`}
+                      >
+                        <img
+                          src={p.image?.s3Url || "/hebat_product_fill.png"}
+                          alt={p.name}
+                          className="w-10 h-10 object-cover rounded-md border border-gray-200"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">{p.name}</p>
+                          <p className="text-xs text-gray-600 truncate">
+                            {p.model || "No model"} — {p.barcode || "No barcode"}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  })
                 ) : (
                   <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
                 )}
@@ -171,7 +185,7 @@ export default function Nav() {
             )}
           </div>
 
-          {/* Hamburger (Right) */}
+          {/* Hamburger */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg"

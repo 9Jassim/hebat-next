@@ -1,6 +1,6 @@
 const CHUNK_PUBLIC_PATH = "server/app/products/[slug]/page.js";
 const runtime = require("../../../chunks/[turbopack]_runtime.js");
-runtime.loadChunk("server/chunks/node_modules_next_dist_a461b6._.js");
+runtime.loadChunk("server/chunks/node_modules_next_dist_77c19a._.js");
 runtime.loadChunk("server/chunks/node_modules_axios_8693f8._.js");
 runtime.loadChunk("server/chunks/node_modules_mime-db_f1334d._.js");
 runtime.loadChunk("server/chunks/node_modules_f085fa._.js");

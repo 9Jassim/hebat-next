@@ -1,11 +1,8 @@
 import "@/app/globals.css"
 import { AuthProvider } from "@/context/AuthContext"
 import Footer from "@/components/Footer"
-import dynamic from "next/dynamic"
 import Nav from "@/components/Nav"
 import CategoryBar from "@/components/CategoryBar"
-
-// const Nav = dynamic(() => import("@/components/Nav"), { ssr: false })
 
 export const metadata = {
   title: {
@@ -31,6 +28,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-T2N4eKbsBfHfXzMsn1Td7lzIMIKuMMbLdbQ6QThXlHl38Zfs2HQI5yokUqM2YQfl4MJk2ZBGfHZMG6cxWz0qYw=="
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <AuthProvider>
           <header>
