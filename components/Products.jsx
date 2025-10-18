@@ -152,19 +152,36 @@ export default function Products() {
               <Link href={`/products/${product.slug}`} key={product.slug}>
                 <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
                   {/* Image Frame */}
-                  <div className="p-3 flex-shrink-0">
-                    <div className="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center h-44 sm:h-48 md:h-52">
+                  <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
+                    <div
+                      className="
+      relative 
+      w-full 
+      h-full 
+      rounded-xl 
+      border border-gray-100
+      bg-gray-50
+      overflow-hidden 
+      shadow-md 
+      flex 
+      items-center 
+      justify-center
+    "
+                    >
                       <img
                         src={product.image?.s3Url || "/hebat_product_fill.png"}
                         alt={product.name}
-                        className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                       />
+
+                      {/* Optional inner subtle frame effect */}
+                      <div className="absolute inset-0 rounded-xl ring-1 ring-yellow-400/40 pointer-events-none"></div>
                     </div>
                   </div>
 
                   {/* Product Info */}
                   <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
-                    <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-600 transition-colors line-clamp-2">
+                    <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
                       {product.name}
                     </h5>
                     <div className="text-xs text-gray-600 space-y-[2px]">
