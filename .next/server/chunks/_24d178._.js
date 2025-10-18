@@ -34,9 +34,16 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d
 ;
 ;
 ;
+// Helper to slugify category names
+function slugify(name = "") {
+    return name.toLowerCase().replace(/&/g, "and") // replace "&" with "and"
+    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+    .trim().replace(/\s+/g, "-") // replace spaces with dashes
+    ;
+}
 function CategoryBar({ refreshTrigger }) {
-    const searchParams = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useSearchParams"]();
-    const activeCategory = decodeURIComponent(searchParams.get("category") || "");
+    const pathname = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["usePathname"]() // e.g. /products/sports-and-outdoors
+    ;
     const [categories, setCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"]([]);
     const [loading, setLoading] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"](true);
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useEffect"](()=>{
@@ -62,6 +69,8 @@ function CategoryBar({ refreshTrigger }) {
     }, [
         refreshTrigger
     ]);
+    // Extract current category slug from the path
+    const activeCategory = pathname.split("/")[2] || "";
     return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
         className: "fixed top-[72px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm overflow-x-auto no-scrollbar",
         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -71,35 +80,49 @@ function CategoryBar({ refreshTrigger }) {
                 children: "Loading categories..."
             }, void 0, false, {
                 fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 38,
+                lineNumber: 50,
                 columnNumber: 11
-            }, this) : categories.length ? categories.map((c)=>{
-                const isActive = activeCategory === c.name;
-                return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                    href: `/products?category=${encodeURIComponent(c.name)}`,
-                    className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
-                    children: c.name
-                }, c._id, false, {
-                    fileName: "<[project]/components/CategoryBar.jsx>",
-                    lineNumber: 43,
-                    columnNumber: 15
-                }, this);
-            }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
+            }, this) : categories.length ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+                children: [
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
+                        href: "/products",
+                        className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${pathname === "/products" ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                        children: "All Products"
+                    }, void 0, false, {
+                        fileName: "<[project]/components/CategoryBar.jsx>",
+                        lineNumber: 54,
+                        columnNumber: 13
+                    }, this),
+                    categories.map((c)=>{
+                        const slug = slugify(c.name);
+                        const isActive = activeCategory === slug;
+                        return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
+                            href: `/products/${slug}`,
+                            className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                            children: c.name
+                        }, c._id, false, {
+                            fileName: "<[project]/components/CategoryBar.jsx>",
+                            lineNumber: 71,
+                            columnNumber: 17
+                        }, this);
+                    })
+                ]
+            }, void 0, true) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
                 className: "text-gray-400 text-sm py-3",
                 children: "No categories available"
             }, void 0, false, {
                 fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 57,
+                lineNumber: 86,
                 columnNumber: 11
             }, this)
         }, void 0, false, {
             fileName: "<[project]/components/CategoryBar.jsx>",
-            lineNumber: 36,
+            lineNumber: 48,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "<[project]/components/CategoryBar.jsx>",
-        lineNumber: 35,
+        lineNumber: 47,
         columnNumber: 5
     }, this);
 }

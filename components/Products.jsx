@@ -1,22 +1,45 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 import Head from "next/head"
 
+// helper — make clean slugs
+const slugify = str =>
+  str
+    ?.toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-") || ""
+
+// helper — reverse slug back to readable text
+const deslugify = str =>
+  str
+    ?.replace(/-/g, " ")
+    .replace(/\band\b/g, "&")
+    .replace(/\b\w/g, c => c.toUpperCase()) || ""
+
 export default function Products() {
   const searchParams = useSearchParams()
-  const selectedCategory = searchParams.get("category")
+  const params = useParams()
+
+  // 🔍 Inputs
+  const selectedCategoryFromQuery = searchParams.get("category")
   const searchQuery = searchParams.get("search")?.trim() || ""
+  const selectedCategoryFromPath = params?.category // e.g. "sports-and-outdoors"
+
+  // 🧠 Unified category (path has priority)
+  const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
 
   const [products, setProducts] = useState([])
   const [showing, setShowing] = useState([])
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("All Products")
 
-  // 🔧 normalize helper
+  // 🔧 normalize text for consistent comparison
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
 
@@ -27,13 +50,14 @@ export default function Products() {
         const fetched = res.data.products || []
         setProducts(fetched)
 
-        // ✅ Case 1: Category filter
+        // ✅ Case 1: Category filter (by slug or query)
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
-          const filtered = fetched.filter(p => normalize(p.category?.name) === normalizedQuery)
+          const filtered = fetched.filter(p => slugify(p.category?.name) === normalizedQuery)
           setShowing(filtered)
-          setDisplayCategory(selectedCategory)
+          setDisplayCategory(deslugify(selectedCategory))
         }
+
         // ✅ Case 2: Search filter
         else if (searchQuery) {
           const query = searchQuery.toLowerCase()
@@ -46,13 +70,14 @@ export default function Products() {
           setShowing(filtered)
           setDisplayCategory(`Search results for "${searchQuery}"`)
         }
+
         // ✅ Case 3: Default (all products)
         else {
           setShowing(fetched)
           setDisplayCategory("All Products")
         }
       } catch (err) {
-        console.error("Error loading products:", err)
+        console.error("❌ Error loading products:", err)
       } finally {
         setLoading(false)
       }
@@ -68,7 +93,7 @@ export default function Products() {
       </div>
     )
 
-  // ✅ Breadcrumb JSON-LD for SEO
+  // ✅ Breadcrumb JSON-LD
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -81,7 +106,9 @@ export default function Products() {
               "@type": "ListItem",
               position: 3,
               name: displayCategory,
-              item: `https://hebat.com/products?category=${encodeURIComponent(selectedCategory)}`,
+              item: `https://hebat.com/products/${encodeURIComponent(
+                selectedCategory.toLowerCase().replace(/\s+/g, "-")
+              )}`,
             },
           ]
         : searchQuery
@@ -97,7 +124,7 @@ export default function Products() {
     ],
   }
 
-  // ✅ SEO title & description
+  // ✅ SEO
   const pageTitle =
     selectedCategory || searchQuery ? `${displayCategory} | Hebat` : "All Products | Hebat"
   const pageDescription = selectedCategory
@@ -117,7 +144,7 @@ export default function Products() {
         />
       </Head>
 
-      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8  w-full">
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 w-full ">
         {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">
@@ -131,7 +158,7 @@ export default function Products() {
             {(selectedCategory || searchQuery) && (
               <>
                 <span>/</span>
-                <span className="text-gray-800 font-semibold">{displayCategory}</span>
+                <span className="text-gray-800 font-semibold capitalize">{displayCategory}</span>
               </>
             )}
           </nav>
@@ -139,7 +166,9 @@ export default function Products() {
 
         {/* Header */}
         <div className="w-full max-w-6xl mb-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2">{displayCategory}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2 capitalize">
+            {displayCategory}
+          </h1>
           <p className="text-gray-700 text-sm font-medium text-left">
             Showing {showing.length} product{showing.length !== 1 && "s"}
           </p>
@@ -149,33 +178,20 @@ export default function Products() {
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
           {showing.length > 0 ? (
             showing.map(product => (
-              <Link href={`/products/${product.slug}`} key={product.slug}>
+              <Link
+                href={`/products/${slugify(product.category?.name)}/${product.slug}`}
+                key={product.slug}
+              >
                 <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
                   {/* Image Frame */}
                   <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                    <div
-                      className="
-      relative 
-      w-full 
-      h-full 
-      rounded-xl 
-      border border-gray-100
-      bg-gray-50
-      overflow-hidden 
-      shadow-md 
-      flex 
-      items-center 
-      justify-center
-    "
-                    >
+                    <div className="relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center">
                       <img
                         src={product.image?.s3Url || "/hebat_product_fill.png"}
                         alt={product.name}
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                       />
-
-                      {/* Optional inner subtle frame effect */}
-                      <div className="absolute inset-0 rounded-xl ring-1 ring-yellow-400/40 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl pointer-events-none"></div>
                     </div>
                   </div>
 
