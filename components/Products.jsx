@@ -146,25 +146,31 @@ export default function Products() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full max-w-6xl">
+        <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
           {showing.length > 0 ? (
             showing.map(product => (
               <Link href={`/products/${product.slug}`} key={product.slug}>
-                <div className="h-[300px] sm:h-[320px] md:h-[340px] border border-yellow-500 bg-yellow-500 rounded-lg overflow-hidden shadow hover:shadow-xl transform hover:scale-105 transition duration-300 flex flex-col">
-                  {/* Image */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={product.image?.s3Url || "/hebat_product_fill.png"}
-                      alt={product.name}
-                      className="w-full h-48 sm:h-52 md:h-56 object-cover"
-                    />
+                <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
+                  {/* Image Frame */}
+                  <div className="p-3 flex-shrink-0">
+                    <div className="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center h-44 sm:h-48 md:h-52">
+                      <img
+                        src={product.image?.s3Url || "/hebat_product_fill.png"}
+                        alt={product.name}
+                        className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
                   </div>
 
-                  {/* Name */}
-                  <div className="p-3 sm:p-4 flex-1 overflow-y-auto text-center hide-scrollbar">
-                    <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug break-words">
+                  {/* Product Info */}
+                  <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
+                    <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-600 transition-colors line-clamp-2">
                       {product.name}
                     </h5>
+                    <div className="text-xs text-gray-600 space-y-[2px]">
+                      <p>Model: {product.model || "N/A"}</p>
+                      <p>Barcode: {product.barcode || "N/A"}</p>
+                    </div>
                   </div>
                 </div>
               </Link>

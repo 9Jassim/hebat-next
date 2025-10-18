@@ -1,0 +1,26 @@
+{
+  "devFiles": [],
+  "ampDevFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [],
+  "rootMainFiles": [
+    "static/chunks/node_modules_next_dist_compiled_react_c5d74f._.js",
+    "static/chunks/node_modules_next_dist_compiled_platform_platform_df9271.js",
+    "static/chunks/node_modules_next_dist_compiled_react-dom_cjs_react-dom_development_3126af.js",
+    "static/chunks/node_modules_next_dist_compiled_react-dom_84eeb4._.js",
+    "static/chunks/node_modules_next_dist_compiled_react-server-dom-turbopack_82aca0._.js",
+    "static/chunks/node_modules_next_dist_compiled_66fc85._.js",
+    "static/chunks/node_modules_next_dist_client_components_react-dev-overlay_internal_ffd96f._.js",
+    "static/chunks/8069e_next_dist_client_components_react-dev-overlay_hot-reloader-client_0ea7b4.js",
+    "static/chunks/node_modules_next_dist_client_components_router-reducer_2a1eb9._.js",
+    "static/chunks/node_modules_next_dist_client_components_917ae7._.js",
+    "static/chunks/node_modules_next_dist_client_2077d4._.js",
+    "static/chunks/node_modules_next_dist_a3dc74._.js",
+    "static/chunks/node_modules_@swc_helpers_f3962d._.js",
+    "static/chunks/[turbopack]_dev_client_hmr-client_ts_561426._.js",
+    "static/chunks/node_modules_next_dist_esm_build_templates_app-page_602389.js",
+    "static/chunks/node_modules_next_dist_esm_build_templates_app-page_7c16a2.js"
+  ],
+  "pages": {},
+  "ampFirstPages": []
+}
