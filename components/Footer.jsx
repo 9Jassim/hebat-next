@@ -156,12 +156,6 @@ export default function Footer() {
               {status === "loading" ? "..." : "Subscribe"}
             </button>
           </form>
-          {/* {status === "success" && (
-            <p className="text-green-400 text-xs">✅ You’ve been subscribed!</p>
-          )}
-          {status === "error" && (
-            <p className="text-red-400 text-xs">❌ Something went wrong. Try again.</p>
-          )} */}
         </div>
       </div>
 
