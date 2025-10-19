@@ -324,7 +324,7 @@ function Footer() {
                 className: "border-gray-800"
             }, void 0, false, {
                 fileName: "<[project]/components/Footer.jsx>",
-                lineNumber: 169,
+                lineNumber: 163,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -338,14 +338,14 @@ function Footer() {
                         children: "Hebat"
                     }, void 0, false, {
                         fileName: "<[project]/components/Footer.jsx>",
-                        lineNumber: 171,
+                        lineNumber: 165,
                         columnNumber: 38
                     }, this),
                     ". All Rights Reserved."
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/Footer.jsx>",
-                lineNumber: 170,
+                lineNumber: 164,
                 columnNumber: 7
             }, this)
         ]
