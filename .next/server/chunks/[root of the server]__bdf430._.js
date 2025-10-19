@@ -27,7 +27,7 @@ const __TURBOPACK__default__export__ = {
 })()),
 "[project]/app/favicon.ico [rsc] (static)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname }) => (() => {
 
-__turbopack_export_value__("/_next/static/media/favicon.4bab0594.ico");
+__turbopack_export_value__("/_next/static/media/favicon.bf3a71d6.ico");
 })()),
 "[project]/app/favicon.ico.mjs/(IMAGE)/[project]/app/favicon.ico [rsc] (static) (structured image object, ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__ }) => (() => {
 "use strict";

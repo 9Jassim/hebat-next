@@ -236,26 +236,15 @@ function Admin() {
             children: [
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                     className: "flex flex-col items-center space-y-2",
-                    children: [
-                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                            src: "https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg",
-                            alt: "Hebat Logo",
-                            className: "w-20 h-auto"
-                        }, void 0, false, {
-                            fileName: "<[project]/app/admin/page.jsx>",
-                            lineNumber: 46,
-                            columnNumber: 11
-                        }, this),
-                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("h1", {
-                            className: "text-2xl font-bold text-gray-900",
-                            children: "Admin Login"
-                        }, void 0, false, {
-                            fileName: "<[project]/app/admin/page.jsx>",
-                            lineNumber: 51,
-                            columnNumber: 11
-                        }, this)
-                    ]
-                }, void 0, true, {
+                    children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("h1", {
+                        className: "text-2xl font-bold text-gray-900",
+                        children: "Admin Login"
+                    }, void 0, false, {
+                        fileName: "<[project]/app/admin/page.jsx>",
+                        lineNumber: 46,
+                        columnNumber: 11
+                    }, this)
+                }, void 0, false, {
                     fileName: "<[project]/app/admin/page.jsx>",
                     lineNumber: 45,
                     columnNumber: 9
@@ -272,7 +261,7 @@ function Admin() {
                                     children: "Email"
                                 }, void 0, false, {
                                     fileName: "<[project]/app/admin/page.jsx>",
-                                    lineNumber: 57,
+                                    lineNumber: 52,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -284,13 +273,13 @@ function Admin() {
                                     required: true
                                 }, void 0, false, {
                                     fileName: "<[project]/app/admin/page.jsx>",
-                                    lineNumber: 60,
+                                    lineNumber: 55,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "<[project]/app/admin/page.jsx>",
-                            lineNumber: 56,
+                            lineNumber: 51,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -301,7 +290,7 @@ function Admin() {
                                     children: "Password"
                                 }, void 0, false, {
                                     fileName: "<[project]/app/admin/page.jsx>",
-                                    lineNumber: 71,
+                                    lineNumber: 66,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -313,13 +302,13 @@ function Admin() {
                                     required: true
                                 }, void 0, false, {
                                     fileName: "<[project]/app/admin/page.jsx>",
-                                    lineNumber: 74,
+                                    lineNumber: 69,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "<[project]/app/admin/page.jsx>",
-                            lineNumber: 70,
+                            lineNumber: 65,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -329,13 +318,13 @@ function Admin() {
                             children: loading ? "Signing in..." : "Sign in"
                         }, void 0, false, {
                             fileName: "<[project]/app/admin/page.jsx>",
-                            lineNumber: 84,
+                            lineNumber: 79,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/app/admin/page.jsx>",
-                    lineNumber: 55,
+                    lineNumber: 50,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -346,12 +335,12 @@ function Admin() {
                         children: "← Back to Home"
                     }, void 0, false, {
                         fileName: "<[project]/app/admin/page.jsx>",
-                        lineNumber: 94,
+                        lineNumber: 89,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "<[project]/app/admin/page.jsx>",
-                    lineNumber: 93,
+                    lineNumber: 88,
                     columnNumber: 9
                 }, this)
             ]

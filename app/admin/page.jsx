@@ -41,13 +41,8 @@ export default function Admin() {
   return (
     <section className="flex flex-col items-center px-4 py-16 min-h-[70vh]">
       <div className="w-full max-w-md bg-yellow-500 rounded-2xl shadow-2xl p-8 space-y-6 border border-yellow-400">
-        {/* Logo + Title */}
+        {/* Title */}
         <div className="flex flex-col items-center space-y-2">
-          <img
-            src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
-            alt="Hebat Logo"
-            className="w-20 h-auto"
-          />
           <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
         </div>
 
