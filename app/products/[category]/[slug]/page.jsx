@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
     )}/${encodeURIComponent(slug)}`
 
     return {
-      title: `${product.name} | Hebat`,
+      title: `${product.name}`,
       description:
         product.description ||
         `Discover ${product.name} — premium ${product.category?.name || category} from Hebat.`,
