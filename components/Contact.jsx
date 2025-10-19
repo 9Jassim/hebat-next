@@ -137,7 +137,7 @@ export default function Contact() {
               className="space-y-5"
             >
               <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_next" value="http://localhost:4000/" />
+              <input type="hidden" name="_next" value="http://localhost:4000/thank-you" />
               <input type="hidden" name="_template" value="table" />
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Name</label>

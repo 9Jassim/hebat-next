@@ -28,10 +28,11 @@ export default function Nav() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [adminOpen, setAdminOpen] = useState(false)
 
   const searchRef = useRef(null)
   const resultsRef = useRef(null)
-
+  const adminMenuRef = useRef(null)
   // ✅ Fetch products
   useEffect(() => {
     let active = true
@@ -50,6 +51,20 @@ export default function Nav() {
       clearTimeout(t)
     }
   }, [refreshTrigger])
+
+  // ✅ Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = e => {
+      if (adminMenuRef.current && !adminMenuRef.current.contains(e.target)) {
+        setAdminOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   // ✅ Search logic
   const handleSearch = e => {
@@ -208,7 +223,8 @@ export default function Nav() {
               open ? "block" : "hidden"
             } absolute md:static top-[72px] right-0 w-full md:w-auto bg-black md:bg-transparent border-t md:border-0 border-gray-700 md:flex md:items-center transition-all duration-300 z-[70]`}
           >
-            <ul className="font-medium flex flex-col md:flex-row text-center md:text-left p-4 md:p-0 md:space-x-6">
+            <ul className="font-medium flex flex-col md:flex-row text-center md:text-left p-4 md:p-0 md:space-x-6 relative">
+              {/* Home */}
               <li>
                 <Link
                   href="/"
@@ -218,6 +234,8 @@ export default function Nav() {
                   Home
                 </Link>
               </li>
+
+              {/* Products */}
               <li>
                 <Link
                   href="/products"
@@ -227,40 +245,90 @@ export default function Nav() {
                   Products
                 </Link>
               </li>
+
+              {/* Admin Controls Dropdown */}
               {user && (
-                <>
-                  <li>
-                    <Link
-                      href="/newproduct"
-                      onClick={handleCloseMenus}
-                      className="block py-2 px-3 text-white hover:text-yellow-500"
+                <li className="relative">
+                  {/* Admin Controls Toggle */}
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      setAdminOpen(prev => !prev)
+                    }}
+                    className="py-2 px-3 text-white hover:text-yellow-500 w-full text-left flex items-center justify-center md:justify-start"
+                  >
+                    Admin Controls
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className={`w-4 h-4 ml-1 transition-transform ${
+                        adminOpen ? "rotate-180" : ""
+                      }`}
                     >
-                      New Product
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        handleCloseMenus()
-                        setShowCategories(true)
-                      }}
-                      className="block py-2 px-3 text-white hover:text-yellow-500 w-full text-left"
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {adminOpen && (
+                    <ul
+                      ref={adminMenuRef}
+                      className="absolute left-0 md:left-auto md:right-0 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[160px] z-50 transition-all duration-200 ease-in-out"
                     >
-                      Manage Categories
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        logout()
-                        handleCloseMenus()
-                      }}
-                      className="block py-2 px-3 text-white hover:text-yellow-500 w-full text-left"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </>
+                      <li>
+                        <Link
+                          href="/newproduct"
+                          onClick={() => {
+                            handleCloseMenus()
+                            setAdminOpen(false)
+                          }}
+                          className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        >
+                          New Product
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            handleCloseMenus()
+                            setShowCategories(true)
+                            setAdminOpen(false)
+                          }}
+                          className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        >
+                          Manage Categories
+                        </button>
+                      </li>
+                      <li>
+                        <Link
+                          href="/newsletter"
+                          onClick={() => {
+                            handleCloseMenus()
+                            setAdminOpen(false)
+                          }}
+                          className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        >
+                          Newsletter
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            logout()
+                            handleCloseMenus()
+                            setAdminOpen(false)
+                          }}
+                          className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </li>
               )}
             </ul>
           </div>

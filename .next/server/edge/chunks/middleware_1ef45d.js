@@ -14,7 +14,8 @@ function middleware(req) {
     const { pathname } = req.nextUrl;
     // ✅ Define only the paths that truly require authentication
     const protectedPaths = [
-        "/new-product"
+        "/new-product",
+        "/newsletter"
     ];
     // ✅ If path is protected, check token
     if (protectedPaths.some((p)=>pathname.startsWith(p))) {

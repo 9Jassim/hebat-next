@@ -1,5 +1,6 @@
 import "@/app/globals.css"
 import { AuthProvider } from "@/context/AuthContext"
+import { Toaster } from "react-hot-toast"
 import Footer from "@/components/Footer"
 import Nav from "@/components/Nav"
 import CategoryBar from "@/components/CategoryBar"
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
 
           <Footer />
         </AuthProvider>
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>
     </html>
   )
