@@ -139,11 +139,7 @@ export default function Nav() {
         <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4 gap-3">
           {/* Logo */}
           <Link href="/" onClick={handleCloseMenus} className="flex items-center space-x-3">
-            <img
-              src="https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg"
-              className="h-10 sm:h-12"
-              alt="Hebat Logo"
-            />
+            <img src="/hebat_logo.png" className="h-10 sm:h-12" alt="Hebat Logo" />
           </Link>
 
           {/* Search */}

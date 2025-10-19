@@ -829,7 +829,7 @@ function Nav() {
                                 onClick: handleCloseMenus,
                                 className: "flex items-center space-x-3",
                                 children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                                    src: "https://hebat-products.s3.me-south-1.amazonaws.com/Hebat_Logo_Text_page-0001.jpg",
+                                    src: "/hebat_logo.png",
                                     className: "h-10 sm:h-12",
                                     alt: "Hebat Logo"
                                 }, void 0, false, {
@@ -856,7 +856,7 @@ function Nav() {
                                         className: "w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
                                     }, void 0, false, {
                                         fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 155,
+                                        lineNumber: 151,
                                         columnNumber: 13
                                     }, this),
                                     showDropdown && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -875,7 +875,7 @@ function Nav() {
                                                         className: "w-10 h-10 object-cover rounded-md border border-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "<[project]/components/Nav.jsx>",
-                                                        lineNumber: 182,
+                                                        lineNumber: 178,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -885,7 +885,7 @@ function Nav() {
                                                                 children: p.name
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 188,
+                                                                lineNumber: 184,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -897,19 +897,19 @@ function Nav() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 189,
+                                                                lineNumber: 185,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "<[project]/components/Nav.jsx>",
-                                                        lineNumber: 187,
+                                                        lineNumber: 183,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, p._id, true, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 174,
+                                                lineNumber: 170,
                                                 columnNumber: 23
                                             }, this);
                                         }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -917,18 +917,18 @@ function Nav() {
                                             children: "No products found"
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 197,
+                                            lineNumber: 193,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 166,
+                                        lineNumber: 162,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 150,
+                                lineNumber: 146,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -947,17 +947,17 @@ function Nav() {
                                         d: "M4 6h16M4 12h16M4 18h16"
                                     }, void 0, false, {
                                         fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 216,
+                                        lineNumber: 212,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 208,
+                                    lineNumber: 204,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 204,
+                                lineNumber: 200,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -973,12 +973,12 @@ function Nav() {
                                                 children: "Home"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 229,
+                                                lineNumber: 225,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 228,
+                                            lineNumber: 224,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -989,12 +989,12 @@ function Nav() {
                                                 children: "Products"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 240,
+                                                lineNumber: 236,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 239,
+                                            lineNumber: 235,
                                             columnNumber: 15
                                         }, this),
                                         user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1021,18 +1021,18 @@ function Nav() {
                                                                 d: "M6 9l6 6 6-6"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 271,
+                                                                lineNumber: 267,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 261,
+                                                            lineNumber: 257,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 253,
+                                                    lineNumber: 249,
                                                     columnNumber: 19
                                                 }, this),
                                                 adminOpen && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
@@ -1050,12 +1050,12 @@ function Nav() {
                                                                 children: "New Product"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 282,
+                                                                lineNumber: 278,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 281,
+                                                            lineNumber: 277,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1069,12 +1069,12 @@ function Nav() {
                                                                 children: "Manage Categories"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 294,
+                                                                lineNumber: 290,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 293,
+                                                            lineNumber: 289,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1088,12 +1088,12 @@ function Nav() {
                                                                 children: "Newsletter"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 306,
+                                                                lineNumber: 302,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 305,
+                                                            lineNumber: 301,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1107,35 +1107,35 @@ function Nav() {
                                                                 children: "Logout"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 318,
+                                                                lineNumber: 314,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 317,
+                                                            lineNumber: 313,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 277,
+                                                    lineNumber: 273,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 251,
+                                            lineNumber: 247,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 226,
+                                    lineNumber: 222,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 221,
+                                lineNumber: 217,
                                 columnNumber: 11
                             }, this)
                         ]
@@ -1148,7 +1148,7 @@ function Nav() {
                         refreshTrigger: refreshTrigger
                     }, void 0, false, {
                         fileName: "<[project]/components/Nav.jsx>",
-                        lineNumber: 338,
+                        lineNumber: 334,
                         columnNumber: 9
                     }, this)
                 ]
@@ -1167,14 +1167,14 @@ function Nav() {
                             children: "Manage Categories"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 345,
+                            lineNumber: 341,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$EditCategories$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                             onUpdated: reloadCategories
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 346,
+                            lineNumber: 342,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -1183,18 +1183,18 @@ function Nav() {
                             children: "✕"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 347,
+                            lineNumber: 343,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/Nav.jsx>",
-                    lineNumber: 344,
+                    lineNumber: 340,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "<[project]/components/Nav.jsx>",
-                lineNumber: 343,
+                lineNumber: 339,
                 columnNumber: 9
             }, this)
         ]
