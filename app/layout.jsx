@@ -1,9 +1,11 @@
+"use client"
+
 import "@/app/globals.css"
+import { useEffect } from "react"
 import { AuthProvider } from "@/context/AuthContext"
 import { Toaster } from "react-hot-toast"
 import Footer from "@/components/Footer"
 import Nav from "@/components/Nav"
-import CategoryBar from "@/components/CategoryBar"
 
 export const metadata = {
   title: {
@@ -13,12 +15,15 @@ export const metadata = {
   description:
     "Discover Hebat — your trusted source for premium products and accessories in the Middle East.",
   icons: {
-    icon: "/favicon.ico", // default favicon
+    icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/apple-icon.png",
   },
   keywords: ["arabvape", "hebat", "morslon", "premium products"],
-  metadataBase: new URL("https://hebat.com"),
+  metadataBase:
+    process.env.NODE_ENV === "production"
+      ? new URL("https://hebatofficial.com")
+      : new URL("http://localhost:4000"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -27,6 +32,20 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  // 🧠 Dynamically calculate navbar height and set it as a CSS variable
+  useEffect(() => {
+    const updateNavHeight = () => {
+      const nav = document.querySelector("nav")
+      if (nav) {
+        document.documentElement.style.setProperty("--nav-height", `${nav.offsetHeight}px`)
+      }
+    }
+
+    updateNavHeight()
+    window.addEventListener("resize", updateNavHeight)
+    return () => window.removeEventListener("resize", updateNavHeight)
+  }, [])
+
   return (
     <html lang="en">
       <head>
@@ -42,13 +61,19 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <header>
             <Nav />
-            <CategoryBar />
           </header>
 
-          <main className="pt-[135px] flex-grow">{children}</main>
+          {/* ✅ Uses dynamic variable to stay below nav automatically */}
+          <main
+            style={{ paddingTop: "var(--nav-height)" }}
+            className="flex-grow transition-all duration-300"
+          >
+            {children}
+          </main>
 
           <Footer />
         </AuthProvider>
+
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       </body>
     </html>
