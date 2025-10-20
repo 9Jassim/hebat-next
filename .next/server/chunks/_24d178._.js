@@ -34,18 +34,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d
 ;
 ;
 ;
-// Helper to slugify category names
-function slugify(name = "") {
-    return name.toLowerCase().replace(/&/g, "and") // replace "&" with "and"
-    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
-    .trim().replace(/\s+/g, "-") // replace spaces with dashes
-    ;
-}
+const slugify = (str)=>str?.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-") || "";
 function CategoryBar({ refreshTrigger }) {
-    const pathname = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["usePathname"]() // e.g. /products/sports-and-outdoors
-    ;
+    const pathname = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["usePathname"]();
     const [categories, setCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"]([]);
     const [loading, setLoading] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"](true);
+    const currentCategoryFromPath = pathname?.startsWith("/products/") && pathname.split("/")[2] ? pathname.split("/")[2] : null;
+    const isProductsPage = pathname?.startsWith("/products");
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useEffect"](()=>{
         let active = true;
         const fetchCategories = async ()=>{
@@ -69,60 +64,79 @@ function CategoryBar({ refreshTrigger }) {
     }, [
         refreshTrigger
     ]);
-    // Extract current category slug from the path
-    const activeCategory = pathname.split("/")[2] || "";
     return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-        className: "fixed top-[72px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm overflow-x-auto no-scrollbar",
+        className: "sticky top-[100px] md:top-[80px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm",
         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-            className: "max-w-screen-xl mx-auto px-2 flex items-center space-x-3 md:space-x-4 py-2",
+            className: "max-w-screen-xl mx-auto flex items-center py-2 px-2 relative",
             children: loading ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
-                className: "text-gray-400 text-sm py-3",
+                className: "text-gray-400 text-sm py-1",
                 children: "Loading categories..."
             }, void 0, false, {
                 fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 50,
+                lineNumber: 49,
                 columnNumber: 11
-            }, this) : categories.length ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
+            }, this) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: [
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                        href: "/products",
-                        className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${pathname === "/products" ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
-                        children: "All Products"
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                        className: "flex-shrink-0 sticky left-0 z-10 bg-black pr-3",
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
+                            href: "/products",
+                            className: `whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${isProductsPage && !currentCategoryFromPath ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                            children: "All Products"
+                        }, void 0, false, {
+                            fileName: "<[project]/components/CategoryBar.jsx>",
+                            lineNumber: 54,
+                            columnNumber: 15
+                        }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/CategoryBar.jsx>",
-                        lineNumber: 54,
+                        lineNumber: 53,
                         columnNumber: 13
                     }, this),
-                    categories.map((c)=>{
-                        const slug = slugify(c.name);
-                        const isActive = activeCategory === slug;
-                        return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
-                            href: `/products/${slug}`,
-                            className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
-                            children: c.name
-                        }, c._id, false, {
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                        className: "flex-1 overflow-x-auto no-scrollbar",
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                            className: "flex space-x-3 md:space-x-4",
+                            children: categories.length ? categories.map((c)=>{
+                                const catSlug = slugify(c.name);
+                                const isActive = currentCategoryFromPath === catSlug;
+                                return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                    href: `/products/${catSlug}`,
+                                    className: `whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                                    children: c.name
+                                }, c._id, false, {
+                                    fileName: "<[project]/components/CategoryBar.jsx>",
+                                    lineNumber: 74,
+                                    columnNumber: 23
+                                }, this);
+                            }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
+                                className: "text-gray-400 text-sm py-1",
+                                children: "No categories found"
+                            }, void 0, false, {
+                                fileName: "<[project]/components/CategoryBar.jsx>",
+                                lineNumber: 88,
+                                columnNumber: 19
+                            }, this)
+                        }, void 0, false, {
                             fileName: "<[project]/components/CategoryBar.jsx>",
-                            lineNumber: 71,
-                            columnNumber: 17
-                        }, this);
-                    })
+                            lineNumber: 68,
+                            columnNumber: 15
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "<[project]/components/CategoryBar.jsx>",
+                        lineNumber: 67,
+                        columnNumber: 13
+                    }, this)
                 ]
-            }, void 0, true) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
-                className: "text-gray-400 text-sm py-3",
-                children: "No categories available"
-            }, void 0, false, {
-                fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 86,
-                columnNumber: 11
-            }, this)
+            }, void 0, true)
         }, void 0, false, {
             fileName: "<[project]/components/CategoryBar.jsx>",
-            lineNumber: 48,
+            lineNumber: 47,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "<[project]/components/CategoryBar.jsx>",
-        lineNumber: 47,
+        lineNumber: 46,
         columnNumber: 5
     }, this);
 }

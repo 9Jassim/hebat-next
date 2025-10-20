@@ -27,7 +27,7 @@ const __TURBOPACK__default__export__ = {
 })()),
 "[project]/app/favicon.ico [rsc] (static)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname }) => (() => {
 
-__turbopack_export_value__("/_next/static/media/favicon.4bab0594.ico");
+__turbopack_export_value__("/_next/static/media/favicon.bf3a71d6.ico");
 })()),
 "[project]/app/favicon.ico.mjs/(IMAGE)/[project]/app/favicon.ico [rsc] (static) (structured image object, ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__ }) => (() => {
 "use strict";
@@ -172,94 +172,11 @@ __turbopack_export_namespace__(__TURBOPACK__imported__module__$5b$project$5d2f$c
 "[project]/app/layout.jsx [rsc] (ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__ }) => (() => {
 "use strict";
 
-__turbopack_esm__({
-    "default": ()=>RootLayout,
-    "metadata": ()=>metadata
-});
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.js [rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/context/AuthContext.jsx [rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/Footer.jsx [rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$shared$2f$lib$2f$app$2d$dynamic$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/shared/lib/app-dynamic.js [rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Nav$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/Nav.jsx [rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$layout$2e$jsx__$28$client__proxy$29$__ = __turbopack_import__("[project]/app/layout.jsx (client proxy)");
 "__TURBOPACK__ecmascript__hoisting__location__";
+"TURBOPACK { transition: next-ecmascript-client-reference }";
 ;
-;
-;
-;
-;
-;
-const metadata = {
-    title: {
-        default: "Hebat | Premium Products",
-        template: "%s | Hebat"
-    },
-    description: "Discover Hebat — your trusted source for premium products and accessories in the Middle East.",
-    icons: {
-        icon: "/favicon.ico",
-        shortcut: "/favicon.ico",
-        apple: "/apple-icon.png"
-    },
-    keywords: [
-        "arabvape",
-        "hebat",
-        "morslon",
-        "premium products"
-    ],
-    metadataBase: new URL("https://hebat.com"),
-    openGraph: {
-        type: "website",
-        locale: "en_US",
-        siteName: "Hebat"
-    }
-};
-function RootLayout({ children }) {
-    return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"]("html", {
-        lang: "en",
-        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"]("body", {
-            className: "min-h-screen flex flex-col bg-gray-50 text-gray-900",
-            children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__["AuthProvider"], {
-                children: [
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"]("header", {
-                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Nav$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                            fileName: "<[project]/app/layout.jsx>",
-                            lineNumber: 36,
-                            columnNumber: 13
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "<[project]/app/layout.jsx>",
-                        lineNumber: 35,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"]("main", {
-                        className: "pt-[50px] flex-grow",
-                        children: children
-                    }, void 0, false, {
-                        fileName: "<[project]/app/layout.jsx>",
-                        lineNumber: 39,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
-                        fileName: "<[project]/app/layout.jsx>",
-                        lineNumber: 41,
-                        columnNumber: 11
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "<[project]/app/layout.jsx>",
-                lineNumber: 34,
-                columnNumber: 9
-            }, this)
-        }, void 0, false, {
-            fileName: "<[project]/app/layout.jsx>",
-            lineNumber: 33,
-            columnNumber: 7
-        }, this)
-    }, void 0, false, {
-        fileName: "<[project]/app/layout.jsx>",
-        lineNumber: 32,
-        columnNumber: 5
-    }, this);
-}
+__turbopack_export_namespace__(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$layout$2e$jsx__$28$client__proxy$29$__["default"]);
 
 })()),
 "[project]/app/layout.jsx [rsc] (ecmascript, Next.js server component)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname }) => (() => {

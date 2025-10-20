@@ -36,21 +36,15 @@ var _s = __turbopack_refresh__.signature();
 ;
 ;
 ;
-// Helper to slugify category names
-function slugify() {
-    let name = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "";
-    return name.toLowerCase().replace(/&/g, "and") // replace "&" with "and"
-    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
-    .trim().replace(/\s+/g, "-") // replace spaces with dashes
-    ;
-}
+const slugify = (str)=>str?.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-") || "";
 function CategoryBar(param) {
     let { refreshTrigger } = param;
     _s();
-    const pathname = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["usePathname"]() // e.g. /products/sports-and-outdoors
-    ;
+    const pathname = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["usePathname"]();
     const [categories, setCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"]([]);
     const [loading, setLoading] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](true);
+    const currentCategoryFromPath = pathname?.startsWith("/products/") && pathname.split("/")[2] ? pathname.split("/")[2] : null;
+    const isProductsPage = pathname?.startsWith("/products");
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"](()=>{
         let active = true;
         const fetchCategories = async ()=>{
@@ -74,60 +68,79 @@ function CategoryBar(param) {
     }, [
         refreshTrigger
     ]);
-    // Extract current category slug from the path
-    const activeCategory = pathname.split("/")[2] || "";
     return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-        className: "fixed top-[72px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm overflow-x-auto no-scrollbar",
+        className: "sticky top-[100px] md:top-[80px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm",
         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-            className: "max-w-screen-xl mx-auto px-2 flex items-center space-x-3 md:space-x-4 py-2",
+            className: "max-w-screen-xl mx-auto flex items-center py-2 px-2 relative",
             children: loading ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
-                className: "text-gray-400 text-sm py-3",
+                className: "text-gray-400 text-sm py-1",
                 children: "Loading categories..."
             }, void 0, false, {
                 fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 50,
+                lineNumber: 49,
                 columnNumber: 11
-            }, this) : categories.length ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+            }, this) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: [
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                        href: "/products",
-                        className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${pathname === "/products" ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
-                        children: "All Products"
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                        className: "flex-shrink-0 sticky left-0 z-10 bg-black pr-3",
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                            href: "/products",
+                            className: `whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${isProductsPage && !currentCategoryFromPath ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                            children: "All Products"
+                        }, void 0, false, {
+                            fileName: "<[project]/components/CategoryBar.jsx>",
+                            lineNumber: 54,
+                            columnNumber: 15
+                        }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/CategoryBar.jsx>",
-                        lineNumber: 54,
+                        lineNumber: 53,
                         columnNumber: 13
                     }, this),
-                    categories.map((c)=>{
-                        const slug = slugify(c.name);
-                        const isActive = activeCategory === slug;
-                        return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                            href: `/products/${slug}`,
-                            className: `whitespace-nowrap px-3 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
-                            children: c.name
-                        }, c._id, false, {
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                        className: "flex-1 overflow-x-auto no-scrollbar",
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                            className: "flex space-x-3 md:space-x-4",
+                            children: categories.length ? categories.map((c)=>{
+                                const catSlug = slugify(c.name);
+                                const isActive = currentCategoryFromPath === catSlug;
+                                return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                    href: `/products/${catSlug}`,
+                                    className: `whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${isActive ? "text-yellow-500 font-semibold underline underline-offset-4" : "text-white hover:text-yellow-500"}`,
+                                    children: c.name
+                                }, c._id, false, {
+                                    fileName: "<[project]/components/CategoryBar.jsx>",
+                                    lineNumber: 74,
+                                    columnNumber: 23
+                                }, this);
+                            }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
+                                className: "text-gray-400 text-sm py-1",
+                                children: "No categories found"
+                            }, void 0, false, {
+                                fileName: "<[project]/components/CategoryBar.jsx>",
+                                lineNumber: 88,
+                                columnNumber: 19
+                            }, this)
+                        }, void 0, false, {
                             fileName: "<[project]/components/CategoryBar.jsx>",
-                            lineNumber: 71,
-                            columnNumber: 17
-                        }, this);
-                    })
+                            lineNumber: 68,
+                            columnNumber: 15
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "<[project]/components/CategoryBar.jsx>",
+                        lineNumber: 67,
+                        columnNumber: 13
+                    }, this)
                 ]
-            }, void 0, true) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
-                className: "text-gray-400 text-sm py-3",
-                children: "No categories available"
-            }, void 0, false, {
-                fileName: "<[project]/components/CategoryBar.jsx>",
-                lineNumber: 86,
-                columnNumber: 11
-            }, this)
+            }, void 0, true)
         }, void 0, false, {
             fileName: "<[project]/components/CategoryBar.jsx>",
-            lineNumber: 48,
+            lineNumber: 47,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "<[project]/components/CategoryBar.jsx>",
-        lineNumber: 47,
+        lineNumber: 46,
         columnNumber: 5
     }, this);
 }
@@ -713,13 +726,13 @@ var _s = __turbopack_refresh__.signature();
 ;
 ;
 ;
-// ✅ Slugify helper
 const slugify = (str)=>str?.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-") || "";
 function Nav() {
     _s();
     const router = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]();
     const { user, logout } = __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]();
     const [open, setOpen] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
+    const [adminOpen, setAdminOpen] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const [showCategories, setShowCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const [products, setProducts] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"]([]);
     const [search, setSearch] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"]("");
@@ -727,43 +740,35 @@ function Nav() {
     const [showDropdown, setShowDropdown] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const [activeIndex, setActiveIndex] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](-1);
     const [refreshTrigger, setRefreshTrigger] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](0);
-    const [adminOpen, setAdminOpen] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const searchRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"](null);
     const resultsRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"](null);
     const adminMenuRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"](null);
+    const navRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"](null);
     // ✅ Fetch products
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"](()=>{
-        let active = true;
         const fetchProducts = async ()=>{
             try {
                 const res = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].get("/products", {
                     withCredentials: true
                 });
-                if (active) setProducts(res.data.products || []);
+                setProducts(res.data.products || []);
             } catch (err) {
                 console.error("❌ Products fetch error:", err);
             }
         };
         fetchProducts();
-        const t = setTimeout(fetchProducts, 1500);
-        return ()=>{
-            active = false;
-            clearTimeout(t);
-        };
     }, [
         refreshTrigger
     ]);
-    // ✅ Close dropdown when clicking outside
+    // ✅ Close dropdowns and hamburger when clicking outside
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"](()=>{
         const handleClickOutside = (e)=>{
-            if (adminMenuRef.current && !adminMenuRef.current.contains(e.target)) {
-                setAdminOpen(false);
-            }
+            if (adminMenuRef.current && !adminMenuRef.current.contains(e.target)) setAdminOpen(false);
+            if (searchRef.current && !searchRef.current.contains(e.target) && !resultsRef.current?.contains(e.target)) setShowDropdown(false);
+            if (navRef.current && !navRef.current.contains(e.target)) setOpen(false);
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return ()=>{
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        return ()=>document.removeEventListener("mousedown", handleClickOutside);
     }, []);
     // ✅ Search logic
     const handleSearch = (e)=>{
@@ -780,72 +785,100 @@ function Nav() {
         setShowDropdown(match.length > 0);
         setActiveIndex(-1);
     };
-    // ✅ Keyboard navigation
     const handleKeyDown = (e)=>{
         if (e.key === "Enter") {
             e.preventDefault();
             if (showDropdown && activeIndex >= 0) {
-                const product = filtered[activeIndex];
-                const catSlug = slugify(product.category?.name || "");
-                router.push(`/products/${catSlug}/${product.slug}`);
-                handleCloseMenus();
-                setSearch("");
+                const p = filtered[activeIndex];
+                router.push(`/products/${slugify(p.category?.name || "")}/${p.slug}`);
+                closeMenus();
                 return;
             }
             if (search.trim()) {
                 router.push(`/products?search=${encodeURIComponent(search.trim())}`);
-                handleCloseMenus();
+                closeMenus();
             }
         }
         if (!showDropdown || !filtered.length) return;
         if (e.key === "ArrowDown") setActiveIndex((i)=>i < filtered.length - 1 ? i + 1 : 0);
         else if (e.key === "ArrowUp") setActiveIndex((i)=>i > 0 ? i - 1 : filtered.length - 1);
     };
-    // ✅ Close dropdown on outside click
-    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"](()=>{
-        const close = (e)=>{
-            if (searchRef.current && !searchRef.current.contains(e.target) && !resultsRef.current?.contains(e.target)) setShowDropdown(false);
-        };
-        document.addEventListener("mousedown", close);
-        return ()=>document.removeEventListener("mousedown", close);
-    }, []);
-    // ✅ Reload categories
-    const reloadCategories = ()=>setRefreshTrigger((x)=>x + 1);
-    // ✅ Close dropdown + mobile menu
-    const handleCloseMenus = ()=>{
+    // ✅ Close menus globally
+    const closeMenus = ()=>{
         setShowDropdown(false);
         setOpen(false);
+        setAdminOpen(false);
     };
+    const reloadCategories = ()=>setRefreshTrigger((x)=>x + 1);
     return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
         children: [
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("nav", {
+                ref: navRef,
                 className: "fixed top-0 left-0 w-full z-50 bg-black shadow-md",
                 children: [
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                        className: "max-w-screen-xl mx-auto flex items-center justify-between p-4 gap-3",
+                        className: "max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2",
                         children: [
-                            /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                href: "/",
-                                onClick: handleCloseMenus,
-                                className: "flex items-center space-x-3",
-                                children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                                    src: "/hebat_logo.png",
-                                    className: "h-10 sm:h-12",
-                                    alt: "Hebat Logo"
-                                }, void 0, false, {
-                                    fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 142,
-                                    columnNumber: 13
-                                }, this)
-                            }, void 0, false, {
+                            /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                className: "flex justify-between items-center w-full md:w-auto",
+                                children: [
+                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                        href: "/",
+                                        onClick: closeMenus,
+                                        className: "flex items-center space-x-3",
+                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
+                                            src: "/hebat_logo.png",
+                                            className: "h-8 sm:h-10",
+                                            alt: "Hebat Logo"
+                                        }, void 0, false, {
+                                            fileName: "<[project]/components/Nav.jsx>",
+                                            lineNumber: 124,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "<[project]/components/Nav.jsx>",
+                                        lineNumber: 123,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
+                                        onClick: ()=>setOpen(!open),
+                                        className: "md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg",
+                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("svg", {
+                                            xmlns: "http://www.w3.org/2000/svg",
+                                            fill: "none",
+                                            viewBox: "0 0 24 24",
+                                            strokeWidth: "2",
+                                            stroke: "currentColor",
+                                            className: "w-6 h-6",
+                                            children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("path", {
+                                                strokeLinecap: "round",
+                                                strokeLinejoin: "round",
+                                                d: "M4 6h16M4 12h16M4 18h16"
+                                            }, void 0, false, {
+                                                fileName: "<[project]/components/Nav.jsx>",
+                                                lineNumber: 139,
+                                                columnNumber: 17
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "<[project]/components/Nav.jsx>",
+                                            lineNumber: 131,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "<[project]/components/Nav.jsx>",
+                                        lineNumber: 127,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 141,
+                                lineNumber: 122,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                className: "relative flex-1 max-w-md mx-2 w-full",
                                 ref: searchRef,
                                 onKeyDown: handleKeyDown,
+                                className: "relative w-full md:max-w-xl mx-auto mt-2 md:mt-0 order-3 md:order-none",
                                 children: [
                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
                                         type: "text",
@@ -856,18 +889,16 @@ function Nav() {
                                         className: "w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
                                     }, void 0, false, {
                                         fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 151,
+                                        lineNumber: 150,
                                         columnNumber: 13
                                     }, this),
                                     showDropdown && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                                         ref: resultsRef,
-                                        className: "absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[60] max-h-72 overflow-y-auto",
-                                        children: filtered.length ? filtered.map((p, i)=>{
-                                            const catSlug = slugify(p.category?.name || "");
-                                            return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                href: `/products/${catSlug}/${p.slug}`,
-                                                onClick: handleCloseMenus,
-                                                className: `flex items-center gap-3 px-3 py-2 text-sm rounded-md ${i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"}`,
+                                        className: "absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto",
+                                        children: filtered.length ? filtered.map((p, i)=>/*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                href: `/products/${slugify(p.category?.name || "")}/${p.slug}`,
+                                                onClick: closeMenus,
+                                                className: `flex items-center gap-3 px-3 py-2 text-sm ${i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"}`,
                                                 children: [
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
                                                         src: p.image?.s3Url || "/hebat_product_fill.png",
@@ -875,18 +906,19 @@ function Nav() {
                                                         className: "w-10 h-10 object-cover rounded-md border border-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "<[project]/components/Nav.jsx>",
-                                                        lineNumber: 178,
-                                                        columnNumber: 25
+                                                        lineNumber: 174,
+                                                        columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                                        className: "text-left",
                                                         children: [
                                                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
                                                                 className: "font-medium text-gray-900",
                                                                 children: p.name
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 184,
-                                                                columnNumber: 27
+                                                                lineNumber: 180,
+                                                                columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
                                                                 className: "text-xs text-gray-600 truncate",
@@ -897,115 +929,237 @@ function Nav() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 185,
-                                                                columnNumber: 27
+                                                                lineNumber: 181,
+                                                                columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "<[project]/components/Nav.jsx>",
-                                                        lineNumber: 183,
-                                                        columnNumber: 25
+                                                        lineNumber: 179,
+                                                        columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, p._id, true, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 170,
-                                                columnNumber: 23
-                                            }, this);
-                                        }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
+                                                lineNumber: 166,
+                                                columnNumber: 21
+                                            }, this)) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
                                             className: "text-gray-500 text-sm px-3 py-2",
                                             children: "No products found"
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 193,
+                                            lineNumber: 188,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 162,
+                                        lineNumber: 160,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 146,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
-                                onClick: ()=>setOpen(!open),
-                                className: "md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg",
-                                children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("svg", {
-                                    xmlns: "http://www.w3.org/2000/svg",
-                                    fill: "none",
-                                    viewBox: "0 0 24 24",
-                                    strokeWidth: "2",
-                                    stroke: "currentColor",
-                                    className: "w-6 h-6",
-                                    children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("path", {
-                                        strokeLinecap: "round",
-                                        strokeLinejoin: "round",
-                                        d: "M4 6h16M4 12h16M4 18h16"
-                                    }, void 0, false, {
-                                        fileName: "<[project]/components/Nav.jsx>",
-                                        lineNumber: 212,
-                                        columnNumber: 15
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 204,
-                                    columnNumber: 13
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 200,
+                                lineNumber: 145,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                className: `${open ? "block" : "hidden"} absolute md:static top-[72px] right-0 w-full md:w-auto bg-black md:bg-transparent border-t md:border-0 border-gray-700 md:flex md:items-center transition-all duration-300 z-[70]`,
+                                className: "hidden md:flex items-center space-x-6",
+                                children: [
+                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                        href: "/",
+                                        onClick: closeMenus,
+                                        className: "text-white hover:text-yellow-500",
+                                        children: "Home"
+                                    }, void 0, false, {
+                                        fileName: "<[project]/components/Nav.jsx>",
+                                        lineNumber: 196,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                        href: "/products",
+                                        onClick: closeMenus,
+                                        className: "text-white hover:text-yellow-500",
+                                        children: "Products"
+                                    }, void 0, false, {
+                                        fileName: "<[project]/components/Nav.jsx>",
+                                        lineNumber: 199,
+                                        columnNumber: 13
+                                    }, this),
+                                    user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                        className: "relative",
+                                        ref: adminMenuRef,
+                                        children: [
+                                            /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
+                                                onClick: (e)=>{
+                                                    e.stopPropagation();
+                                                    setAdminOpen((prev)=>!prev);
+                                                },
+                                                className: "text-white hover:text-yellow-500 flex items-center",
+                                                children: [
+                                                    "Admin Controls",
+                                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("svg", {
+                                                        xmlns: "http://www.w3.org/2000/svg",
+                                                        fill: "none",
+                                                        viewBox: "0 0 24 24",
+                                                        strokeWidth: "2",
+                                                        stroke: "currentColor",
+                                                        className: `w-4 h-4 ml-1 transition-transform ${adminOpen ? "rotate-180" : ""}`,
+                                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("path", {
+                                                            strokeLinecap: "round",
+                                                            strokeLinejoin: "round",
+                                                            d: "M6 9l6 6 6-6"
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 226,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/Nav.jsx>",
+                                                        lineNumber: 218,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "<[project]/components/Nav.jsx>",
+                                                lineNumber: 210,
+                                                columnNumber: 17
+                                            }, this),
+                                            adminOpen && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
+                                                className: "absolute left-0 mt-2 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[180px] z-[80] transition-all duration-150 ease-in-out",
+                                                children: [
+                                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                            href: "/newproduct",
+                                                            onClick: closeMenus,
+                                                            className: "block py-2 px-4 text-sm text-white hover:text-yellow-500",
+                                                            children: "New Product"
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 233,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/Nav.jsx>",
+                                                        lineNumber: 232,
+                                                        columnNumber: 21
+                                                    }, this),
+                                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
+                                                            onClick: ()=>{
+                                                                setShowCategories(true);
+                                                                closeMenus();
+                                                            },
+                                                            className: "block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500",
+                                                            children: "Manage Categories"
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 242,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/Nav.jsx>",
+                                                        lineNumber: 241,
+                                                        columnNumber: 21
+                                                    }, this),
+                                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                            href: "/newsletter",
+                                                            onClick: closeMenus,
+                                                            className: "block py-2 px-4 text-sm text-white hover:text-yellow-500",
+                                                            children: "Newsletter"
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 253,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/Nav.jsx>",
+                                                        lineNumber: 252,
+                                                        columnNumber: 21
+                                                    }, this),
+                                                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                        className: "border-t border-gray-700",
+                                                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
+                                                            onClick: ()=>{
+                                                                logout();
+                                                                closeMenus();
+                                                            },
+                                                            className: "block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500",
+                                                            children: "Logout"
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 262,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/Nav.jsx>",
+                                                        lineNumber: 261,
+                                                        columnNumber: 21
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "<[project]/components/Nav.jsx>",
+                                                lineNumber: 231,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "<[project]/components/Nav.jsx>",
+                                        lineNumber: 209,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "<[project]/components/Nav.jsx>",
+                                lineNumber: 195,
+                                columnNumber: 11
+                            }, this),
+                            open && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                className: "w-full md:hidden border-t border-gray-700 mt-2 pt-2",
                                 children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
-                                    className: "font-medium flex flex-col md:flex-row text-center md:text-left p-4 md:p-0 md:space-x-6 relative",
+                                    className: "space-y-1 text-left",
                                     children: [
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                                 href: "/",
-                                                onClick: handleCloseMenus,
-                                                className: "block py-2 px-3 text-white hover:text-yellow-500",
+                                                onClick: closeMenus,
+                                                className: "block py-2 text-white hover:text-yellow-500",
                                                 children: "Home"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 225,
-                                                columnNumber: 17
+                                                lineNumber: 283,
+                                                columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 224,
-                                            columnNumber: 15
+                                            lineNumber: 282,
+                                            columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                                 href: "/products",
-                                                onClick: handleCloseMenus,
-                                                className: "block py-2 px-3 text-white hover:text-yellow-500",
+                                                onClick: closeMenus,
+                                                className: "block py-2 text-white hover:text-yellow-500",
                                                 children: "Products"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 236,
-                                                columnNumber: 17
+                                                lineNumber: 292,
+                                                columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 235,
-                                            columnNumber: 15
+                                            lineNumber: 291,
+                                            columnNumber: 17
                                         }, this),
                                         user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
-                                            className: "relative",
+                                            ref: adminMenuRef,
                                             children: [
                                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
                                                     onClick: (e)=>{
                                                         e.stopPropagation();
                                                         setAdminOpen((prev)=>!prev);
                                                     },
-                                                    className: "py-2 px-3 text-white hover:text-yellow-500 w-full text-left flex items-center justify-center md:justify-start",
+                                                    className: "py-2 px-3 text-white hover:text-yellow-500 w-full text-left flex items-center justify-between",
                                                     children: [
                                                         "Admin Controls",
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("svg", {
@@ -1021,144 +1175,143 @@ function Nav() {
                                                                 d: "M6 9l6 6 6-6"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 267,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 257,
-                                                            columnNumber: 21
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 249,
-                                                    columnNumber: 19
-                                                }, this),
-                                                adminOpen && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
-                                                    ref: adminMenuRef,
-                                                    className: "absolute left-0 md:left-auto md:right-0 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[160px] z-50 transition-all duration-200 ease-in-out",
-                                                    children: [
-                                                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
-                                                            children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                                href: "/newproduct",
-                                                                onClick: ()=>{
-                                                                    handleCloseMenus();
-                                                                    setAdminOpen(false);
-                                                                },
-                                                                className: "block py-2 px-4 text-sm text-white hover:text-yellow-500",
-                                                                children: "New Product"
-                                                            }, void 0, false, {
-                                                                fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 278,
+                                                                lineNumber: 321,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 277,
+                                                            lineNumber: 311,
                                                             columnNumber: 23
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "<[project]/components/Nav.jsx>",
+                                                    lineNumber: 303,
+                                                    columnNumber: 21
+                                                }, this),
+                                                adminOpen && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
+                                                    className: "bg-black border border-gray-700 rounded-lg shadow-lg mt-1 space-y-1 z-[90] relative",
+                                                    children: [
+                                                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                            children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                                href: "/newproduct",
+                                                                onClick: closeMenus,
+                                                                className: "block py-2 px-4 text-sm text-white hover:text-yellow-500",
+                                                                children: "New Product"
+                                                            }, void 0, false, {
+                                                                fileName: "<[project]/components/Nav.jsx>",
+                                                                lineNumber: 328,
+                                                                columnNumber: 27
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "<[project]/components/Nav.jsx>",
+                                                            lineNumber: 327,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
                                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
                                                                 onClick: ()=>{
-                                                                    handleCloseMenus();
                                                                     setShowCategories(true);
-                                                                    setAdminOpen(false);
+                                                                    closeMenus();
                                                                 },
                                                                 className: "block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500",
                                                                 children: "Manage Categories"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 290,
-                                                                columnNumber: 25
+                                                                lineNumber: 337,
+                                                                columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 289,
-                                                            columnNumber: 23
+                                                            lineNumber: 336,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
                                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                                                 href: "/newsletter",
-                                                                onClick: ()=>{
-                                                                    handleCloseMenus();
-                                                                    setAdminOpen(false);
-                                                                },
+                                                                onClick: closeMenus,
                                                                 className: "block py-2 px-4 text-sm text-white hover:text-yellow-500",
                                                                 children: "Newsletter"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 302,
-                                                                columnNumber: 25
+                                                                lineNumber: 348,
+                                                                columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 301,
-                                                            columnNumber: 23
+                                                            lineNumber: 347,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
+                                                            className: "border-t border-gray-700",
                                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
                                                                 onClick: ()=>{
                                                                     logout();
-                                                                    handleCloseMenus();
-                                                                    setAdminOpen(false);
+                                                                    closeMenus();
                                                                 },
                                                                 className: "block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500",
                                                                 children: "Logout"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 314,
-                                                                columnNumber: 25
+                                                                lineNumber: 357,
+                                                                columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 313,
-                                                            columnNumber: 23
+                                                            lineNumber: 356,
+                                                            columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 273,
-                                                    columnNumber: 21
+                                                    lineNumber: 326,
+                                                    columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 247,
-                                            columnNumber: 17
+                                            lineNumber: 302,
+                                            columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 222,
-                                    columnNumber: 13
+                                    lineNumber: 281,
+                                    columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 217,
-                                columnNumber: 11
+                                lineNumber: 280,
+                                columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "<[project]/components/Nav.jsx>",
-                        lineNumber: 139,
+                        lineNumber: 120,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CategoryBar$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                        refreshTrigger: refreshTrigger
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                        className: "relative z-[40] mt-1",
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CategoryBar$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                            refreshTrigger: refreshTrigger
+                        }, void 0, false, {
+                            fileName: "<[project]/components/Nav.jsx>",
+                            lineNumber: 378,
+                            columnNumber: 11
+                        }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/Nav.jsx>",
-                        lineNumber: 334,
+                        lineNumber: 377,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/Nav.jsx>",
-                lineNumber: 138,
+                lineNumber: 118,
                 columnNumber: 7
             }, this),
             showCategories && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                className: "fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50",
+                className: "fixed inset-0 z-[80] flex items-center justify-center bg-black/50",
                 children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                     className: "bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 relative",
                     children: [
@@ -1167,14 +1320,14 @@ function Nav() {
                             children: "Manage Categories"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 341,
+                            lineNumber: 386,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$EditCategories$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                             onUpdated: reloadCategories
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 342,
+                            lineNumber: 387,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -1183,24 +1336,24 @@ function Nav() {
                             children: "✕"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 343,
+                            lineNumber: 388,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/Nav.jsx>",
-                    lineNumber: 340,
+                    lineNumber: 385,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "<[project]/components/Nav.jsx>",
-                lineNumber: 339,
+                lineNumber: 384,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true);
 }
-_s(Nav, "k+yifUFxlf5BcVAPnJuGwxwS5e0=", false, function() {
+_s(Nav, "KgJ7C/pB9/liNxfCDeWHhG9ZOBU=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]

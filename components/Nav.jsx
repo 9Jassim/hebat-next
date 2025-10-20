@@ -8,7 +8,6 @@ import Client from "@/lib/api"
 import EditCategories from "@/components/EditCategories"
 import CategoryBar from "@/components/CategoryBar"
 
-// ✅ Slugify helper
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -20,7 +19,9 @@ const slugify = str =>
 export default function Nav() {
   const router = useRouter()
   const { user, logout } = useAuth()
+
   const [open, setOpen] = useState(false)
+  const [adminOpen, setAdminOpen] = useState(false)
   const [showCategories, setShowCategories] = useState(false)
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState("")
@@ -28,42 +29,39 @@ export default function Nav() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
-  const [adminOpen, setAdminOpen] = useState(false)
 
   const searchRef = useRef(null)
   const resultsRef = useRef(null)
   const adminMenuRef = useRef(null)
+  const navRef = useRef(null)
+
   // ✅ Fetch products
   useEffect(() => {
-    let active = true
     const fetchProducts = async () => {
       try {
         const res = await Client.get("/products", { withCredentials: true })
-        if (active) setProducts(res.data.products || [])
+        setProducts(res.data.products || [])
       } catch (err) {
         console.error("❌ Products fetch error:", err)
       }
     }
     fetchProducts()
-    const t = setTimeout(fetchProducts, 1500)
-    return () => {
-      active = false
-      clearTimeout(t)
-    }
   }, [refreshTrigger])
 
-  // ✅ Close dropdown when clicking outside
+  // ✅ Close dropdowns and hamburger when clicking outside
   useEffect(() => {
     const handleClickOutside = e => {
-      if (adminMenuRef.current && !adminMenuRef.current.contains(e.target)) {
-        setAdminOpen(false)
-      }
+      if (adminMenuRef.current && !adminMenuRef.current.contains(e.target)) setAdminOpen(false)
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(e.target) &&
+        !resultsRef.current?.contains(e.target)
+      )
+        setShowDropdown(false)
+      if (navRef.current && !navRef.current.contains(e.target)) setOpen(false)
     }
-
     document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   // ✅ Search logic
@@ -87,21 +85,18 @@ export default function Nav() {
     setActiveIndex(-1)
   }
 
-  // ✅ Keyboard navigation
   const handleKeyDown = e => {
     if (e.key === "Enter") {
       e.preventDefault()
       if (showDropdown && activeIndex >= 0) {
-        const product = filtered[activeIndex]
-        const catSlug = slugify(product.category?.name || "")
-        router.push(`/products/${catSlug}/${product.slug}`)
-        handleCloseMenus()
-        setSearch("")
+        const p = filtered[activeIndex]
+        router.push(`/products/${slugify(p.category?.name || "")}/${p.slug}`)
+        closeMenus()
         return
       }
       if (search.trim()) {
         router.push(`/products?search=${encodeURIComponent(search.trim())}`)
-        handleCloseMenus()
+        closeMenus()
       }
     }
     if (!showDropdown || !filtered.length) return
@@ -109,44 +104,48 @@ export default function Nav() {
     else if (e.key === "ArrowUp") setActiveIndex(i => (i > 0 ? i - 1 : filtered.length - 1))
   }
 
-  // ✅ Close dropdown on outside click
-  useEffect(() => {
-    const close = e => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(e.target) &&
-        !resultsRef.current?.contains(e.target)
-      )
-        setShowDropdown(false)
-    }
-    document.addEventListener("mousedown", close)
-    return () => document.removeEventListener("mousedown", close)
-  }, [])
-
-  // ✅ Reload categories
-  const reloadCategories = () => setRefreshTrigger(x => x + 1)
-
-  // ✅ Close dropdown + mobile menu
-  const handleCloseMenus = () => {
+  // ✅ Close menus globally
+  const closeMenus = () => {
     setShowDropdown(false)
     setOpen(false)
+    setAdminOpen(false)
   }
+
+  const reloadCategories = () => setRefreshTrigger(x => x + 1)
 
   return (
     <>
-      {/* Fixed Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4 gap-3">
-          {/* Logo */}
-          <Link href="/" onClick={handleCloseMenus} className="flex items-center space-x-3">
-            <img src="/hebat_logo.png" className="h-10 sm:h-12" alt="Hebat Logo" />
-          </Link>
+      <nav ref={navRef} className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
+        {/* Container */}
+        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2">
+          {/* Top Row (Logo + Hamburger) */}
+          <div className="flex justify-between items-center w-full md:w-auto">
+            <Link href="/" onClick={closeMenus} className="flex items-center space-x-3">
+              <img src="/hebat_logo.png" className="h-8 sm:h-10" alt="Hebat Logo" />
+            </Link>
 
-          {/* Search */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Search Bar */}
           <div
-            className="relative flex-1 max-w-md mx-2 w-full"
             ref={searchRef}
             onKeyDown={handleKeyDown}
+            className="relative w-full md:max-w-xl mx-auto mt-2 md:mt-0 order-3 md:order-none"
           >
             <input
               type="text"
@@ -157,38 +156,34 @@ export default function Nav() {
               className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
             />
 
-            {/* Dropdown */}
             {showDropdown && (
               <div
                 ref={resultsRef}
-                className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[60] max-h-72 overflow-y-auto"
+                className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto"
               >
                 {filtered.length ? (
-                  filtered.map((p, i) => {
-                    const catSlug = slugify(p.category?.name || "")
-                    return (
-                      <Link
-                        key={p._id}
-                        href={`/products/${catSlug}/${p.slug}`}
-                        onClick={handleCloseMenus}
-                        className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md ${
-                          i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
-                        }`}
-                      >
-                        <img
-                          src={p.image?.s3Url || "/hebat_product_fill.png"}
-                          alt={p.name}
-                          className="w-10 h-10 object-cover rounded-md border border-gray-200"
-                        />
-                        <div>
-                          <p className="font-medium text-gray-900">{p.name}</p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {p.model || "No model"} — {p.barcode || "No barcode"}
-                          </p>
-                        </div>
-                      </Link>
-                    )
-                  })
+                  filtered.map((p, i) => (
+                    <Link
+                      key={p._id}
+                      href={`/products/${slugify(p.category?.name || "")}/${p.slug}`}
+                      onClick={closeMenus}
+                      className={`flex items-center gap-3 px-3 py-2 text-sm ${
+                        i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
+                      }`}
+                    >
+                      <img
+                        src={p.image?.s3Url || "/hebat_product_fill.png"}
+                        alt={p.name}
+                        className="w-10 h-10 object-cover rounded-md border border-gray-200"
+                      />
+                      <div className="text-left">
+                        <p className="font-medium text-gray-900">{p.name}</p>
+                        <p className="text-xs text-gray-600 truncate">
+                          {p.model || "No model"} — {p.barcode || "No barcode"}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
                 ) : (
                   <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
                 )}
@@ -196,147 +191,197 @@ export default function Nav() {
             )}
           </div>
 
-          {/* Hamburger */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-6 h-6"
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center space-x-6">
+            <Link href="/" onClick={closeMenus} className="text-white hover:text-yellow-500">
+              Home
+            </Link>
+            <Link
+              href="/products"
+              onClick={closeMenus}
+              className="text-white hover:text-yellow-500"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+              Products
+            </Link>
 
-          {/* Links */}
-          <div
-            className={`${
-              open ? "block" : "hidden"
-            } absolute md:static top-[72px] right-0 w-full md:w-auto bg-black md:bg-transparent border-t md:border-0 border-gray-700 md:flex md:items-center transition-all duration-300 z-[70]`}
-          >
-            <ul className="font-medium flex flex-col md:flex-row text-center md:text-left p-4 md:p-0 md:space-x-6 relative">
-              {/* Home */}
-              <li>
-                <Link
-                  href="/"
-                  onClick={handleCloseMenus}
-                  className="block py-2 px-3 text-white hover:text-yellow-500"
+            {/* Admin Controls */}
+            {user && (
+              <div className="relative" ref={adminMenuRef}>
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    setAdminOpen(prev => !prev)
+                  }}
+                  className="text-white hover:text-yellow-500 flex items-center"
                 >
-                  Home
-                </Link>
-              </li>
-
-              {/* Products */}
-              <li>
-                <Link
-                  href="/products"
-                  onClick={handleCloseMenus}
-                  className="block py-2 px-3 text-white hover:text-yellow-500"
-                >
-                  Products
-                </Link>
-              </li>
-
-              {/* Admin Controls Dropdown */}
-              {user && (
-                <li className="relative">
-                  {/* Admin Controls Toggle */}
-                  <button
-                    onClick={e => {
-                      e.stopPropagation()
-                      setAdminOpen(prev => !prev)
-                    }}
-                    className="py-2 px-3 text-white hover:text-yellow-500 w-full text-left flex items-center justify-center md:justify-start"
+                  Admin Controls
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className={`w-4 h-4 ml-1 transition-transform ${adminOpen ? "rotate-180" : ""}`}
                   >
-                    Admin Controls
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      className={`w-4 h-4 ml-1 transition-transform ${
-                        adminOpen ? "rotate-180" : ""
-                      }`}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
-                    </svg>
-                  </button>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
 
-                  {/* Dropdown Menu */}
-                  {adminOpen && (
-                    <ul
-                      ref={adminMenuRef}
-                      className="absolute left-0 md:left-auto md:right-0 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[160px] z-50 transition-all duration-200 ease-in-out"
-                    >
-                      <li>
-                        <Link
-                          href="/newproduct"
-                          onClick={() => {
-                            handleCloseMenus()
-                            setAdminOpen(false)
-                          }}
-                          className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                        >
-                          New Product
-                        </Link>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            handleCloseMenus()
-                            setShowCategories(true)
-                            setAdminOpen(false)
-                          }}
-                          className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
-                        >
-                          Manage Categories
-                        </button>
-                      </li>
-                      <li>
-                        <Link
-                          href="/newsletter"
-                          onClick={() => {
-                            handleCloseMenus()
-                            setAdminOpen(false)
-                          }}
-                          className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                        >
-                          Newsletter
-                        </Link>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => {
-                            logout()
-                            handleCloseMenus()
-                            setAdminOpen(false)
-                          }}
-                          className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
-                        >
-                          Logout
-                        </button>
-                      </li>
-                    </ul>
-                  )}
-                </li>
-              )}
-            </ul>
+                {adminOpen && (
+                  <ul className="absolute left-0 mt-2 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[180px] z-[80] transition-all duration-150 ease-in-out">
+                    <li>
+                      <Link
+                        href="/newproduct"
+                        onClick={closeMenus}
+                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        New Product
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          setShowCategories(true)
+                          closeMenus()
+                        }}
+                        className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Manage Categories
+                      </button>
+                    </li>
+                    <li>
+                      <Link
+                        href="/newsletter"
+                        onClick={closeMenus}
+                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Newsletter
+                      </Link>
+                    </li>
+                    <li className="border-t border-gray-700">
+                      <button
+                        onClick={() => {
+                          logout()
+                          closeMenus()
+                        }}
+                        className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
+
+          {/* Mobile Menu */}
+          {open && (
+            <div className="w-full md:hidden border-t border-gray-700 mt-2 pt-2">
+              <ul className="space-y-1 text-left">
+                <li>
+                  <Link
+                    href="/"
+                    onClick={closeMenus}
+                    className="block py-2 text-white hover:text-yellow-500"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/products"
+                    onClick={closeMenus}
+                    className="block py-2 text-white hover:text-yellow-500"
+                  >
+                    Products
+                  </Link>
+                </li>
+
+                {user && (
+                  <li ref={adminMenuRef}>
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        setAdminOpen(prev => !prev)
+                      }}
+                      className="py-2 px-3 text-white hover:text-yellow-500 w-full text-left flex items-center justify-between"
+                    >
+                      Admin Controls
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className={`w-4 h-4 ml-1 transition-transform ${
+                          adminOpen ? "rotate-180" : ""
+                        }`}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                      </svg>
+                    </button>
+
+                    {adminOpen && (
+                      <ul className="bg-black border border-gray-700 rounded-lg shadow-lg mt-1 space-y-1 z-[90] relative">
+                        <li>
+                          <Link
+                            href="/newproduct"
+                            onClick={closeMenus}
+                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            New Product
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              setShowCategories(true)
+                              closeMenus()
+                            }}
+                            className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Manage Categories
+                          </button>
+                        </li>
+                        <li>
+                          <Link
+                            href="/newsletter"
+                            onClick={closeMenus}
+                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Newsletter
+                          </Link>
+                        </li>
+                        <li className="border-t border-gray-700">
+                          <button
+                            onClick={() => {
+                              logout()
+                              closeMenus()
+                            }}
+                            className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Logout
+                          </button>
+                        </li>
+                      </ul>
+                    )}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
-        {/* Category Bar */}
-        <CategoryBar refreshTrigger={refreshTrigger} />
+        {/* CategoryBar */}
+        <div className="relative z-[40] mt-1">
+          <CategoryBar refreshTrigger={refreshTrigger} />
+        </div>
       </nav>
 
-      {/* Admin Category Modal */}
+      {/* Manage Categories Modal */}
       {showCategories && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 relative">
             <h2 className="text-xl font-bold mb-4 text-gray-800">Manage Categories</h2>
             <EditCategories onUpdated={reloadCategories} />
