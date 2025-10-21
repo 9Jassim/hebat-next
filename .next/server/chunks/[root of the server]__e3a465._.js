@@ -127,16 +127,34 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Products$2e$js
 ;
 ;
 async function generateMetadata({ params }) {
-    const category = params.category.replace(/-/g, " ");
+    const rawCategory = params.category || "";
+    const categoryName = rawCategory.replace(/-/g, " ").replace(/\band\b/g, "&").replace(/\b\w/g, (c)=>c.toUpperCase());
+    const pageTitle = `${categoryName}`;
+    const description = `Explore premium ${categoryName} at Hebat — trusted quality, innovation, and top performance in the Middle East.`;
     return {
-        title: `${category}`,
-        description: `Discover premium ${category} from Hebat.`
+        title: pageTitle,
+        description,
+        keywords: [
+            "Hebat",
+            "premium products",
+            categoryName,
+            `${categoryName} accessories`,
+            `${categoryName} collection`,
+            "Hebat Middle East"
+        ],
+        openGraph: {
+            title: `${categoryName} | Hebat`,
+            description,
+            type: "website",
+            url: `https://hebat.com/products/${rawCategory}`,
+            siteName: "Hebat"
+        }
     };
 }
 function CategoryPage() {
     return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Products$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
         fileName: "<[project]/app/products/[category]/page.jsx>",
-        lineNumber: 12,
+        lineNumber: 35,
         columnNumber: 10
     }, this);
 }

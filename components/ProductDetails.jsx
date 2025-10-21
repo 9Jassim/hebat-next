@@ -69,7 +69,7 @@ export default function ProductDetails({ params }) {
     try {
       await Client.delete(`/products/${product._id}`, { withCredentials: true })
       setOpenRemove(false)
-      router.push(`/products/${slugify(product.category?.name || category) || ""}`)
+      router.push(`/products`)
     } catch (err) {
       console.error("Error deleting product:", err)
     }

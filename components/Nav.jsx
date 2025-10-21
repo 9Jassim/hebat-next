@@ -88,20 +88,46 @@ export default function Nav() {
   const handleKeyDown = e => {
     if (e.key === "Enter") {
       e.preventDefault()
+
       if (showDropdown && activeIndex >= 0) {
         const p = filtered[activeIndex]
-        router.push(`/products/${slugify(p.category?.name || "")}/${p.slug}`)
+
+        // ✅ Handle multiple categories gracefully
+        let categorySlug = "others"
+        if (Array.isArray(p.categories) && p.categories.length > 0) {
+          const firstCat = p.categories[0]
+          categorySlug = firstCat?.name
+            ? firstCat.name
+                .toLowerCase()
+                .replace(/&/g, "and")
+                .replace(/[^a-z0-9]+/g, "-")
+            : "others"
+        } else if (p.category?.name) {
+          // fallback for old products with single category
+          categorySlug = p.category.name
+            .toLowerCase()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+        }
+
+        router.push(`/products/${categorySlug}/${p.slug}`)
         closeMenus()
         return
       }
+
       if (search.trim()) {
         router.push(`/products?search=${encodeURIComponent(search.trim())}`)
         closeMenus()
       }
     }
+
     if (!showDropdown || !filtered.length) return
-    if (e.key === "ArrowDown") setActiveIndex(i => (i < filtered.length - 1 ? i + 1 : 0))
-    else if (e.key === "ArrowUp") setActiveIndex(i => (i > 0 ? i - 1 : filtered.length - 1))
+
+    if (e.key === "ArrowDown") {
+      setActiveIndex(i => (i < filtered.length - 1 ? i + 1 : 0))
+    } else if (e.key === "ArrowUp") {
+      setActiveIndex(i => (i > 0 ? i - 1 : filtered.length - 1))
+    }
   }
 
   // ✅ Close menus globally
@@ -141,7 +167,7 @@ export default function Nav() {
             </button>
           </div>
 
-          {/* Search Bar */}
+          {/* 🔍 Search Bar */}
           <div
             ref={searchRef}
             onKeyDown={handleKeyDown}
@@ -162,28 +188,36 @@ export default function Nav() {
                 className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto"
               >
                 {filtered.length ? (
-                  filtered.map((p, i) => (
-                    <Link
-                      key={p._id}
-                      href={`/products/${slugify(p.category?.name || "")}/${p.slug}`}
-                      onClick={closeMenus}
-                      className={`flex items-center gap-3 px-3 py-2 text-sm ${
-                        i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
-                      }`}
-                    >
-                      <img
-                        src={p.image?.s3Url || "/hebat_product_fill.png"}
-                        alt={p.name}
-                        className="w-10 h-10 object-cover rounded-md border border-gray-200"
-                      />
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">{p.name}</p>
-                        <p className="text-xs text-gray-600 truncate">
-                          {p.model || "No model"} — {p.barcode || "No barcode"}
-                        </p>
-                      </div>
-                    </Link>
-                  ))
+                  filtered.map((p, i) => {
+                    // ✅ Use first category from array or fallback to single category
+                    const firstCategory =
+                      Array.isArray(p.categories) && p.categories.length > 0
+                        ? p.categories[0]?.name
+                        : p.category?.name || "others"
+
+                    return (
+                      <Link
+                        key={p._id || i}
+                        href={`/products/${slugify(firstCategory)}/${p.slug}`}
+                        onClick={closeMenus}
+                        className={`flex items-center gap-3 px-3 py-2 text-sm ${
+                          i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
+                        }`}
+                      >
+                        <img
+                          src={p.image?.s3Url || "/hebat_product_fill.png"}
+                          alt={p.name}
+                          className="w-10 h-10 object-cover rounded-md border border-gray-200"
+                        />
+                        <div className="text-left">
+                          <p className="font-medium text-gray-900">{p.name}</p>
+                          <p className="text-xs text-gray-600 truncate">
+                            {p.model || "No model"} — {p.barcode || "No barcode"}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  })
                 ) : (
                   <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
                 )}
