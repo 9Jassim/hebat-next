@@ -33,15 +33,16 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d
 function EditProductForm({ product, setProduct, handleCloseE }) {
     const [categories, setCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"]([]);
     const [newCategory, setNewCategory] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"](false);
+    const [selectedCategories, setSelectedCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useState"]([]) // ✅ multiple selection
+    ;
     const categoryRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
     // Form refs
     const modelRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
     const nameRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
     const descriptionRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
-    const categorySelectRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
     const manualRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
     const imageRef = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRef"](null);
-    // Fetch categories on mount
+    // ✅ Fetch categories on mount
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useEffect"](()=>{
         const getCategories = async ()=>{
             try {
@@ -55,27 +56,47 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
         };
         getCategories();
     }, []);
-    // Populate form fields when product or categories change
+    // ✅ Populate fields + existing categories when product changes
     __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useEffect"](()=>{
-        if (!product || !modelRef.current) return;
-        modelRef.current.value = product.model || "";
-        nameRef.current.value = product.name || "";
-        descriptionRef.current.value = product.description || "";
-        if (categorySelectRef.current && product.category?._id) {
-            categorySelectRef.current.value = product.category._id;
+        if (!product) return;
+        if (modelRef.current) modelRef.current.value = product.model || "";
+        if (nameRef.current) nameRef.current.value = product.name || "";
+        if (descriptionRef.current) descriptionRef.current.value = product.description || "";
+        // Preload product categories (if any)
+        if (product.categories && product.categories.length) {
+            setSelectedCategories(product.categories.map((cat)=>cat._id));
+        } else if (product.category?._id) {
+            // For backward compatibility (single category)
+            setSelectedCategories([
+                product.category._id
+            ]);
         }
     }, [
-        product,
-        categories
+        product
     ]);
-    // Handle editing the product
+    // ✅ Add category to selected list
+    const handleSelectCategory = (e)=>{
+        const id = e.target.value;
+        if (id && !selectedCategories.includes(id)) {
+            setSelectedCategories([
+                ...selectedCategories,
+                id
+            ]);
+        }
+    };
+    // ✅ Remove category from tag list
+    const removeCategory = (id)=>{
+        setSelectedCategories((prev)=>prev.filter((catId)=>catId !== id));
+    };
+    // ✅ Update product
     const editProduct = async (e)=>{
         e.preventDefault();
         const formData = new FormData();
         formData.append("model", modelRef.current.value);
         formData.append("name", nameRef.current.value);
         formData.append("description", descriptionRef.current.value);
-        formData.append("category", categorySelectRef.current.value);
+        // Append multiple categories
+        selectedCategories.forEach((cat)=>formData.append("categories", cat));
         if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0]);
         if (imageRef.current.files[0]) formData.append("image", imageRef.current.files[0]);
         try {
@@ -92,7 +113,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
             alert("Failed to update product.");
         }
     };
-    // Add new category
+    // ✅ Add new category inline
     const addCategory = async ()=>{
         try {
             const res = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"].post("/products/category", {
@@ -120,7 +141,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                     children: "Edit Product"
                 }, void 0, false, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 92,
+                    lineNumber: 112,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -131,7 +152,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "Model"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 98,
+                            lineNumber: 118,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -142,13 +163,13 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             placeholder: "Product model"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 101,
+                            lineNumber: 121,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 97,
+                    lineNumber: 117,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -159,7 +180,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "Name"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 112,
+                            lineNumber: 132,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -170,13 +191,13 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             placeholder: "Product name"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 115,
+                            lineNumber: 135,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 111,
+                    lineNumber: 131,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -187,7 +208,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "Description"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 126,
+                            lineNumber: 146,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("textarea", {
@@ -198,52 +219,91 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             placeholder: "Product description"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 129,
+                            lineNumber: 149,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 125,
+                    lineNumber: 145,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                     children: [
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("label", {
-                            htmlFor: "category",
+                            htmlFor: "categories",
                             className: "block mb-2 text-sm font-medium text-gray-900",
-                            children: "Category"
+                            children: "Categories (Select one or more)"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 140,
+                            lineNumber: 160,
                             columnNumber: 11
                         }, this),
-                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("select", {
-                            ref: categorySelectRef,
-                            id: "category",
-                            name: "category",
-                            className: "block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs",
+                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                            className: "flex flex-col space-y-2",
                             children: [
-                                /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("option", {
-                                    value: "",
-                                    children: "--Category--"
-                                }, void 0, false, {
+                                /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("select", {
+                                    id: "categories",
+                                    onChange: handleSelectCategory,
+                                    className: "block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs",
+                                    children: [
+                                        /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("option", {
+                                            value: "",
+                                            children: "--Select Category--"
+                                        }, void 0, false, {
+                                            fileName: "<[project]/components/EditProductForm.jsx>",
+                                            lineNumber: 171,
+                                            columnNumber: 15
+                                        }, this),
+                                        categories.map((cat)=>/*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("option", {
+                                                value: cat._id,
+                                                children: cat.name
+                                            }, cat._id, false, {
+                                                fileName: "<[project]/components/EditProductForm.jsx>",
+                                                lineNumber: 173,
+                                                columnNumber: 17
+                                            }, this))
+                                    ]
+                                }, void 0, true, {
                                     fileName: "<[project]/components/EditProductForm.jsx>",
-                                    lineNumber: 149,
+                                    lineNumber: 166,
                                     columnNumber: 13
                                 }, this),
-                                categories.map((cat)=>/*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("option", {
-                                        value: cat._id,
-                                        children: cat.name
-                                    }, cat._id, false, {
-                                        fileName: "<[project]/components/EditProductForm.jsx>",
-                                        lineNumber: 151,
-                                        columnNumber: 15
-                                    }, this))
+                                selectedCategories.length > 0 && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                    className: "flex flex-wrap gap-2 mt-1",
+                                    children: selectedCategories.map((id)=>{
+                                        const cat = categories.find((c)=>c._id === id);
+                                        return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("span", {
+                                            className: "flex items-center bg-black text-white px-2 py-1 rounded text-xs",
+                                            children: [
+                                                cat?.name || "Unknown",
+                                                /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
+                                                    type: "button",
+                                                    onClick: ()=>removeCategory(id),
+                                                    className: "ml-1 text-yellow-400 hover:text-red-400",
+                                                    title: "Remove",
+                                                    children: "✕"
+                                                }, void 0, false, {
+                                                    fileName: "<[project]/components/EditProductForm.jsx>",
+                                                    lineNumber: 190,
+                                                    columnNumber: 23
+                                                }, this)
+                                            ]
+                                        }, id, true, {
+                                            fileName: "<[project]/components/EditProductForm.jsx>",
+                                            lineNumber: 185,
+                                            columnNumber: 21
+                                        }, this);
+                                    })
+                                }, void 0, false, {
+                                    fileName: "<[project]/components/EditProductForm.jsx>",
+                                    lineNumber: 181,
+                                    columnNumber: 15
+                                }, this)
                             ]
                         }, void 0, true, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 143,
+                            lineNumber: 164,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("span", {
@@ -252,7 +312,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "New"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 156,
+                            lineNumber: 206,
                             columnNumber: 11
                         }, this),
                         newCategory && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -261,12 +321,12 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
                                     type: "text",
                                     id: "category-name",
+                                    ref: categoryRef,
                                     className: "block p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs flex-1",
-                                    placeholder: "New category name",
-                                    ref: categoryRef
+                                    placeholder: "New category name"
                                 }, void 0, false, {
                                     fileName: "<[project]/components/EditProductForm.jsx>",
-                                    lineNumber: 165,
+                                    lineNumber: 215,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -276,19 +336,19 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                                     children: "+"
                                 }, void 0, false, {
                                     fileName: "<[project]/components/EditProductForm.jsx>",
-                                    lineNumber: 172,
+                                    lineNumber: 222,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 164,
+                            lineNumber: 214,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 139,
+                    lineNumber: 159,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -298,7 +358,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "Manual"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 185,
+                            lineNumber: 235,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -309,13 +369,13 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             className: "p-1.5 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 186,
+                            lineNumber: 236,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 184,
+                    lineNumber: 234,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -325,7 +385,7 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             children: "Image"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 197,
+                            lineNumber: 247,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
@@ -336,13 +396,13 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                             className: "p-1.5 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 198,
+                            lineNumber: 248,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 196,
+                    lineNumber: 246,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -361,30 +421,30 @@ function EditProductForm({ product, setProduct, handleCloseE }) {
                                 clipRule: "evenodd"
                             }, void 0, false, {
                                 fileName: "<[project]/components/EditProductForm.jsx>",
-                                lineNumber: 219,
+                                lineNumber: 269,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "<[project]/components/EditProductForm.jsx>",
-                            lineNumber: 212,
+                            lineNumber: 262,
                             columnNumber: 11
                         }, this),
                         "Save Changes"
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/EditProductForm.jsx>",
-                    lineNumber: 208,
+                    lineNumber: 258,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "<[project]/components/EditProductForm.jsx>",
-            lineNumber: 88,
+            lineNumber: 108,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "<[project]/components/EditProductForm.jsx>",
-        lineNumber: 87,
+        lineNumber: 107,
         columnNumber: 5
     }, this);
 }
@@ -634,7 +694,7 @@ function ProductDetails({ params }) {
                 withCredentials: true
             });
             setOpenRemove(false);
-            router.push(`/products/${slugify(product.category?.name || category) || ""}`);
+            router.push(`/products`);
         } catch (err) {
             console.error("Error deleting product:", err);
         }

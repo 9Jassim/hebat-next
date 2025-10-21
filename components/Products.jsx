@@ -6,7 +6,7 @@ import Link from "next/link"
 import Client from "@/lib/api"
 import Head from "next/head"
 
-// helper — make clean slugs
+// ✅ Slugify helper
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -15,7 +15,7 @@ const slugify = str =>
     .trim()
     .replace(/\s+/g, "-") || ""
 
-// helper — reverse slug back to readable text
+// ✅ Deslugify helper
 const deslugify = str =>
   str
     ?.replace(/-/g, " ")
@@ -39,7 +39,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("All Products")
 
-  // 🔧 normalize text for consistent comparison
+  // 🔧 Normalize for consistent comparison
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
 
@@ -47,13 +47,17 @@ export default function Products() {
     const fetchProducts = async () => {
       try {
         const res = await Client.get("/products")
-        const fetched = res.data.products || []
-        setProducts(fetched)
+        let fetched = res.data.products || []
 
-        // ✅ Case 1: Category filter (by slug or query)
+        // ✅ Case 1: Category filter (check if product has that category slug)
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
-          const filtered = fetched.filter(p => slugify(p.category?.name) === normalizedQuery)
+          const filtered = fetched.filter(p =>
+            Array.isArray(p.categories)
+              ? p.categories.some(c => normalize(slugify(c?.name)) === normalizedQuery)
+              : p.category && normalize(slugify(p.category.name)) === normalizedQuery
+          )
+
           setShowing(filtered)
           setDisplayCategory(deslugify(selectedCategory))
         }
@@ -71,11 +75,16 @@ export default function Products() {
           setDisplayCategory(`Search results for "${searchQuery}"`)
         }
 
-        // ✅ Case 3: Default (all products)
+        // ✅ Case 3: Default (All Products — deduped)
         else {
-          setShowing(fetched)
+          const uniqueProducts = Array.from(
+            new Map(fetched.map(p => [p._id || p.slug, p])).values()
+          )
+          setShowing(uniqueProducts)
           setDisplayCategory("All Products")
         }
+
+        setProducts(fetched)
       } catch (err) {
         console.error("❌ Error loading products:", err)
       } finally {
@@ -144,7 +153,7 @@ export default function Products() {
         />
       </Head>
 
-      <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full ">
+      <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
         {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">
@@ -177,37 +186,42 @@ export default function Products() {
         {/* Product Grid */}
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
           {showing.length > 0 ? (
-            showing.map(product => (
-              <Link
-                href={`/products/${slugify(product.category?.name)}/${product.slug}`}
-                key={product.slug}
-              >
-                <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
-                  {/* Image Frame */}
-                  <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                    <div className="relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center">
-                      <img
-                        src={product.image?.s3Url || "/hebat_product_fill.png"}
-                        alt={product.name}
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 rounded-xl pointer-events-none"></div>
-                    </div>
-                  </div>
+            showing.map(product => {
+              // ✅ Choose first category or fallback
+              const firstCat =
+                Array.isArray(product.categories) && product.categories.length > 0
+                  ? product.categories[0]?.name
+                  : product.category?.name || "others"
 
-                  {/* Product Info */}
-                  <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
-                    <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
-                      {product.name}
-                    </h5>
-                    <div className="text-xs text-gray-600 space-y-[2px]">
-                      <p>Model: {product.model || "N/A"}</p>
-                      <p>Barcode: {product.barcode || "N/A"}</p>
+              return (
+                <Link key={product.slug} href={`/products/${slugify(firstCat)}/${product.slug}`}>
+                  <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
+                    {/* Image Frame */}
+                    <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
+                      <div className="relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center">
+                        <img
+                          src={product.image?.s3Url || "/hebat_product_fill.png"}
+                          alt={product.name}
+                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 rounded-xl pointer-events-none"></div>
+                      </div>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
+                      <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
+                        {product.name}
+                      </h5>
+                      <div className="text-xs text-gray-600 space-y-[2px]">
+                        <p>Model: {product.model || "N/A"}</p>
+                        <p>Barcode: {product.barcode || "N/A"}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))
+                </Link>
+              )
+            })
           ) : (
             <p className="text-gray-600 text-sm text-center">
               {searchQuery

@@ -6,17 +6,17 @@ import Client from "@/lib/api"
 export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [categories, setCategories] = useState([])
   const [newCategory, setNewCategory] = useState(false)
+  const [selectedCategories, setSelectedCategories] = useState([]) // ✅ multiple selection
   const categoryRef = useRef(null)
 
   // Form refs
   const modelRef = useRef(null)
   const nameRef = useRef(null)
   const descriptionRef = useRef(null)
-  const categorySelectRef = useRef(null)
   const manualRef = useRef(null)
   const imageRef = useRef(null)
 
-  // Fetch categories on mount
+  // ✅ Fetch categories on mount
   useEffect(() => {
     const getCategories = async () => {
       try {
@@ -29,19 +29,37 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     getCategories()
   }, [])
 
-  // Populate form fields when product or categories change
+  // ✅ Populate fields + existing categories when product changes
   useEffect(() => {
-    if (!product || !modelRef.current) return
+    if (!product) return
 
-    modelRef.current.value = product.model || ""
-    nameRef.current.value = product.name || ""
-    descriptionRef.current.value = product.description || ""
-    if (categorySelectRef.current && product.category?._id) {
-      categorySelectRef.current.value = product.category._id
+    if (modelRef.current) modelRef.current.value = product.model || ""
+    if (nameRef.current) nameRef.current.value = product.name || ""
+    if (descriptionRef.current) descriptionRef.current.value = product.description || ""
+
+    // Preload product categories (if any)
+    if (product.categories && product.categories.length) {
+      setSelectedCategories(product.categories.map(cat => cat._id))
+    } else if (product.category?._id) {
+      // For backward compatibility (single category)
+      setSelectedCategories([product.category._id])
     }
-  }, [product, categories])
+  }, [product])
 
-  // Handle editing the product
+  // ✅ Add category to selected list
+  const handleSelectCategory = e => {
+    const id = e.target.value
+    if (id && !selectedCategories.includes(id)) {
+      setSelectedCategories([...selectedCategories, id])
+    }
+  }
+
+  // ✅ Remove category from tag list
+  const removeCategory = id => {
+    setSelectedCategories(prev => prev.filter(catId => catId !== id))
+  }
+
+  // ✅ Update product
   const editProduct = async e => {
     e.preventDefault()
 
@@ -49,7 +67,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     formData.append("model", modelRef.current.value)
     formData.append("name", nameRef.current.value)
     formData.append("description", descriptionRef.current.value)
-    formData.append("category", categorySelectRef.current.value)
+
+    // Append multiple categories
+    selectedCategories.forEach(cat => formData.append("categories", cat))
 
     if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0])
     if (imageRef.current.files[0]) formData.append("image", imageRef.current.files[0])
@@ -67,7 +87,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     }
   }
 
-  // Add new category
+  // ✅ Add new category inline
   const addCategory = async () => {
     try {
       const res = await Client.post(
@@ -135,24 +155,54 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
           ></textarea>
         </div>
 
-        {/* Category */}
+        {/* Categories */}
         <div>
-          <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">
-            Category
+          <label htmlFor="categories" className="block mb-2 text-sm font-medium text-gray-900">
+            Categories (Select one or more)
           </label>
-          <select
-            ref={categorySelectRef}
-            id="category"
-            name="category"
-            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
-          >
-            <option value="">--Category--</option>
-            {categories.map(cat => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+
+          <div className="flex flex-col space-y-2">
+            {/* Dropdown */}
+            <select
+              id="categories"
+              onChange={handleSelectCategory}
+              className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+            >
+              <option value="">--Select Category--</option>
+              {categories.map(cat => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Selected category tags */}
+            {selectedCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {selectedCategories.map(id => {
+                  const cat = categories.find(c => c._id === id)
+                  return (
+                    <span
+                      key={id}
+                      className="flex items-center bg-black text-white px-2 py-1 rounded text-xs"
+                    >
+                      {cat?.name || "Unknown"}
+                      <button
+                        type="button"
+                        onClick={() => removeCategory(id)}
+                        className="ml-1 text-yellow-400 hover:text-red-400"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Add new category inline */}
           <span
             className="mx-2 cursor-pointer text-sm underline text-gray-700"
             onClick={() => setNewCategory(!newCategory)}
@@ -165,9 +215,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
               <input
                 type="text"
                 id="category-name"
+                ref={categoryRef}
                 className="block p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs flex-1"
                 placeholder="New category name"
-                ref={categoryRef}
               />
               <button
                 onClick={addCategory}

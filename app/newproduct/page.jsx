@@ -10,18 +10,17 @@ export default function NewProduct() {
 
   const [categories, setCategories] = useState([])
   const [newCategory, setNewCategory] = useState(false)
-  const categoryRef = useRef(null)
+  const [selectedCategories, setSelectedCategories] = useState([])
 
-  // Properly structured refs
+  const categoryRef = useRef(null)
   const modelRef = useRef(null)
   const barcodeRef = useRef(null)
   const nameRef = useRef(null)
   const descriptionRef = useRef(null)
-  const categorySelectRef = useRef(null)
   const manualRef = useRef(null)
   const imageRef = useRef(null)
 
-  // Fetch categories and handle auth redirect
+  // Fetch categories
   useEffect(() => {
     if (!user) {
       router.push("/admin")
@@ -40,7 +39,20 @@ export default function NewProduct() {
     getCategories()
   }, [user, router])
 
-  // Add new product
+  // ✅ Add category to selected list
+  const handleSelectCategory = e => {
+    const id = e.target.value
+    if (id && !selectedCategories.includes(id)) {
+      setSelectedCategories([...selectedCategories, id])
+    }
+  }
+
+  // ✅ Remove category tag
+  const removeCategory = id => {
+    setSelectedCategories(prev => prev.filter(catId => catId !== id))
+  }
+
+  // ✅ Add new product
   const addProduct = async e => {
     e.preventDefault()
 
@@ -49,7 +61,10 @@ export default function NewProduct() {
     formData.append("barcode", barcodeRef.current.value)
     formData.append("name", nameRef.current.value)
     formData.append("description", descriptionRef.current.value)
-    formData.append("category", categorySelectRef.current.value)
+
+    // ✅ Add multiple categories
+    selectedCategories.forEach(cat => formData.append("categories", cat))
+
     if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0])
     if (imageRef.current.files[0]) formData.append("image", imageRef.current.files[0])
 
@@ -58,15 +73,34 @@ export default function NewProduct() {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       })
-      const slug = res.data.product.slug
-      router.push(`/products/${slug}`)
+
+      const product = res.data.product
+      const slug = product.slug
+
+      // ✅ Redirect using first selected category (from UI)
+      if (selectedCategories.length > 0) {
+        const firstCategoryId = selectedCategories[0]
+        // Fetch its name from your already-loaded category list
+        const firstCategory = categories.find(cat => cat._id === firstCategoryId)
+        const categorySlug = firstCategory
+          ? firstCategory.name
+              .toLowerCase()
+              .replace(/&/g, "and")
+              .replace(/[^a-z0-9]+/g, "-")
+          : "others"
+
+        router.push(`/products/${categorySlug}/${slug}`)
+      } else {
+        // fallback to products page
+        router.push("/products")
+      }
     } catch (err) {
       console.error("Add product error:", err)
       alert("Error adding product")
     }
   }
 
-  // Add new category
+  // ✅ Add new category inline
   const addCategory = async () => {
     try {
       const res = await Client.post("/products/category", {
@@ -90,6 +124,7 @@ export default function NewProduct() {
           New Product
         </h1>
 
+        {/* Model */}
         <div>
           <label htmlFor="model" className="block mb-2 text-sm font-medium text-gray-900">
             Model
@@ -103,6 +138,7 @@ export default function NewProduct() {
           />
         </div>
 
+        {/* Barcode */}
         <div>
           <label htmlFor="barcode" className="block mb-2 text-sm font-medium text-gray-900">
             Barcode
@@ -116,6 +152,7 @@ export default function NewProduct() {
           />
         </div>
 
+        {/* Name */}
         <div>
           <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
             Name
@@ -129,6 +166,7 @@ export default function NewProduct() {
           />
         </div>
 
+        {/* Description */}
         <div>
           <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900">
             Description
@@ -142,24 +180,54 @@ export default function NewProduct() {
           ></textarea>
         </div>
 
+        {/* Categories */}
         <div>
-          <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">
-            Category
+          <label htmlFor="categories" className="block mb-2 text-sm font-medium text-gray-900">
+            Categories (Select one or more)
           </label>
-          <select
-            id="category"
-            name="category"
-            ref={categorySelectRef}
-            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
-          >
-            <option value="">--Category--</option>
-            {categories.map(category => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
 
+          <div className="flex flex-col space-y-2">
+            {/* Category dropdown */}
+            <select
+              id="categories"
+              onChange={handleSelectCategory}
+              className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+            >
+              <option value="">--Select Category--</option>
+              {categories.map(category => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Selected category tags */}
+            {selectedCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {selectedCategories.map(id => {
+                  const cat = categories.find(c => c._id === id)
+                  return (
+                    <span
+                      key={id}
+                      className="flex items-center bg-black text-white px-2 py-1 rounded text-xs"
+                    >
+                      {cat?.name || "Unknown"}
+                      <button
+                        type="button"
+                        onClick={() => removeCategory(id)}
+                        className="ml-1 text-yellow-400 hover:text-red-400"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Add new category inline */}
           <span
             className="mx-2 cursor-pointer text-sm underline"
             onClick={() => setNewCategory(!newCategory)}
@@ -187,6 +255,7 @@ export default function NewProduct() {
           )}
         </div>
 
+        {/* Manual */}
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900">Manual</label>
           <input
@@ -198,6 +267,7 @@ export default function NewProduct() {
           />
         </div>
 
+        {/* Image */}
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900">Image</label>
           <input
@@ -209,6 +279,7 @@ export default function NewProduct() {
           />
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
           className="flex justify-center w-full text-white bg-black hover:bg-gray-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center"
