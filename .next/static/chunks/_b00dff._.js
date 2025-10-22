@@ -284,7 +284,7 @@ function Products() {
                                                 className: "relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center",
                                                 children: [
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                                                        src: product.image?.s3Url || "/hebat_product_fill.png",
+                                                        src: product.images[0]?.s3Url || "/hebat_product_fill.png",
                                                         alt: product.name,
                                                         className: "object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                                                     }, void 0, false, {
