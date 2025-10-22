@@ -200,7 +200,7 @@ export default function Products() {
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
                       <div className="relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center">
                         <img
-                          src={product.image?.s3Url || "/hebat_product_fill.png"}
+                          src={product.images[0]?.s3Url || "/hebat_product_fill.png"}
                           alt={product.name}
                           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                         />

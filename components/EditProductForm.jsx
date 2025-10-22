@@ -14,7 +14,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const nameRef = useRef(null)
   const descriptionRef = useRef(null)
   const manualRef = useRef(null)
-  const imageRef = useRef(null)
 
   // ✅ Fetch categories on mount
   useEffect(() => {
@@ -72,7 +71,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     selectedCategories.forEach(cat => formData.append("categories", cat))
 
     if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0])
-    if (imageRef.current.files[0]) formData.append("image", imageRef.current.files[0])
 
     try {
       const res = await Client.put(`/products/${product._id}`, formData, {
@@ -238,18 +236,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             type="file"
             id="manual"
             name="manual"
-            className="p-1.5 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
-          />
-        </div>
-
-        {/* Image */}
-        <div>
-          <label className="block mb-2 text-sm font-medium text-gray-900">Image</label>
-          <input
-            ref={imageRef}
-            type="file"
-            id="image"
-            name="image"
             className="p-1.5 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
           />
         </div>
