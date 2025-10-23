@@ -1,0 +1,18 @@
+{
+  "version": 3,
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["/turbopack/[node]/.next/server/app/products/page/actions.js"],"sourcesContent":["__turbopack_export_value__({\n});"],"names":[],"mappings":"AAAA,2BAA2B,CAC3B"}},
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/app/apple-icon.png.mjs (structured image object)"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 180, height: 180 }\n"],"names":[],"mappings":";;;;;;uCACe;IAAE,GAAG;IAAE,OAAO;IAAK,QAAQ;AAAI"}},
+    {"offset": {"line": 25, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 34, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/app/favicon.ico.mjs (structured image object)"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 48, height: 48 }\n"],"names":[],"mappings":";;;;;;uCACe;IAAE,GAAG;IAAE,OAAO;IAAI,QAAQ;AAAG"}},
+    {"offset": {"line": 45, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 50, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/app/layout.jsx/proxy.ts"],"sourcesContent":["import { createProxy } from 'next/dist/build/webpack/loaders/next-flight-loader/module-proxy'\n\nconst proxy = createProxy(\"[project]/app/layout.jsx\")\n\n// Accessing the __esModule property and exporting $$typeof are required here.\n// The __esModule getter forces the proxy target to create the default export\n// and the $$typeof value is for rendering logic to determine if the module\n// is a client boundary.\nconst { __esModule, $$typeof } = proxy;\n\nexport { __esModule, $$typeof };\nexport default proxy;\n"],"names":[],"mappings":";;;;;;;;AAEA,MAAM,QAAQ,mNAAY;AAE1B,8EAA8E;AAC9E,6EAA6E;AAC7E,2EAA2E;AAC3E,wBAAwB;AACxB,MAAM,EAAE,UAAU,EAAE,QAAQ,EAAE,GAAG;;uCAGlB"}},
+    {"offset": {"line": 66, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 71, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 76, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 88, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/app/products/page.jsx/proxy.ts"],"sourcesContent":["import { createProxy } from 'next/dist/build/webpack/loaders/next-flight-loader/module-proxy'\n\nconst proxy = createProxy(\"[project]/app/products/page.jsx\")\n\n// Accessing the __esModule property and exporting $$typeof are required here.\n// The __esModule getter forces the proxy target to create the default export\n// and the $$typeof value is for rendering logic to determine if the module\n// is a client boundary.\nconst { __esModule, $$typeof } = proxy;\n\nexport { __esModule, $$typeof };\nexport default proxy;\n"],"names":[],"mappings":";;;;;;;;AAEA,MAAM,QAAQ,mNAAY;AAE1B,8EAA8E;AAC9E,6EAA6E;AAC7E,2EAA2E;AAC3E,wBAAwB;AACxB,MAAM,EAAE,UAAU,EAAE,QAAQ,EAAE,GAAG;;uCAGlB"}},
+    {"offset": {"line": 104, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 109, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 114, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

@@ -640,67 +640,12 @@ var _c;
 __turbopack_refresh__.register(_c, "AuthProvider");
 
 })()),
-"[project]/context/AuthContext.jsx [client] (ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, k: __turbopack_refresh__ }) => (() => {
-"use strict";
+"[project]/context/AuthContext.jsx [client] (ecmascript)": (function({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, k: __turbopack_refresh__, m: module, e: exports, t: require }) { !function() {
 
-__turbopack_esm__({
-    "AuthProvider": ()=>AuthProvider,
-    "useAuth": ()=>useAuth
-});
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/lib/auth.js [client] (ecmascript)");
-"__TURBOPACK__ecmascript__hoisting__location__";
-;
-var _s = __turbopack_refresh__.signature(), _s1 = __turbopack_refresh__.signature();
-"use client";
-;
-;
-const AuthContext = /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"]({
-    user: null,
-    setUser: ()=>{},
-    logout: async ()=>{}
-});
-function AuthProvider(param) {
-    let { children } = param;
-    _s();
-    const [user, setUser] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](null);
-    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"](()=>{
-        const fetchSession = async ()=>{
-            const session = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$client$5d$__$28$ecmascript$29$__["CheckSession"]();
-            setUser(session?.user || null);
-        };
-        fetchSession();
-    }, []);
-    const logout = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"](async ()=>{
-        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$js__$5b$client$5d$__$28$ecmascript$29$__["LogOutUser"]();
-        setUser(null);
-        if (typeof window !== "undefined") window.location.reload();
-    }, []);
-    return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](AuthContext.Provider, {
-        value: {
-            user,
-            setUser,
-            logout
-        },
-        children: children
-    }, void 0, false, {
-        fileName: "<[project]/context/AuthContext.jsx>",
-        lineNumber: 24,
-        columnNumber: 10
-    }, this);
-}
-_s(AuthProvider, "uE2UxO3LsdHeg1tRJVeyiUfHQHU=");
-_c = AuthProvider;
-const useAuth = ()=>{
-    _s1();
-    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"](AuthContext);
-};
-_s1(useAuth, "gDsCjeeItUuvgOWf1v4qoK9RF6k=");
-var _c;
-__turbopack_refresh__.register(_c, "AuthProvider");
-
-})()),
+const e = new Error("Could not parse module '[project]/context/AuthContext.jsx'");
+e.code = 'MODULE_UNPARSEABLE';
+throw e;
+}.call(this) }),
 "[project]/components/Nav.jsx [client] (ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, k: __turbopack_refresh__ }) => (() => {
 "use strict";
 
@@ -711,7 +656,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/link.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/navigation.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/context/AuthContext.jsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/context/AuthContext.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/lib/api.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$EditCategories$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/EditCategories.jsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CategoryBar$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/CategoryBar.jsx [client] (ecmascript)");
@@ -730,7 +675,7 @@ const slugify = (str)=>str?.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9
 function Nav() {
     _s();
     const router = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]();
-    const { user, logout } = __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]();
+    const { user, logout } = __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]();
     const [open, setOpen] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const [adminOpen, setAdminOpen] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
     const [showCategories, setShowCategories] = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"](false);
@@ -916,7 +861,7 @@ function Nav() {
                                                 className: `flex items-center gap-3 px-3 py-2 text-sm ${i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"}`,
                                                 children: [
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                                                        src: p.image?.s3Url || "/hebat_product_fill.png",
+                                                        src: p.images[0]?.s3Url || "/hebat_product_fill.png",
                                                         alt: p.name,
                                                         className: "w-10 h-10 object-cover rounded-md border border-gray-200"
                                                     }, void 0, false, {
@@ -1096,9 +1041,11 @@ function Nav() {
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
                                                         className: "border-t border-gray-700",
                                                         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
-                                                            onClick: ()=>{
-                                                                logout();
+                                                            onClick: async ()=>{
+                                                                await logout();
+                                                                console.log("Logged out, redirecting...");
                                                                 closeMenus();
+                                                                setTimeout(()=>router.push("/"), 50);
                                                             },
                                                             className: "block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500",
                                                             children: "Logout"
@@ -1143,12 +1090,12 @@ function Nav() {
                                                 children: "Home"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 317,
+                                                lineNumber: 319,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 316,
+                                            lineNumber: 318,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1159,12 +1106,12 @@ function Nav() {
                                                 children: "Products"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                lineNumber: 326,
+                                                lineNumber: 328,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 325,
+                                            lineNumber: 327,
                                             columnNumber: 17
                                         }, this),
                                         user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1191,18 +1138,18 @@ function Nav() {
                                                                 d: "M6 9l6 6 6-6"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 355,
+                                                                lineNumber: 357,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 345,
+                                                            lineNumber: 347,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 337,
+                                                    lineNumber: 339,
                                                     columnNumber: 21
                                                 }, this),
                                                 adminOpen && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("ul", {
@@ -1216,12 +1163,12 @@ function Nav() {
                                                                 children: "New Product"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 362,
+                                                                lineNumber: 364,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 361,
+                                                            lineNumber: 363,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1234,12 +1181,12 @@ function Nav() {
                                                                 children: "Manage Categories"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 371,
+                                                                lineNumber: 373,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 370,
+                                                            lineNumber: 372,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1250,12 +1197,12 @@ function Nav() {
                                                                 children: "Newsletter"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 382,
+                                                                lineNumber: 384,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 381,
+                                                            lineNumber: 383,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("li", {
@@ -1269,35 +1216,35 @@ function Nav() {
                                                                 children: "Logout"
                                                             }, void 0, false, {
                                                                 fileName: "<[project]/components/Nav.jsx>",
-                                                                lineNumber: 391,
+                                                                lineNumber: 393,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "<[project]/components/Nav.jsx>",
-                                                            lineNumber: 390,
+                                                            lineNumber: 392,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Nav.jsx>",
-                                                    lineNumber: 360,
+                                                    lineNumber: 362,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "<[project]/components/Nav.jsx>",
-                                            lineNumber: 336,
+                                            lineNumber: 338,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "<[project]/components/Nav.jsx>",
-                                    lineNumber: 315,
+                                    lineNumber: 317,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "<[project]/components/Nav.jsx>",
-                                lineNumber: 314,
+                                lineNumber: 316,
                                 columnNumber: 13
                             }, this)
                         ]
@@ -1312,12 +1259,12 @@ function Nav() {
                             refreshTrigger: refreshTrigger
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 412,
+                            lineNumber: 414,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/Nav.jsx>",
-                        lineNumber: 411,
+                        lineNumber: 413,
                         columnNumber: 9
                     }, this)
                 ]
@@ -1336,14 +1283,14 @@ function Nav() {
                             children: "Manage Categories"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 420,
+                            lineNumber: 422,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$EditCategories$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                             onUpdated: reloadCategories
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 421,
+                            lineNumber: 423,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -1352,18 +1299,18 @@ function Nav() {
                             children: "✕"
                         }, void 0, false, {
                             fileName: "<[project]/components/Nav.jsx>",
-                            lineNumber: 422,
+                            lineNumber: 424,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "<[project]/components/Nav.jsx>",
-                    lineNumber: 419,
+                    lineNumber: 421,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "<[project]/components/Nav.jsx>",
-                lineNumber: 418,
+                lineNumber: 420,
                 columnNumber: 9
             }, this)
         ]
@@ -1372,7 +1319,7 @@ function Nav() {
 _s(Nav, "KgJ7C/pB9/liNxfCDeWHhG9ZOBU=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useAuth"]
     ];
 });
 _c = Nav;
@@ -1733,7 +1680,7 @@ __turbopack_esm__({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/compiled/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/context/AuthContext.jsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/context/AuthContext.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hot$2d$toast$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/react-hot-toast/dist/index.mjs [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/Footer.jsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Nav$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/Nav.jsx [client] (ecmascript)");
@@ -1810,7 +1757,7 @@ function RootLayout(param) {
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("body", {
                 className: "min-h-screen flex flex-col bg-gray-50 text-gray-900",
                 children: [
-                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["AuthProvider"], {
+                    /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$AuthContext$2e$js__$5b$client$5d$__$28$ecmascript$29$__["AuthProvider"], {
                         children: [
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("header", {
                                 children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Nav$2e$jsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {

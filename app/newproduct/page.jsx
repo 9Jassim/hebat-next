@@ -24,11 +24,6 @@ export default function NewProduct() {
 
   // ✅ Fetch categories
   useEffect(() => {
-    if (!user) {
-      router.push("/admin")
-      return
-    }
-
     const getCategories = async () => {
       try {
         const res = await Client.get("/products/category")
@@ -127,6 +122,14 @@ export default function NewProduct() {
       console.error("Add category error:", err)
     }
   }
+
+  // 🚫 Only admins can view this page
+  if (!user)
+    return (
+      <div className="flex justify-center items-center min-h-[60vh] text-gray-600">
+        You must be logged in as an admin to access this page.
+      </div>
+    )
 
   return (
     <div className="flex flex-col w-full pt-10">

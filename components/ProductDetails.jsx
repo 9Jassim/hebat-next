@@ -110,7 +110,7 @@ export default function ProductDetails({ params }) {
     }
   }
 
-  // ✅ Handle preview and prepare tracking
+  // ✅ Handle preview selection
   const handlePreviewSelection = e => {
     const files = Array.from(e.target.files)
     if (!files.length) return
@@ -118,16 +118,14 @@ export default function ProductDetails({ params }) {
     const previews = files.map(file => ({
       file,
       previewUrl: URL.createObjectURL(file),
-      progress: 0, // for upload tracking
+      progress: 0,
     }))
 
     setPreviewImages(prev => [...prev, ...previews])
-
-    // Reset file input so same files can be reselected
-    e.target.value = null
+    e.target.value = null // allow reselecting same file later
   }
 
-  // ✅ Handle removing previews
+  // ✅ Handle removing preview
   const handleRemovePreview = index => {
     setPreviewImages(prev => {
       const updated = [...prev]
@@ -137,21 +135,18 @@ export default function ProductDetails({ params }) {
     })
   }
 
-  // ✅ Handle image upload with per-file progress
+  // ✅ Handle uploads with real-time product update
   const handleAddImages = async e => {
     e.preventDefault()
     if (!previewImages.length) return alert("Please select at least one image.")
-
     setUploading(true)
+
     try {
-      const updatedPreviews = [...previewImages]
-
-      // Upload each image individually to track progress
-      for (let i = 0; i < updatedPreviews.length; i++) {
+      for (let i = 0; i < previewImages.length; i++) {
         const formData = new FormData()
-        formData.append("images", updatedPreviews[i].file)
+        formData.append("images", previewImages[i].file)
 
-        await Client.post(`/products/${product._id}/images`, formData, {
+        const res = await Client.post(`/products/${product._id}/images`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
           onUploadProgress: e => {
@@ -160,12 +155,23 @@ export default function ProductDetails({ params }) {
               prev.map((img, idx) => (idx === i ? { ...img, progress: percent } : img))
             )
           },
-        }).then(res => {
-          setProduct(res.data.product)
         })
+
+        // ✅ Update gallery immediately with latest product
+        const updatedProduct = res.data.product
+        setProduct(updatedProduct)
+
+        // ✅ If main image is empty, show the first uploaded image
+        if ((!product.images || product.images.length === 0) && updatedProduct.images.length > 0) {
+          setMainImage(updatedProduct.images[0].s3Url)
+        }
+
+        // ✅ Mark this image as fully uploaded
+        setPreviewImages(prev =>
+          prev.map((img, idx) => (idx === i ? { ...img, progress: 100 } : img))
+        )
       }
 
-      // ✅ After all uploads done
       alert("✅ All images uploaded successfully!")
       setPreviewImages([])
       imageInputRef.current.value = ""
@@ -349,7 +355,7 @@ export default function ProductDetails({ params }) {
               className="text-sm text-gray-800"
             />
 
-            {/* ✅ Image previews with progress */}
+            {/* ✅ Preview with progress */}
             {previewImages.length > 0 && (
               <div className="flex flex-wrap gap-3 mt-3">
                 {previewImages.map((img, i) => (
@@ -371,7 +377,7 @@ export default function ProductDetails({ params }) {
                       ✕
                     </button>
 
-                    {/* Upload progress bar overlay */}
+                    {/* Progress bar */}
                     {uploading && img.progress !== undefined && (
                       <div className="absolute bottom-0 left-0 w-full bg-black/30 h-2">
                         <div
