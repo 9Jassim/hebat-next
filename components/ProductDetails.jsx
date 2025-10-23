@@ -110,50 +110,68 @@ export default function ProductDetails({ params }) {
     }
   }
 
+  // ✅ Handle preview and prepare tracking
   const handlePreviewSelection = e => {
     const files = Array.from(e.target.files)
     if (!files.length) return
 
-    const newPreviews = files.map(file => ({
+    const previews = files.map(file => ({
       file,
       previewUrl: URL.createObjectURL(file),
+      progress: 0, // for upload tracking
     }))
 
-    // ✅ Merge with any previously selected previews
-    setPreviewImages(prev => [...prev, ...newPreviews])
+    setPreviewImages(prev => [...prev, ...previews])
+
+    // Reset file input so same files can be reselected
+    e.target.value = null
   }
 
-  // ✅ Add new images
+  // ✅ Handle removing previews
+  const handleRemovePreview = index => {
+    setPreviewImages(prev => {
+      const updated = [...prev]
+      URL.revokeObjectURL(updated[index].previewUrl)
+      updated.splice(index, 1)
+      return updated
+    })
+  }
+
+  // ✅ Handle image upload with per-file progress
   const handleAddImages = async e => {
     e.preventDefault()
     if (!previewImages.length) return alert("Please select at least one image.")
 
     setUploading(true)
-    const formData = new FormData()
-
-    // ✅ Append actual files from state (not just input ref)
-    previewImages.forEach(({ file }) => formData.append("images", file))
-
     try {
-      const res = await Client.post(`/products/${product._id}/images`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      })
+      const updatedPreviews = [...previewImages]
 
-      const updatedProduct = res.data.product
-      setProduct(updatedProduct)
+      // Upload each image individually to track progress
+      for (let i = 0; i < updatedPreviews.length; i++) {
+        const formData = new FormData()
+        formData.append("images", updatedPreviews[i].file)
 
-      // ✅ Set new main image if no image existed before
-      if ((!product.images || product.images.length === 0) && updatedProduct.images.length > 0) {
-        setMainImage(updatedProduct.images[0].s3Url)
+        await Client.post(`/products/${product._id}/images`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+          onUploadProgress: e => {
+            const percent = Math.round((e.loaded * 100) / e.total)
+            setPreviewImages(prev =>
+              prev.map((img, idx) => (idx === i ? { ...img, progress: percent } : img))
+            )
+          },
+        }).then(res => {
+          setProduct(res.data.product)
+        })
       }
 
-      // 🧹 Clean up previews and close dialog
+      // ✅ After all uploads done
+      alert("✅ All images uploaded successfully!")
       setPreviewImages([])
       imageInputRef.current.value = ""
       setOpenAddImage(false)
     } catch (err) {
-      console.error("❌ Failed to add images:", err)
+      console.error("❌ Failed to upload images:", err)
       alert("Error uploading images")
     } finally {
       setUploading(false)
@@ -317,10 +335,10 @@ export default function ProductDetails({ params }) {
       </div>
 
       {/* ✅ Add Image Dialog */}
-      <Dialog open={openAddImage} onClose={() => setOpenAddImage(false)} fullWidth>
+      <Dialog open={openAddImage} onClose={() => setOpenAddImage(false)}>
         <DialogTitle>Add New Images</DialogTitle>
         <DialogContent>
-          <form onSubmit={handleAddImages} className="flex flex-col gap-4 mt-2">
+          <form onSubmit={handleAddImages} className="flex flex-col gap-3 mt-2">
             {/* File input */}
             <input
               ref={imageInputRef}
@@ -331,9 +349,9 @@ export default function ProductDetails({ params }) {
               className="text-sm text-gray-800"
             />
 
-            {/* ✅ Show all selected previews */}
+            {/* ✅ Image previews with progress */}
             {previewImages.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-2">
+              <div className="flex flex-wrap gap-3 mt-3">
                 {previewImages.map((img, i) => (
                   <div
                     key={i}
@@ -346,25 +364,41 @@ export default function ProductDetails({ params }) {
                     />
                     <button
                       type="button"
-                      onClick={() => setPreviewImages(prev => prev.filter((_, idx) => idx !== i))}
+                      onClick={() => handleRemovePreview(i)}
+                      disabled={uploading}
                       className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full p-1 hover:bg-red-600"
                     >
                       ✕
                     </button>
+
+                    {/* Upload progress bar overlay */}
+                    {uploading && img.progress !== undefined && (
+                      <div className="absolute bottom-0 left-0 w-full bg-black/30 h-2">
+                        <div
+                          className="bg-yellow-500 h-2 transition-all duration-300"
+                          style={{ width: `${img.progress}%` }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Upload button */}
-            <Button type="submit" variant="contained" disabled={uploading}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={uploading || previewImages.length === 0}
+            >
               {uploading ? "Uploading..." : "Upload"}
             </Button>
           </form>
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={() => setOpenAddImage(false)}>Close</Button>
+          <Button onClick={() => setOpenAddImage(false)} disabled={uploading}>
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
 

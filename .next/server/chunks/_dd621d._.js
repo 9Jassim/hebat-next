@@ -707,46 +707,69 @@ function ProductDetails({ params }) {
             console.error("❌ Error removing image:", err);
         }
     };
+    // ✅ Handle preview and prepare tracking
     const handlePreviewSelection = (e)=>{
         const files = Array.from(e.target.files);
         if (!files.length) return;
-        const newPreviews = files.map((file)=>({
+        const previews = files.map((file)=>({
                 file,
-                previewUrl: URL.createObjectURL(file)
+                previewUrl: URL.createObjectURL(file),
+                progress: 0
             }));
-        // ✅ Merge with any previously selected previews
         setPreviewImages((prev)=>[
                 ...prev,
-                ...newPreviews
+                ...previews
             ]);
+        // Reset file input so same files can be reselected
+        e.target.value = null;
     };
-    // ✅ Add new images
+    // ✅ Handle removing previews
+    const handleRemovePreview = (index)=>{
+        setPreviewImages((prev)=>{
+            const updated = [
+                ...prev
+            ];
+            URL.revokeObjectURL(updated[index].previewUrl);
+            updated.splice(index, 1);
+            return updated;
+        });
+    };
+    // ✅ Handle image upload with per-file progress
     const handleAddImages = async (e)=>{
         e.preventDefault();
         if (!previewImages.length) return alert("Please select at least one image.");
         setUploading(true);
-        const formData = new FormData();
-        // ✅ Append actual files from state (not just input ref)
-        previewImages.forEach(({ file })=>formData.append("images", file));
         try {
-            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"].post(`/products/${product._id}/images`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-                withCredentials: true
-            });
-            const updatedProduct = res.data.product;
-            setProduct(updatedProduct);
-            // ✅ Set new main image if no image existed before
-            if ((!product.images || product.images.length === 0) && updatedProduct.images.length > 0) {
-                setMainImage(updatedProduct.images[0].s3Url);
+            const updatedPreviews = [
+                ...previewImages
+            ];
+            // Upload each image individually to track progress
+            for(let i = 0; i < updatedPreviews.length; i++){
+                const formData = new FormData();
+                formData.append("images", updatedPreviews[i].file);
+                await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"].post(`/products/${product._id}/images`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    },
+                    withCredentials: true,
+                    onUploadProgress: (e)=>{
+                        const percent = Math.round(e.loaded * 100 / e.total);
+                        setPreviewImages((prev)=>prev.map((img, idx)=>idx === i ? {
+                                    ...img,
+                                    progress: percent
+                                } : img));
+                    }
+                }).then((res)=>{
+                    setProduct(res.data.product);
+                });
             }
-            // 🧹 Clean up previews and close dialog
+            // ✅ After all uploads done
+            alert("✅ All images uploaded successfully!");
             setPreviewImages([]);
             imageInputRef.current.value = "";
             setOpenAddImage(false);
         } catch (err) {
-            console.error("❌ Failed to add images:", err);
+            console.error("❌ Failed to upload images:", err);
             alert("Error uploading images");
         } finally{
             setUploading(false);
@@ -757,7 +780,7 @@ function ProductDetails({ params }) {
         children: "Loading product..."
     }, void 0, false, {
         fileName: "<[project]/components/ProductDetails.jsx>",
-        lineNumber: 165,
+        lineNumber: 183,
         columnNumber: 7
     }, this);
     const images = product.images?.length ? product.images : product.image ? [
@@ -775,14 +798,14 @@ function ProductDetails({ params }) {
                         children: "Home"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 176,
+                        lineNumber: 194,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("span", {
                         children: "/"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 179,
+                        lineNumber: 197,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -791,14 +814,14 @@ function ProductDetails({ params }) {
                         children: "Products"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 180,
+                        lineNumber: 198,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("span", {
                         children: "/"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 183,
+                        lineNumber: 201,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("span", {
@@ -806,13 +829,13 @@ function ProductDetails({ params }) {
                         children: product.name
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 184,
+                        lineNumber: 202,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 175,
+                lineNumber: 193,
                 columnNumber: 7
             }, this),
             user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -824,7 +847,7 @@ function ProductDetails({ params }) {
                         children: "✏️ Edit"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 190,
+                        lineNumber: 208,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -833,7 +856,7 @@ function ProductDetails({ params }) {
                         children: "➕ Add Image"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 197,
+                        lineNumber: 215,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -842,13 +865,13 @@ function ProductDetails({ params }) {
                         children: "🗑️ Remove Product"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 204,
+                        lineNumber: 222,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 189,
+                lineNumber: 207,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -865,12 +888,12 @@ function ProductDetails({ params }) {
                                     className: "w-full h-[400px] object-contain bg-white p-2"
                                 }, void 0, false, {
                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                    lineNumber: 219,
+                                    lineNumber: 237,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 218,
+                                lineNumber: 236,
                                 columnNumber: 11
                             }, this),
                             images.length > 0 && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -888,7 +911,7 @@ function ProductDetails({ params }) {
                                                 className: `w-20 h-20 rounded-lg object-contain cursor-pointer transition-all duration-200 ${mainImage === img.s3Url ? "ring-2 ring-yellow-500 scale-105" : "hover:scale-105"}`
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                                lineNumber: 243,
+                                                lineNumber: 261,
                                                 columnNumber: 19
                                             }, this),
                                             user && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -898,24 +921,24 @@ function ProductDetails({ params }) {
                                                 children: "✕"
                                             }, void 0, false, {
                                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                                lineNumber: 256,
+                                                lineNumber: 274,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, img.s3Key, true, {
                                         fileName: "<[project]/components/ProductDetails.jsx>",
-                                        lineNumber: 237,
+                                        lineNumber: 255,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 228,
+                                lineNumber: 246,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 216,
+                        lineNumber: 234,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -926,7 +949,7 @@ function ProductDetails({ params }) {
                                 children: product.name
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 278,
+                                lineNumber: 296,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -936,7 +959,7 @@ function ProductDetails({ params }) {
                                         children: "Barcode:"
                                     }, void 0, false, {
                                         fileName: "<[project]/components/ProductDetails.jsx>",
-                                        lineNumber: 280,
+                                        lineNumber: 298,
                                         columnNumber: 13
                                     }, this),
                                     " ",
@@ -944,7 +967,7 @@ function ProductDetails({ params }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 279,
+                                lineNumber: 297,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -954,7 +977,7 @@ function ProductDetails({ params }) {
                                         children: "Model:"
                                     }, void 0, false, {
                                         fileName: "<[project]/components/ProductDetails.jsx>",
-                                        lineNumber: 283,
+                                        lineNumber: 301,
                                         columnNumber: 13
                                     }, this),
                                     " ",
@@ -962,7 +985,7 @@ function ProductDetails({ params }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 282,
+                                lineNumber: 300,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("h2", {
@@ -970,7 +993,7 @@ function ProductDetails({ params }) {
                                 children: "Description"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 286,
+                                lineNumber: 304,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -979,7 +1002,7 @@ function ProductDetails({ params }) {
                                 children: product.description
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 287,
+                                lineNumber: 305,
                                 columnNumber: 11
                             }, this),
                             isClamped && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -988,7 +1011,7 @@ function ProductDetails({ params }) {
                                 children: clamped ? "Read more" : "Read less"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 295,
+                                lineNumber: 313,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("h2", {
@@ -996,7 +1019,7 @@ function ProductDetails({ params }) {
                                 children: "Manual"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 303,
+                                lineNumber: 321,
                                 columnNumber: 11
                             }, this),
                             product.manual ? /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("a", {
@@ -1007,44 +1030,43 @@ function ProductDetails({ params }) {
                                 children: "📄 View Manual"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 305,
+                                lineNumber: 323,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
                                 className: "text-gray-600 text-sm",
                                 children: "No manual available"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 314,
+                                lineNumber: 332,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 277,
+                        lineNumber: 295,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 214,
+                lineNumber: 232,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Dialog$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                 open: openAddImage,
                 onClose: ()=>setOpenAddImage(false),
-                fullWidth: true,
                 children: [
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogTitle$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                         children: "Add New Images"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 321,
+                        lineNumber: 339,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogContent$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("form", {
                             onSubmit: handleAddImages,
-                            className: "flex flex-col gap-4 mt-2",
+                            className: "flex flex-col gap-3 mt-2",
                             children: [
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("input", {
                                     ref: imageInputRef,
@@ -1055,11 +1077,11 @@ function ProductDetails({ params }) {
                                     className: "text-sm text-gray-800"
                                 }, void 0, false, {
                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                    lineNumber: 325,
+                                    lineNumber: 343,
                                     columnNumber: 13
                                 }, this),
                                 previewImages.length > 0 && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                    className: "flex flex-wrap gap-3 mt-2",
+                                    className: "flex flex-wrap gap-3 mt-3",
                                     children: previewImages.map((img, i)=>/*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                                             className: "relative w-24 h-24 rounded-lg border border-gray-300 bg-gray-100 overflow-hidden flex items-center justify-center",
                                             children: [
@@ -1069,69 +1091,88 @@ function ProductDetails({ params }) {
                                                     className: "object-cover w-full h-full"
                                                 }, void 0, false, {
                                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                                    lineNumber: 342,
+                                                    lineNumber: 360,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
                                                     type: "button",
-                                                    onClick: ()=>setPreviewImages((prev)=>prev.filter((_, idx)=>idx !== i)),
+                                                    onClick: ()=>handleRemovePreview(i),
+                                                    disabled: uploading,
                                                     className: "absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full p-1 hover:bg-red-600",
                                                     children: "✕"
                                                 }, void 0, false, {
                                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                                    lineNumber: 347,
+                                                    lineNumber: 365,
                                                     columnNumber: 21
+                                                }, this),
+                                                uploading && img.progress !== undefined && /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                                    className: "absolute bottom-0 left-0 w-full bg-black/30 h-2",
+                                                    children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
+                                                        className: "bg-yellow-500 h-2 transition-all duration-300",
+                                                        style: {
+                                                            width: `${img.progress}%`
+                                                        }
+                                                    }, void 0, false, {
+                                                        fileName: "<[project]/components/ProductDetails.jsx>",
+                                                        lineNumber: 377,
+                                                        columnNumber: 25
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "<[project]/components/ProductDetails.jsx>",
+                                                    lineNumber: 376,
+                                                    columnNumber: 23
                                                 }, this)
                                             ]
                                         }, i, true, {
                                             fileName: "<[project]/components/ProductDetails.jsx>",
-                                            lineNumber: 338,
+                                            lineNumber: 356,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                    lineNumber: 336,
+                                    lineNumber: 354,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Button$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                     type: "submit",
                                     variant: "contained",
-                                    disabled: uploading,
+                                    disabled: uploading || previewImages.length === 0,
                                     children: uploading ? "Uploading..." : "Upload"
                                 }, void 0, false, {
                                     fileName: "<[project]/components/ProductDetails.jsx>",
-                                    lineNumber: 360,
+                                    lineNumber: 388,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "<[project]/components/ProductDetails.jsx>",
-                            lineNumber: 323,
+                            lineNumber: 341,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 322,
+                        lineNumber: 340,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogActions$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                         children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Button$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                             onClick: ()=>setOpenAddImage(false),
+                            disabled: uploading,
                             children: "Close"
                         }, void 0, false, {
                             fileName: "<[project]/components/ProductDetails.jsx>",
-                            lineNumber: 367,
+                            lineNumber: 399,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 366,
+                        lineNumber: 398,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 320,
+                lineNumber: 338,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Dialog$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1142,7 +1183,7 @@ function ProductDetails({ params }) {
                         children: "Edit Product Details"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 373,
+                        lineNumber: 407,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogContent$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1152,12 +1193,12 @@ function ProductDetails({ params }) {
                             handleCloseE: ()=>setOpenEdit(false)
                         }, void 0, false, {
                             fileName: "<[project]/components/ProductDetails.jsx>",
-                            lineNumber: 375,
+                            lineNumber: 409,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 374,
+                        lineNumber: 408,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogActions$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1166,18 +1207,18 @@ function ProductDetails({ params }) {
                             children: "Close"
                         }, void 0, false, {
                             fileName: "<[project]/components/ProductDetails.jsx>",
-                            lineNumber: 382,
+                            lineNumber: 416,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 381,
+                        lineNumber: 415,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 372,
+                lineNumber: 406,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Dialog$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1188,7 +1229,7 @@ function ProductDetails({ params }) {
                         children: "Remove Product From Inventory?"
                     }, void 0, false, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 387,
+                        lineNumber: 421,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$DialogActions$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1198,7 +1239,7 @@ function ProductDetails({ params }) {
                                 children: "Cancel"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 389,
+                                lineNumber: 423,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$esm$2f$Button$2f$index$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -1207,25 +1248,25 @@ function ProductDetails({ params }) {
                                 children: "Remove"
                             }, void 0, false, {
                                 fileName: "<[project]/components/ProductDetails.jsx>",
-                                lineNumber: 390,
+                                lineNumber: 424,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "<[project]/components/ProductDetails.jsx>",
-                        lineNumber: 388,
+                        lineNumber: 422,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "<[project]/components/ProductDetails.jsx>",
-                lineNumber: 386,
+                lineNumber: 420,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "<[project]/components/ProductDetails.jsx>",
-        lineNumber: 173,
+        lineNumber: 191,
         columnNumber: 5
     }, this);
 }
