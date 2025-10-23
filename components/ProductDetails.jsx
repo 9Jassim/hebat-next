@@ -110,17 +110,30 @@ export default function ProductDetails({ params }) {
     }
   }
 
+  // ✅ Handle file selection and preview
   const handlePreviewSelection = e => {
     const files = Array.from(e.target.files)
     if (!files.length) return
 
-    const newPreviews = files.map(file => ({
+    const previews = files.map(file => ({
       file,
       previewUrl: URL.createObjectURL(file),
     }))
 
-    // ✅ Merge with any previously selected previews
-    setPreviewImages(prev => [...prev, ...newPreviews])
+    setPreviewImages(prev => [...prev, ...previews])
+
+    // ✅ Reset input so same files can be reselected later
+    e.target.value = null
+  }
+
+  // ✅ Handle preview removal
+  const handleRemovePreview = index => {
+    setPreviewImages(prev => {
+      const updated = [...prev]
+      URL.revokeObjectURL(updated[index].previewUrl) // cleanup blob
+      updated.splice(index, 1)
+      return updated
+    })
   }
 
   // ✅ Add new images
@@ -317,10 +330,10 @@ export default function ProductDetails({ params }) {
       </div>
 
       {/* ✅ Add Image Dialog */}
-      <Dialog open={openAddImage} onClose={() => setOpenAddImage(false)} fullWidth>
+      <Dialog open={openAddImage} onClose={() => setOpenAddImage(false)}>
         <DialogTitle>Add New Images</DialogTitle>
         <DialogContent>
-          <form onSubmit={handleAddImages} className="flex flex-col gap-4 mt-2">
+          <form onSubmit={handleAddImages} className="flex flex-col gap-3 mt-2">
             {/* File input */}
             <input
               ref={imageInputRef}
@@ -331,9 +344,9 @@ export default function ProductDetails({ params }) {
               className="text-sm text-gray-800"
             />
 
-            {/* ✅ Show all selected previews */}
+            {/* ✅ Image previews */}
             {previewImages.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-2">
+              <div className="flex flex-wrap gap-3 mt-3">
                 {previewImages.map((img, i) => (
                   <div
                     key={i}
@@ -346,7 +359,7 @@ export default function ProductDetails({ params }) {
                     />
                     <button
                       type="button"
-                      onClick={() => setPreviewImages(prev => prev.filter((_, idx) => idx !== i))}
+                      onClick={() => handleRemovePreview(i)}
                       className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full p-1 hover:bg-red-600"
                     >
                       ✕
@@ -356,8 +369,11 @@ export default function ProductDetails({ params }) {
               </div>
             )}
 
-            {/* Upload button */}
-            <Button type="submit" variant="contained" disabled={uploading}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={uploading || previewImages.length === 0}
+            >
               {uploading ? "Uploading..." : "Upload"}
             </Button>
           </form>
