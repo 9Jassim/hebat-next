@@ -1,8 +1,9 @@
 {
   "/page": "app/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/products/[category]/[slug]/page": "app/products/[category]/[slug]/page.js",
-  "/products/[category]/page": "app/products/[category]/page.js",
   "/products/page": "app/products/page.js",
-  "/admin/page": "app/admin/page.js"
+  "/products/[category]/page": "app/products/[category]/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/newproduct/page": "app/newproduct/page.js",
+  "/newsletter/page": "app/newsletter/page.js"
 }

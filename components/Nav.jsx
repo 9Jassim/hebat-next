@@ -294,9 +294,11 @@ export default function Nav() {
                     </li>
                     <li className="border-t border-gray-700">
                       <button
-                        onClick={() => {
-                          logout()
+                        onClick={async () => {
+                          await logout()
+                          console.log("Logged out, redirecting...")
                           closeMenus()
+                          setTimeout(() => router.replace("/"), 50)
                         }}
                         className="block w-full text-left py-2 px-4 text-sm text-white hover:text-yellow-500"
                       >
