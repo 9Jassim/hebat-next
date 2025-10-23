@@ -205,7 +205,7 @@ export default function Nav() {
                         }`}
                       >
                         <img
-                          src={p.image?.s3Url || "/hebat_product_fill.png"}
+                          src={p.images[0]?.s3Url || "/hebat_product_fill.png"}
                           alt={p.name}
                           className="w-10 h-10 object-cover rounded-md border border-gray-200"
                         />

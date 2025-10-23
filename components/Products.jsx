@@ -198,13 +198,20 @@ export default function Products() {
                   <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
                     {/* Image Frame */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                      <div className="relative w-full h-full rounded-xl border-2 border-gray-100 bg-white overflow-hidden shadow-md flex items-center justify-center">
+                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-sm flex items-center justify-center">
                         <img
-                          src={product.images[0]?.s3Url || "/hebat_product_fill.png"}
+                          src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                           alt={product.name}
-                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                          decoding="async"
+                          className="object-contain w-full h-full transition-transform duration-300 ease-out group-hover:scale-[1.03] will-change-transform"
+                          style={{
+                            backfaceVisibility: "hidden",
+                            transform: "translateZ(0)", // smoother GPU rendering
+                            imageRendering: "auto", // disable pixelation
+                          }}
                         />
-                        <div className="absolute inset-0 rounded-xl pointer-events-none"></div>
+                        <div className="absolute inset-0 pointer-events-none rounded-xl"></div>
                       </div>
                     </div>
 

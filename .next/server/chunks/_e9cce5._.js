@@ -861,7 +861,7 @@ function Nav() {
                                                 className: `flex items-center gap-3 px-3 py-2 text-sm ${i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"}`,
                                                 children: [
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
-                                                        src: p.image?.s3Url || "/hebat_product_fill.png",
+                                                        src: p.images[0]?.s3Url || "/hebat_product_fill.png",
                                                         alt: p.name,
                                                         className: "w-10 h-10 object-cover rounded-md border border-gray-200"
                                                     }, void 0, false, {
