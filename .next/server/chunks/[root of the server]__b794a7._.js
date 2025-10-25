@@ -117,11 +117,48 @@ __turbopack_export_namespace__(__TURBOPACK__imported__module__$5b$project$5d2f$c
 "[project]/app/products/page.jsx [rsc] (ecmascript)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname, x: __turbopack_external_require__, y: __turbopack_external_import__ }) => (() => {
 "use strict";
 
-var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$products$2f$page$2e$jsx__$28$client__proxy$29$__ = __turbopack_import__("[project]/app/products/page.jsx (client proxy)");
+__turbopack_esm__({
+    "default": ()=>ProductsPage,
+    "metadata": ()=>metadata
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.js [rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Products$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/components/Products.jsx [rsc] (ecmascript)");
 "__TURBOPACK__ecmascript__hoisting__location__";
-"TURBOPACK { transition: next-ecmascript-client-reference }";
 ;
-__turbopack_export_namespace__(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$products$2f$page$2e$jsx__$28$client__proxy$29$__["default"]);
+;
+const metadata = {
+    title: "Our Products",
+    description: "Explore a wide range of premium Hebat products, carefully selected for quality and customer satisfaction.",
+    keywords: [
+        "arabvape",
+        "hebat",
+        "morslon",
+        "products"
+    ],
+    openGraph: {
+        title: "Hebat Products",
+        description: "Shop high-quality vape products and accessories from Hebat.",
+        url: "https://hebat.com/products",
+        siteName: "Hebat",
+        images: [
+            {
+                url: "/og-image.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Hebat Products"
+            }
+        ],
+        locale: "en_US",
+        type: "website"
+    }
+};
+function ProductsPage() {
+    return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$future$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$rsc$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Products$2e$jsx__$5b$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+        fileName: "<[project]/app/products/page.jsx>",
+        lineNumber: 27,
+        columnNumber: 10
+    }, this);
+}
 
 })()),
 "[project]/app/products/page.jsx [rsc] (ecmascript, Next.js server component)": (({ r: __turbopack_require__, f: __turbopack_require_context__, i: __turbopack_import__, s: __turbopack_esm__, v: __turbopack_export_value__, n: __turbopack_export_namespace__, c: __turbopack_cache__, l: __turbopack_load__, j: __turbopack_dynamic__, g: global, __dirname }) => (() => {
