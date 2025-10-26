@@ -69,9 +69,12 @@ function ShareButtons(param) {
                         rel: "noopener noreferrer",
                         className: "w-10 h-10 flex items-center justify-center bg-green-500 rounded-full hover:bg-green-600 transition-colors",
                         title: "Share on WhatsApp",
-                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$lucide$2d$react$2e$js__$5b$client$5d$__$28$ecmascript$29$__["MessageSquare"], {
-                            size: 20,
-                            color: "white"
+                        children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                            src: "/whatsapp-logo.svg",
+                            alt: "Whatsapp",
+                            width: 18,
+                            height: 18,
+                            className: "invert"
                         }, void 0, false, {
                             fileName: "<[project]/components/ShareButtons.jsx>",
                             lineNumber: 50,
@@ -96,12 +99,12 @@ function ShareButtons(param) {
                             className: "invert"
                         }, void 0, false, {
                             fileName: "<[project]/components/ShareButtons.jsx>",
-                            lineNumber: 61,
+                            lineNumber: 67,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ShareButtons.jsx>",
-                        lineNumber: 54,
+                        lineNumber: 60,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("a", {
@@ -118,12 +121,12 @@ function ShareButtons(param) {
                             className: "invert"
                         }, void 0, false, {
                             fileName: "<[project]/components/ShareButtons.jsx>",
-                            lineNumber: 78,
+                            lineNumber: 84,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ShareButtons.jsx>",
-                        lineNumber: 71,
+                        lineNumber: 77,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("button", {
@@ -135,12 +138,12 @@ function ShareButtons(param) {
                             color: "white"
                         }, void 0, false, {
                             fileName: "<[project]/components/ShareButtons.jsx>",
-                            lineNumber: 87,
+                            lineNumber: 93,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "<[project]/components/ShareButtons.jsx>",
-                        lineNumber: 82,
+                        lineNumber: 88,
                         columnNumber: 9
                     }, this)
                 ]
