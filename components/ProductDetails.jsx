@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import Button from "@mui/material/Button"
 import EditProductForm from "@/components/EditProductForm"
+import ShareButtons from "@/components/ShareButtons"
 import Link from "next/link"
 
 // ✅ Helper functions
@@ -337,6 +338,8 @@ export default function ProductDetails({ params }) {
           ) : (
             <p className="text-gray-600 text-sm">No manual available</p>
           )}
+
+          <ShareButtons product={product} />
         </div>
       </div>
 
