@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { MessageSquare, Share2 } from "lucide-react"
+import { Share2 } from "lucide-react"
 import Image from "next/image"
 
 export default function ShareButtons({ product }) {
@@ -47,7 +47,13 @@ export default function ShareButtons({ product }) {
           className="w-10 h-10 flex items-center justify-center bg-green-500 rounded-full hover:bg-green-600 transition-colors"
           title="Share on WhatsApp"
         >
-          <MessageSquare size={20} color="white" />
+          <Image
+            src="/whatsapp-logo.svg"
+            alt="Whatsapp"
+            width={18}
+            height={18}
+            className="invert"
+          />
         </a>
 
         {/* Facebook */}
