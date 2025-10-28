@@ -187,31 +187,43 @@ export default function Products() {
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
           {showing.length > 0 ? (
             showing.map(product => {
-              // ✅ Choose first category or fallback
               const firstCat =
                 Array.isArray(product.categories) && product.categories.length > 0
                   ? product.categories[0]?.name
                   : product.category?.name || "others"
 
               return (
-                <Link key={product.slug} href={`/products/${slugify(firstCat)}/${product.slug}`}>
-                  <div className="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
+                <Link
+                  key={product.slug}
+                  href={`/products/${slugify(firstCat)}/${product.slug}`}
+                  className="group" // ✅ move group here so hover propagates
+                >
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
                     {/* Image Frame */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-sm flex items-center justify-center">
+                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md flex items-center justify-center">
                         <img
                           src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                           alt={product.name}
                           loading="lazy"
                           decoding="async"
-                          className="object-contain w-full h-full transition-transform duration-300 ease-out group-hover:scale-[1.03] will-change-transform"
+                          className="
+                    object-contain 
+                    w-full h-full
+                    scale-100
+                    transition-transform duration-500 ease-in-out
+                    group-hover:scale-110  /* ✅ now works */
+                    will-change-transform
+                  "
                           style={{
+                            transformOrigin: "center center",
                             backfaceVisibility: "hidden",
-                            transform: "translateZ(0)", // smoother GPU rendering
-                            imageRendering: "auto", // disable pixelation
+                            WebkitFontSmoothing: "antialiased",
+                            imageRendering: "high-quality",
+                            filter: "brightness(1.02) contrast(1.04)",
                           }}
                         />
-                        <div className="absolute inset-0 pointer-events-none rounded-xl"></div>
+                        <div className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-500 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100"></div>
                       </div>
                     </div>
 

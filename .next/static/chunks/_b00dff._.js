@@ -271,50 +271,53 @@ function Products() {
                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                         className: "gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl",
                         children: showing.length > 0 ? showing.map((product)=>{
-                            // ✅ Choose first category or fallback
                             const firstCat = Array.isArray(product.categories) && product.categories.length > 0 ? product.categories[0]?.name : product.category?.name || "others";
                             return /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"](__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$link$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                                 href: `/products/${slugify(firstCat)}/${product.slug}`,
+                                className: "group" // ✅ move group here so hover propagates
+                                ,
                                 children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                    className: "group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]",
+                                    className: "bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]",
                                     children: [
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
                                             className: "p-3 flex-shrink-0 h-44 sm:h-48 md:h-52",
                                             children: /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                                className: "relative w-full h-full rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-sm flex items-center justify-center",
+                                                className: "relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md flex items-center justify-center",
                                                 children: [
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("img", {
                                                         src: product.images?.[0]?.s3Url || "/hebat_product_fill.png",
                                                         alt: product.name,
                                                         loading: "lazy",
                                                         decoding: "async",
-                                                        className: "object-contain w-full h-full transition-transform duration-300 ease-out group-hover:scale-[1.03] will-change-transform",
+                                                        className: "   object-contain    w-full h-full   scale-100   transition-transform duration-500 ease-in-out   group-hover:scale-110  /* ✅ now works */   will-change-transform   ",
                                                         style: {
+                                                            transformOrigin: "center center",
                                                             backfaceVisibility: "hidden",
-                                                            transform: "translateZ(0)",
-                                                            imageRendering: "auto"
+                                                            WebkitFontSmoothing: "antialiased",
+                                                            imageRendering: "high-quality",
+                                                            filter: "brightness(1.02) contrast(1.04)"
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "<[project]/components/Products.jsx>",
-                                                        lineNumber: 202,
+                                                        lineNumber: 205,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
-                                                        className: "absolute inset-0 pointer-events-none rounded-xl"
+                                                        className: "absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-500 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100"
                                                     }, void 0, false, {
                                                         fileName: "<[project]/components/Products.jsx>",
-                                                        lineNumber: 214,
+                                                        lineNumber: 226,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "<[project]/components/Products.jsx>",
-                                                lineNumber: 201,
+                                                lineNumber: 204,
                                                 columnNumber: 23
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "<[project]/components/Products.jsx>",
-                                            lineNumber: 200,
+                                            lineNumber: 203,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -325,7 +328,7 @@ function Products() {
                                                     children: product.name
                                                 }, void 0, false, {
                                                     fileName: "<[project]/components/Products.jsx>",
-                                                    lineNumber: 220,
+                                                    lineNumber: 232,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("div", {
@@ -338,7 +341,7 @@ function Products() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "<[project]/components/Products.jsx>",
-                                                            lineNumber: 224,
+                                                            lineNumber: 236,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -348,30 +351,30 @@ function Products() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "<[project]/components/Products.jsx>",
-                                                            lineNumber: 225,
+                                                            lineNumber: 237,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "<[project]/components/Products.jsx>",
-                                                    lineNumber: 223,
+                                                    lineNumber: 235,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "<[project]/components/Products.jsx>",
-                                            lineNumber: 219,
+                                            lineNumber: 231,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "<[project]/components/Products.jsx>",
-                                    lineNumber: 198,
+                                    lineNumber: 201,
                                     columnNumber: 19
                                 }, this)
                             }, product.slug, false, {
                                 fileName: "<[project]/components/Products.jsx>",
-                                lineNumber: 197,
+                                lineNumber: 196,
                                 columnNumber: 17
                             }, this);
                         }) : /*#__PURE__*/ __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"]("p", {
@@ -379,7 +382,7 @@ function Products() {
                             children: searchQuery ? `No products found matching "${searchQuery}".` : "No products found in this category."
                         }, void 0, false, {
                             fileName: "<[project]/components/Products.jsx>",
-                            lineNumber: 233,
+                            lineNumber: 245,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
