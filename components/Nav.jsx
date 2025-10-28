@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthContext"
 import Client from "@/lib/api"
+import Image from "next/image"
 import EditCategories from "@/components/EditCategories"
 import CategoryBar from "@/components/CategoryBar"
 
@@ -146,8 +147,34 @@ export default function Nav() {
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2">
           {/* Top Row (Logo + Hamburger) */}
           <div className="flex justify-between items-center w-full md:w-auto">
-            <Link href="/" onClick={closeMenus} className="flex items-center space-x-3">
-              <img src="/hebat_logo.png" className="h-8 sm:h-10" alt="Hebat Logo" />
+            <Link
+              href="/"
+              onClick={closeMenus}
+              className="flex items-center space-x-3 select-none transition-transform duration-300 ease-out"
+            >
+              <img
+                src="/hebat_logo.png"
+                alt="Hebat Logo"
+                width="2546"
+                height="500"
+                decoding="async"
+                loading="eager"
+                draggable={false}
+                className="
+      h-10 sm:h-12
+      w-auto
+      object-contain
+      block
+      select-none
+      pointer-events-none
+      [image-rendering:auto]
+      [backface-visibility:hidden]
+    "
+                style={{
+                  transform: "none",
+                  filter: "none",
+                }}
+              />
             </Link>
 
             <button
