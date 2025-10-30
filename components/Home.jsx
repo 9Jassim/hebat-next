@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import Carousel from "@/components/Carousel"
+import Banners from "@/components/Banners"
 
 export default function Home() {
   return (
@@ -9,9 +9,11 @@ export default function Home() {
       {/* Subtle yellow accent background */}
       <div className="absolute right-0 top-0 w-full h-full bg-gradient-to-l from-yellow-50 via-white to-white -z-10"></div>
 
-      {/* === Carousel matches both columns === */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 mb-16">
-        <Carousel />
+      {/* === Full-width for phones, same container for desktop === */}
+      <div className="w-full mb-16 lg:px-8">
+        <div className="lg:mx-auto lg:max-w-7xl">
+          <Banners />
+        </div>
       </div>
 
       {/* === Content Grid === */}
