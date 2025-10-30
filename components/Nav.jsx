@@ -292,7 +292,7 @@ export default function Nav() {
                   <ul className="absolute left-0 mt-2 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[180px] z-[80] transition-all duration-150 ease-in-out">
                     <li>
                       <Link
-                        href="/newproduct"
+                        href="/admin/newproduct"
                         onClick={closeMenus}
                         className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                       >
@@ -312,11 +312,20 @@ export default function Nav() {
                     </li>
                     <li>
                       <Link
-                        href="/newsletter"
+                        href="/admin/newsletter"
                         onClick={closeMenus}
                         className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                       >
                         Newsletter
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/admin/banners"
+                        onClick={closeMenus}
+                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Manage Banners
                       </Link>
                     </li>
                     <li className="border-t border-gray-700">
@@ -389,7 +398,7 @@ export default function Nav() {
                       <ul className="bg-black border border-gray-700 rounded-lg shadow-lg mt-1 space-y-1 z-[90] relative">
                         <li>
                           <Link
-                            href="/newproduct"
+                            href="/admin/newproduct"
                             onClick={closeMenus}
                             className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                           >
@@ -409,11 +418,20 @@ export default function Nav() {
                         </li>
                         <li>
                           <Link
-                            href="/newsletter"
+                            href="/admin/newsletter"
                             onClick={closeMenus}
                             className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                           >
                             Newsletter
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/admin/banners"
+                            onClick={closeMenus}
+                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Manage banners
                           </Link>
                         </li>
                         <li className="border-t border-gray-700">

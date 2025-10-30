@@ -1,21 +1,28 @@
 "use client"
 
 import Link from "next/link"
+import Banners from "@/components/Banners"
 
 export default function Home() {
   return (
     <section className="relative overflow-hidden bg-gray-50 p-10">
-      {/* Subtle yellow accent background that blends */}
+      {/* Subtle yellow accent background */}
       <div className="absolute right-0 top-0 w-full h-full bg-gradient-to-l from-yellow-50 via-white to-white -z-10"></div>
 
+      {/* === Full-width for phones, same container for desktop === */}
+      <div className="w-full mb-16 lg:px-8">
+        <div className="lg:mx-auto lg:max-w-7xl">
+          <Banners />
+        </div>
+      </div>
+
+      {/* === Content Grid === */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-10 relative">
         <div
           className="
             mx-auto 
             grid 
-            max-w-2xl 
             grid-cols-1 
-            lg:max-w-none 
             lg:grid-cols-2 
             lg:gap-x-20 
             items-center
@@ -75,7 +82,6 @@ export default function Home() {
                 hover:scale-105
               "
             >
-              {/* Yellow accent behind image */}
               <div
                 className="
                   absolute 
