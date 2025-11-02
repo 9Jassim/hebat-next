@@ -11,6 +11,7 @@ module.exports = {
         yellow: {
           500: "#fcbb17", // override the default yellow-500
         },
+        black: "#171717",
       },
     },
     plugins: [],
