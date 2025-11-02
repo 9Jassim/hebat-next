@@ -11,21 +11,26 @@ export async function generateMetadata({ params }) {
   const description = `Explore premium ${categoryName} at Hebat — trusted quality, innovation, and top performance in the Middle East.`
 
   return {
-    title: pageTitle, // uses layout’s "%s | Hebat"
+    title: `${pageTitle} | Hebat`,
     description,
     keywords: [
       "Hebat",
       "premium products",
+      "Bahrain",
+      "Middle East",
       categoryName,
       `${categoryName} accessories`,
       `${categoryName} collection`,
       "Hebat Middle East",
+      "online shopping",
+      "fast delivery",
+      "secure payment",
     ],
     openGraph: {
       title: `${categoryName} | Hebat`,
       description,
       type: "website",
-      url: `https://hebat.com/products/${rawCategory}`,
+      url: `https://hebatofficial.com/products/${rawCategory}`,
       siteName: "Hebat",
     },
   }

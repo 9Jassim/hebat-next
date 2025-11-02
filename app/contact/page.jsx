@@ -27,7 +27,7 @@ export const metadata = {
         alt: "Contact Hebat",
       },
     ],
-    locale: "en_US",
+    locale: "en_GB",
     type: "website",
   },
 }

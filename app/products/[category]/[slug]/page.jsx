@@ -9,12 +9,12 @@ export async function generateMetadata({ params }) {
     const res = await Client.get(`/products/${slug}`)
     const product = res.data.product
 
-    const productUrl = `https://hebat.com/products/${encodeURIComponent(
+    const productUrl = `https://hebatofficial.com/products/${encodeURIComponent(
       category
     )}/${encodeURIComponent(slug)}`
 
     return {
-      title: `${product.name}`,
+      title: `${product.name} | Hebat`,
       description:
         product.description ||
         `Discover ${product.name} — premium ${product.category?.name || category} from Hebat.`,
@@ -27,14 +27,18 @@ export async function generateMetadata({ params }) {
         "hebat",
         "morslon",
         "products",
-      ],
+        "Middle East",
+        "Bahrain",
+        "secure payment",
+        "fast delivery",
+      ].filter(Boolean),
       openGraph: {
         title: product.name,
         description: product.description || "Premium product from Hebat.",
         url: productUrl,
         images: [
           {
-            url: product.image?.s3Url || "/default-og.jpg",
+            url: product.image?.s3Url || "/hebat_cover.png",
             width: 1200,
             height: 630,
             alt: product.name,
@@ -48,8 +52,16 @@ export async function generateMetadata({ params }) {
     }
   } catch {
     return {
-      title: "Hebat Product",
-      description: "Explore premium products from Hebat.",
+      title: "Product Not Found",
+      description:
+        "Explore premium products from Hebat — trusted across Bahrain and the Middle East for quality and performance.",
+      openGraph: {
+        title: "Product Not Found | Hebat",
+        description: "Discover high-quality accessories, electronics, tools, and more at Hebat.",
+        images: [{ url: "/hebat_cover.png", width: 1200, height: 630 }],
+        type: "website",
+        locale: "en_GB",
+      },
     }
   }
 }

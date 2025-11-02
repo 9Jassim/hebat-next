@@ -27,7 +27,7 @@ export const metadata = {
         alt: "About Hebat - Premium Products and Accessories",
       },
     ],
-    locale: "en_US",
+    locale: "en_GB",
     type: "website",
   },
 }
