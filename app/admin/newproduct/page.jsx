@@ -42,6 +42,7 @@ export default function NewProduct() {
     setImages(prev => [...prev, ...files]) // keep old + new
     const newPreviews = files.map(file => URL.createObjectURL(file))
     setImagePreviews(prev => [...prev, ...newPreviews])
+    e.target.value = ""
   }
 
   // ✅ Remove an image before submitting
