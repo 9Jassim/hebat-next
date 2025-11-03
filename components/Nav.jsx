@@ -36,6 +36,9 @@ export default function Nav() {
   const adminMenuRef = useRef(null)
   const navRef = useRef(null)
 
+  // ✅ New: refs for each dropdown item
+  const itemRefs = useRef([])
+
   // ✅ Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
@@ -64,6 +67,21 @@ export default function Nav() {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+
+  // ✅ Reset itemRefs when filtered list changes
+  useEffect(() => {
+    itemRefs.current = []
+  }, [filtered])
+
+  // ✅ Scroll highlighted item into view
+  useEffect(() => {
+    if (activeIndex >= 0 && itemRefs.current[activeIndex]) {
+      itemRefs.current[activeIndex].scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      })
+    }
+  }, [activeIndex])
 
   // ✅ Search logic
   const handleSearch = e => {
@@ -160,16 +178,7 @@ export default function Nav() {
                 decoding="async"
                 loading="eager"
                 draggable={false}
-                className="
-      h-10 sm:h-12
-      w-auto
-      object-contain
-      block
-      select-none
-      pointer-events-none
-      [image-rendering:auto]
-      [backface-visibility:hidden]
-    "
+                className="h-10 sm:h-12 w-auto object-contain block select-none pointer-events-none [image-rendering:auto] [backface-visibility:hidden]"
                 style={{
                   transform: "none",
                   filter: "none",
@@ -216,7 +225,6 @@ export default function Nav() {
               >
                 {filtered.length ? (
                   filtered.map((p, i) => {
-                    // ✅ Use first category from array or fallback to single category
                     const firstCategory =
                       Array.isArray(p.categories) && p.categories.length > 0
                         ? p.categories[0]?.name
@@ -225,6 +233,7 @@ export default function Nav() {
                     return (
                       <Link
                         key={p._id || i}
+                        ref={el => (itemRefs.current[i] = el)} // ✅ attach ref
                         href={`/products/${slugify(firstCategory)}/${p.slug}`}
                         onClick={closeMenus}
                         className={`flex items-center gap-3 px-3 py-2 text-sm ${
@@ -234,7 +243,7 @@ export default function Nav() {
                         <img
                           src={p.images[0]?.s3Url || "/hebat_product_fill.png"}
                           alt={p.name}
-                          className="w-10 h-10 object-cover rounded-md border border-gray-200"
+                          className="w-10 h-10 object-cover rounded-md border bg-white border-gray-200"
                         />
                         <div className="text-left">
                           <p className="font-medium text-gray-900">{p.name}</p>
