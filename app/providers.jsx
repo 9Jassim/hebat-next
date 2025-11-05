@@ -23,18 +23,22 @@ export default function Providers({ children }) {
 
   return (
     <AuthProvider>
-      <header>
-        <Nav />
-      </header>
+      {/* This div recreates the old <body> flex behavior */}
+      <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+        <header>
+          <Nav />
+        </header>
 
-      <main
-        style={{ paddingTop: "var(--nav-height)" }}
-        className="flex-grow transition-all duration-300"
-      >
-        {children}
-      </main>
+        <main
+          style={{ paddingTop: "var(--nav-height)" }}
+          className="flex-grow transition-all duration-300"
+        >
+          {children}
+        </main>
 
-      <Footer />
+        <Footer />
+      </div>
+
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     </AuthProvider>
   )

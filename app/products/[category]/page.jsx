@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   const description = `Explore premium ${categoryName} at Hebat — trusted quality, innovation, and top performance in the Middle East.`
 
   return {
-    title: `${pageTitle} | Hebat`,
+    title: `${pageTitle}`,
     description,
     keywords: [
       "Hebat",
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
       "secure payment",
     ],
     openGraph: {
-      title: `${categoryName} | Hebat`,
+      title: `${categoryName}`,
       description,
       type: "website",
       url: `${process.env.NEXT_PUBLIC_URL}/products/${rawCategory}`,

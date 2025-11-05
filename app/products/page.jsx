@@ -1,7 +1,7 @@
 import Products from "@/components/Products"
 
 export const metadata = {
-  title: "Products | Hebat",
+  title: "Products",
   description:
     "Explore a wide range of high-quality Hebat products — from electronics and home appliances to accessories, tools, and sports gear. Shop online across Bahrain and the Middle East with secure payment and fast delivery.",
   keywords: [
@@ -38,7 +38,7 @@ export const metadata = {
     "أدوات",
   ],
   openGraph: {
-    title: "Products | Hebat",
+    title: "Products",
     description:
       "Discover Hebat’s complete product range — electronics, accessories, appliances, tools, and outdoor gear. Shop online in Bahrain and the Middle East with secure checkout and fast delivery.",
     url: `${process.env.NEXT_PUBLIC_URL}/products`,
