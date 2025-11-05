@@ -17,7 +17,7 @@ export const metadata = {
     title: "About Hebat | Premium Quality Products",
     description:
       "Discover Hebat’s story — our mission, our values, and our promise to deliver premium products and exceptional customer experiences.",
-    url: "https://hebatofficial.com/about",
+    url: `${process.env.NEXT_PUBLIC_URL}/about`,
     siteName: "Hebat",
     images: [
       {

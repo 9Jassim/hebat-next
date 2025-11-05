@@ -56,11 +56,11 @@ export const metadata = {
   ],
   metadataBase:
     process.env.NODE_ENV === "production"
-      ? new URL("https://hebatofficial.com")
+      ? new URL(process.env.NEXT_PUBLIC_URL)
       : new URL("http://localhost:4000"),
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_GB",
     siteName: "Hebat",
   },
 }

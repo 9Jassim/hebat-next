@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
     const res = await Client.get(`/products/${slug}`)
     const product = res.data.product
 
-    const productUrl = `https://hebatofficial.com/products/${encodeURIComponent(
+    const productUrl = `${process.env.NEXT_PUBLIC_URL}/products/${encodeURIComponent(
       category
     )}/${encodeURIComponent(slug)}`
 

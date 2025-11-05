@@ -41,7 +41,7 @@ export const metadata = {
     title: "Products | Hebat",
     description:
       "Discover Hebat’s complete product range — electronics, accessories, appliances, tools, and outdoor gear. Shop online in Bahrain and the Middle East with secure checkout and fast delivery.",
-    url: "https://hebatofficial.com/products",
+    url: `${process.env.NEXT_PUBLIC_URL}/products`,
     siteName: "Hebat",
     images: [
       {
