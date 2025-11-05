@@ -44,7 +44,8 @@ export const metadata = {
   ],
   openGraph: {
     title: "Hebat Products",
-    description: "Shop high-quality vape products and accessories from Hebat.",
+    description:
+      "Explore a wide range of premium Hebat products, carefully selected for quality and customer satisfaction.",
     url: `${process.env.NEXT_PUBLIC_URL}/`,
     siteName: "Hebat",
     images: [
