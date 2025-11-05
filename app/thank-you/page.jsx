@@ -1,6 +1,7 @@
 "use client"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function ThankYou() {
   const router = useRouter()
@@ -31,12 +32,12 @@ export default function ThankYou() {
           possible.
         </p>
 
-        <a
+        <Link
           href="/"
           className="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all"
         >
           Back to Home
-        </a>
+        </Link>
       </div>
 
       {/* Subtle Footer */}
