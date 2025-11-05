@@ -233,18 +233,20 @@ export default function Nav() {
                     return (
                       <Link
                         key={p._id || i}
-                        ref={el => (itemRefs.current[i] = el)} // ✅ attach ref
                         href={`/products/${slugify(firstCategory)}/${p.slug}`}
                         onClick={closeMenus}
-                        className={`flex items-center gap-3 px-3 py-2 text-sm ${
+                        ref={el => (itemRefs.current[i] = el)}
+                        className={`group flex items-center gap-3 px-3 py-2 text-sm ${
                           i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
                         }`}
                       >
-                        <img
-                          src={p.images[0]?.s3Url || "/hebat_product_fill.png"}
-                          alt={p.name}
-                          className="w-10 h-10 object-cover rounded-md border bg-white border-gray-200"
-                        />
+                        <div className="w-10 h-10 flex-shrink-0 rounded-md border border-gray-200 bg-white overflow-hidden">
+                          <img
+                            src={p.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                            alt={p.name}
+                            className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
+                          />
+                        </div>
                         <div className="text-left">
                           <p className="font-medium text-gray-900">{p.name}</p>
                           <p className="text-xs text-gray-600 truncate">
