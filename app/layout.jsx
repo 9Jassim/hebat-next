@@ -56,8 +56,6 @@ export const metadata = {
   },
 }
 
-console.log("API Base URL:", process.env.NEXT_PUBLIC_API_URL)
-
 import Providers from "./providers" // <-- separate client logic here
 
 export default function RootLayout({ children }) {
