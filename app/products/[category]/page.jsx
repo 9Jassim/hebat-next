@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
       title: `${categoryName} | Hebat`,
       description,
       type: "website",
-      url: `https://hebatofficial.com/products/${rawCategory}`,
+      url: `${process.env.NEXT_PUBLIC_URL}/products/${rawCategory}`,
       siteName: "Hebat",
     },
   }

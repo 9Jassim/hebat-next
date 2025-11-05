@@ -12,7 +12,7 @@ export default function ThankYou() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-900 px-6">
       {/* Card */}
-      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md text-center border-t-4 border-yellow-500">
+      <div className="bg-white shadow-lg rounded-2xl  max-w-md text-center border-t-4 border-yellow-500">
         <div className="flex justify-center mb-4">
           <svg
             className="w-16 h-16 text-yellow-500"

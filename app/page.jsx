@@ -45,7 +45,7 @@ export const metadata = {
   openGraph: {
     title: "Hebat Products",
     description: "Shop high-quality vape products and accessories from Hebat.",
-    url: "https://hebatofficial.com/",
+    url: `${process.env.NEXT_PUBLIC_URL}/`,
     siteName: "Hebat",
     images: [
       {
