@@ -41,7 +41,7 @@ export default function Footer() {
           <p className="text-sm text-center sm:text-left">
             <span className="font-semibold uppercase">WhatsApp:</span> +973 33176767, +973 33115656
             <br />
-            <span className="font-semibold uppercase">Email:</span> support@morslon.com
+            <span className="font-semibold uppercase">Email:</span> info@hebat.com
           </p>
 
           {/* Social Icons */}
