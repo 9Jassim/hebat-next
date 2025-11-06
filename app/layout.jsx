@@ -61,6 +61,17 @@ import Providers from "./providers" // <-- separate client logic here
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      {/* Google tag (gtag.js)  */}
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-L2PNGGS7JL"></script>
+      <script>
+        {`window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L2PNGGS7JL');`}
+      </script>
+      {/* ✅ Google Search Console Verification */}
+      <meta name="google-site-verification" content="9u5ismbnFFNwT5yBsgLnl8M6OyjhfgFxhPXFN2cYneg" />
       <body>
         <Providers>{children}</Providers>
       </body>

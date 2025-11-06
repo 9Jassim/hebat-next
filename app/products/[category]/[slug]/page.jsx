@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
         url: productUrl,
         images: [
           {
-            url: product.image?.s3Url || "/hebat_cover.png",
+            url: product.images[0]?.s3Url || "/hebat_cover.png",
             width: 1200,
             height: 630,
             alt: product.name,
