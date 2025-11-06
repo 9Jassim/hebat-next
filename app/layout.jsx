@@ -1,3 +1,6 @@
+import Script from "next/script"
+import Providers from "./providers"
+
 export const metadata = {
   title: {
     default: "Hebat | Premium Products",
@@ -12,6 +15,7 @@ export const metadata = {
   },
   keywords: [
     "HEBAT",
+    "Hebet", // optional typo link
     "online shopping",
     "Bahrain store",
     "Middle East e-commerce",
@@ -31,19 +35,6 @@ export const metadata = {
     "buy online Bahrain",
     "best prices",
     "quality products",
-    "هيبات",
-    "تسوق أونلاين",
-    "البحرين",
-    "الشرق الأوسط",
-    "أكسسوارات",
-    "أجهزة منزلية",
-    "إلكترونيات",
-    "رياضة",
-    "هواء طلق",
-    "عروض",
-    "توصيل سريع",
-    "دفع آمن",
-    "منتجات عالية الجودة",
   ],
   metadataBase:
     process.env.NODE_ENV === "production"
@@ -56,24 +47,33 @@ export const metadata = {
   },
 }
 
-import Providers from "./providers" // <-- separate client logic here
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* Google tag (gtag.js)  */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-L2PNGGS7JL"></script>
-      <script>
-        {`window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+      <head>
+        {/* ✅ Google Search Console Verification */}
+        <meta
+          name="google-site-verification"
+          content="9u5ismbnFFNwT5yBsgLnl8M6OyjhfgFxhPXFN2cYneg"
+        />
+      </head>
 
-  gtag('config', 'G-L2PNGGS7JL');`}
-      </script>
-      {/* ✅ Google Search Console Verification */}
-      <meta name="google-site-verification" content="9u5ismbnFFNwT5yBsgLnl8M6OyjhfgFxhPXFN2cYneg" />
       <body>
         <Providers>{children}</Providers>
+
+        {/* ✅ Google Analytics (afterInteractive = safe) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-L2PNGGS7JL"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-setup" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-L2PNGGS7JL', { page_path: window.location.pathname });
+          `}
+        </Script>
       </body>
     </html>
   )
