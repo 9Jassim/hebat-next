@@ -56,6 +56,36 @@ export default function RootLayout({ children }) {
           name="google-site-verification"
           content="9u5ismbnFFNwT5yBsgLnl8M6OyjhfgFxhPXFN2cYneg"
         />
+
+        {/* ✅ Site name for Google and Social */}
+        <meta property="og:site_name" content="Hebat" />
+
+        {/* ✅ Structured Data for Google (WebSite schema) */}
+        <Script id="structured-data" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Hebat",
+            alternateName: "Hebat Official",
+            url: `${process.env.NEXT_PUBLIC_URL}`,
+            potentialAction: {
+              "@type": "SearchAction",
+              target: `${process.env.NEXT_PUBLIC_URL}/search?q={search_term_string}`,
+              "query-input": "required name=search_term_string",
+            },
+          })}
+        </Script>
+
+        {/* ✅ Organization schema for stronger brand identity */}
+        <Script id="organization-schema" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Hebat",
+            url: `${process.env.NEXT_PUBLIC_URL}`,
+            logo: `${process.env.NEXT_PUBLIC_URL}/favicon.ico`,
+          })}
+        </Script>
       </head>
 
       <body>
