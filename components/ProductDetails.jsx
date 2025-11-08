@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle"
 import DialogContent from "@mui/material/DialogContent"
 import Button from "@mui/material/Button"
 import EditProductForm from "@/components/EditProductForm"
+import ProductGallery from "@/components/ProductGallery"
 import ShareButtons from "@/components/ShareButtons"
 import Link from "next/link"
 
@@ -238,65 +239,13 @@ export default function ProductDetails({ params }) {
       {/* ✅ Product Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* 🖼️ Image Gallery */}
-        <div className="order-1 lg:order-2">
-          {/* Main Image Frame */}
-          <div className="relative w-full rounded-2xl overflow-hidden shadow-md bg-white border border-gray-200">
-            <img
-              src={mainImage || "/hebat_product_fill.png"}
-              alt={product.name}
-              className="w-full h-[400px] object-contain bg-white p-2"
-            />
-          </div>
-
-          {/* Thumbnails — Always visible, even if only one */}
-          {images.length > 0 && (
-            <div
-              className="
-        flex gap-3 mt-4 
-        overflow-x-auto 
-        pb-3 pt-1
-        scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent
-      "
-            >
-              {images.map(img => (
-                <div
-                  key={img.s3Key}
-                  className="relative flex-shrink-0 bg-white border border-gray-300 rounded-xl p-1 shadow-sm hover:shadow-md transition-all duration-200"
-                  style={{ minWidth: "88px" }}
-                >
-                  {/* Thumbnail */}
-                  <img
-                    src={img.s3Url}
-                    alt={img.name}
-                    onClick={() => setMainImage(img.s3Url)}
-                    className={`w-20 h-20 rounded-lg object-contain cursor-pointer transition-all duration-200 ${
-                      mainImage === img.s3Url
-                        ? "ring-2 ring-yellow-500 scale-105"
-                        : "hover:scale-105"
-                    }`}
-                  />
-
-                  {/* ✅ Properly aligned remove button */}
-                  {user && (
-                    <button
-                      onClick={() => handleRemoveImage(img.s3Key)}
-                      className="
-        absolute top-1 right-1
-        bg-black/70 text-white text-xs 
-        rounded-full p-1.5
-        hover:bg-red-600 shadow-md
-        flex items-center justify-center
-      "
-                      title="Remove image"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductGallery
+          images={images}
+          mainImage={mainImage}
+          setMainImage={setMainImage}
+          user={user}
+          handleRemoveImage={handleRemoveImage}
+        />
 
         {/* Details */}
         <div className="order-2 lg:order-1">
