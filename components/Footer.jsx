@@ -39,9 +39,9 @@ export default function Footer() {
         {/* LEFT — Contact Info + Socials */}
         <div className="flex flex-col items-center sm:items-start space-y-3">
           <p className="text-sm text-center sm:text-left">
-            <span className="font-semibold uppercase">WhatsApp:</span> +973 33176767, +973 33115656
+            <span className="font-semibold uppercase">WhatsApp:</span> +973 66600457
             <br />
-            <span className="font-semibold uppercase">Email:</span> info@hebat.com
+            {/* <span className="font-semibold uppercase">Email:</span> info@hebat.com */}
           </p>
 
           {/* Social Icons */}

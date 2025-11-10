@@ -24,7 +24,7 @@ export default function Contact() {
             </p>
 
             <div className="space-y-4">
-              <div>
+              {/* <div>
                 <h3 className="font-semibold text-gray-800">Email</h3>
                 <Link
                   href="mailto:info@hebat.com"
@@ -32,11 +32,11 @@ export default function Contact() {
                 >
                   info@hebat.com
                 </Link>
-              </div>
+              </div> */}
 
               <div>
                 <h3 className="font-semibold text-gray-800">Phone</h3>
-                <p className="text-gray-700">+973 33176767</p>
+                <p className="text-gray-700">+973 66600457</p>
               </div>
 
               <div>
