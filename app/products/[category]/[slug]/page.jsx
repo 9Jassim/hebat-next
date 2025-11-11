@@ -1,27 +1,41 @@
-// ✅ Keep this as a server component
+// ✅ Server component
 import ProductDetails from "@/components/ProductDetails"
 import Client from "@/lib/api"
 
-// ✅ Generate SEO metadata dynamically per product
+// ✅ Generate SEO metadata dynamically for products & variants
 export async function generateMetadata({ params }) {
   const { category, slug } = params
+
   try {
     const res = await Client.get(`/products/${slug}`)
-    const product = res.data.product
+    const { product, selectedVariant } = res.data
+
+    // 🧠 Determine which name & description to show
+    const displayName = selectedVariant?.name
+      ? `${product.name} – ${selectedVariant.name}`
+      : product.name
+
+    const description =
+      selectedVariant?.description ||
+      product.description ||
+      `Discover ${displayName} — premium ${product.category?.name || category} from Hebat.`
+
+    // 🖼️ Variant-specific image if available
+    const imageUrl =
+      selectedVariant?.images?.[0]?.s3Url || product.images?.[0]?.s3Url || "/hebat_cover.png"
 
     const productUrl = `${process.env.NEXT_PUBLIC_URL}/products/${encodeURIComponent(
       category
     )}/${encodeURIComponent(slug)}`
 
     return {
-      title: `${product.name}`,
-      description:
-        product.description ||
-        `Discover ${product.name} — premium ${product.category?.name || category} from Hebat.`,
+      title: displayName,
+      description,
       keywords: [
-        product.name,
+        displayName,
         product.model,
         product.barcode,
+        selectedVariant?.name,
         product.category?.name || category,
         "arabvape",
         "hebat",
@@ -33,15 +47,15 @@ export async function generateMetadata({ params }) {
         "fast delivery",
       ].filter(Boolean),
       openGraph: {
-        title: product.name,
-        description: product.description || "Premium product from Hebat.",
+        title: displayName,
+        description,
         url: productUrl,
         images: [
           {
-            url: product.images[0]?.s3Url || "/hebat_cover.png",
+            url: imageUrl,
             width: 1200,
             height: 630,
-            alt: product.name,
+            alt: displayName,
           },
         ],
         type: "website",
@@ -50,7 +64,8 @@ export async function generateMetadata({ params }) {
         canonical: productUrl,
       },
     }
-  } catch {
+  } catch (error) {
+    console.error("❌ Metadata generation failed:", error.message)
     return {
       title: "Product Not Found",
       description:
@@ -66,7 +81,7 @@ export async function generateMetadata({ params }) {
   }
 }
 
-// ✅ Product details render
+// ✅ Product page rendering (client component)
 export default function ProductPage({ params }) {
   return <ProductDetails params={params} />
 }
