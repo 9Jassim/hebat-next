@@ -3,7 +3,7 @@ import Client from "@/lib/api"
 export default async function sitemap() {
   const baseUrl = "https://hebatofficial.com"
 
-  // Helper: convert category names into clean, SEO-friendly slugs
+  // Helper: SEO-friendly slug generator
   const slugify = str =>
     str
       ?.toLowerCase()
@@ -19,7 +19,7 @@ export default async function sitemap() {
     })
     const categories = catRes.data?.categories || []
 
-    // ✅ Fetch products
+    // ✅ Fetch all products
     const prodRes = await Client.get("/products")
     const products = prodRes.data?.products || []
 
@@ -31,27 +31,77 @@ export default async function sitemap() {
       priority: 0.8,
     }))
 
-    // ✅ Product URLs
-    const productUrls = products.map(product => {
+    // ✅ Product + Variant URLs (with image tags)
+    const productUrls = []
+
+    for (const product of products) {
       const firstCategoryName =
         Array.isArray(product.categories) && product.categories.length > 0
           ? product.categories[0].name
           : product.category?.name || "products"
 
       const categorySlug = slugify(firstCategoryName)
-      const productSlug = product.slug
+      const parentSlug = product.slug
 
-      return {
-        url: `${baseUrl}/products/${categorySlug}/${productSlug}`,
+      // Collect all relevant images for the product
+      const allImages = [
+        ...(product.images || []),
+        ...(product.variants?.colors?.flatMap(c => c.images || []) || []),
+        ...(product.variants?.models?.flatMap(m => m.images || []) || []),
+      ]
+
+      // ✅ Parent product entry
+      productUrls.push({
+        url: `${baseUrl}/products/${categorySlug}/${parentSlug}`,
         lastModified: new Date(product.updatedAt || new Date()).toISOString(),
         changeFrequency: "weekly",
         priority: 0.7,
-      }
-    })
+        images: allImages
+          .filter(img => img?.s3Url)
+          .map(img => ({
+            loc: img.s3Url,
+            title: product.name,
+          })),
+      })
 
-    // ✅ Combine static, category, and product URLs
+      // ✅ Variant colors
+      if (product.variants?.colors?.length) {
+        for (const color of product.variants.colors) {
+          const colorImages = color.images?.filter(img => img?.s3Url) || []
+          productUrls.push({
+            url: `${baseUrl}/products/${categorySlug}/${color.slug}`,
+            lastModified: new Date(product.updatedAt || new Date()).toISOString(),
+            changeFrequency: "weekly",
+            priority: 0.6,
+            images: colorImages.map(img => ({
+              loc: img.s3Url,
+              title: `${product.name} - ${color.name}`,
+            })),
+          })
+        }
+      }
+
+      // ✅ Variant models
+      if (product.variants?.models?.length) {
+        for (const model of product.variants.models) {
+          const modelImages = model.images?.filter(img => img?.s3Url) || []
+          productUrls.push({
+            url: `${baseUrl}/products/${categorySlug}/${model.slug}`,
+            lastModified: new Date(product.updatedAt || new Date()).toISOString(),
+            changeFrequency: "weekly",
+            priority: 0.6,
+            images: modelImages.map(img => ({
+              loc: img.s3Url,
+              title: `${product.name} - ${model.name}`,
+            })),
+          })
+        }
+      }
+    }
+
+    // ✅ Combine static + dynamic URLs
     return [
-      // Static URLs
+      // Static
       {
         url: `${baseUrl}/`,
         lastModified: new Date().toISOString(),
@@ -64,14 +114,14 @@ export default async function sitemap() {
         changeFrequency: "weekly",
         priority: 0.9,
       },
-      // Dynamic URLs
+      // Dynamic
       ...categoryUrls,
       ...productUrls,
     ]
   } catch (error) {
     console.error("❌ Error generating sitemap:", error.message)
 
-    // Fallback sitemap if API calls fail
+    // Fallback
     return [
       {
         url: `${baseUrl}/`,

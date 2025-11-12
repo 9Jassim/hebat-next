@@ -12,6 +12,7 @@ import Button from "@mui/material/Button"
 import EditProductForm from "@/components/EditProductForm"
 import ProductGallery from "@/components/ProductGallery"
 import ShareButtons from "@/components/ShareButtons"
+import ProductVariants from "@/components/ProductVariants"
 import Link from "next/link"
 
 // ✅ Helper functions
@@ -46,20 +47,50 @@ export default function ProductDetails({ params }) {
   const imageInputRef = useRef(null)
   const [previewImages, setPreviewImages] = useState([])
 
-  // ✅ Fetch product data
+  // ✅ Fetch product data with variant-aware logic
   useEffect(() => {
     const getProduct = async () => {
       try {
         const res = await Client.get(`/products/${slug}`, { withCredentials: true })
-        const p = res.data.product
-        setProduct(p)
-        setMainImage(p?.images?.[0]?.s3Url || p?.image?.s3Url || "/hebat_product_fill.png")
+        const { product: p, selectedVariant } = res.data
+
+        // 🧠 Create display name (append variant name if available)
+        let displayName = p.name
+        if (selectedVariant?.name) {
+          displayName = `${p.name} – ${selectedVariant.name}`
+        }
+
+        // 🖼️ Determine main image
+        let mainImg =
+          selectedVariant?.images?.[0]?.s3Url || p?.images?.[0]?.s3Url || "/hebat_product_fill.png"
+
+        // 🪄 Update state
+        setProduct({ ...p, displayName, selectedVariant })
+        setMainImage(mainImg)
       } catch (err) {
         console.error("❌ Failed to fetch product:", err)
       }
     }
     getProduct()
   }, [slug])
+
+  // ✅ Detect if current slug belongs to a deleted variant
+  useEffect(() => {
+    if (!product) return
+
+    const allVariantSlugs = [
+      product.slug, // parent slug
+      ...(product.variants?.colors?.map(c => c.slug) || []),
+      ...(product.variants?.models?.map(m => m.slug) || []),
+    ]
+
+    // if current slug isn't part of parent or variants, redirect
+    if (!allVariantSlugs.includes(slug)) {
+      const parentUrl = `/products/${category}/${product.slug}`
+      console.log(`🔁 Variant no longer exists. Redirecting to parent: ${parentUrl}`)
+      router.push(parentUrl)
+    }
+  }, [product, slug, category, router])
 
   // ✅ Detect clamping
   useEffect(() => {
@@ -245,11 +276,15 @@ export default function ProductDetails({ params }) {
           setMainImage={setMainImage}
           user={user}
           handleRemoveImage={handleRemoveImage}
+          variantImage={product.selectedVariant?.images?.[0]?.s3Url}
+          variantName={product.selectedVariant?.name}
         />
 
         {/* Details */}
         <div className="order-2 lg:order-1">
-          <h1 className="block text-2xl font-bold text-yellow-500 mb-3">{product.name}</h1>
+          <h1 className="block text-2xl font-bold text-yellow-500 mb-3">
+            {product.displayName || product.name}
+          </h1>
           <p className="text-gray-700 text-sm mb-2">
             <strong>Barcode:</strong> {product.barcode || "N/A"}
           </p>
@@ -273,6 +308,8 @@ export default function ProductDetails({ params }) {
               {clamped ? "Read more" : "Read less"}
             </button>
           )}
+
+          {product.variants && <ProductVariants product={product} />}
 
           <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-2">Manual</h2>
           {product.manual ? (
@@ -361,7 +398,7 @@ export default function ProductDetails({ params }) {
       </Dialog>
 
       {/* ✅ Edit & Remove Product Modals */}
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
+      <Dialog open={openEdit} onClose={() => setOpenEdit(false)} maxWidth="md" fullWidth>
         <DialogTitle>Edit Product Details</DialogTitle>
         <DialogContent>
           <EditProductForm
