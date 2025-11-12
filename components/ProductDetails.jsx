@@ -74,6 +74,24 @@ export default function ProductDetails({ params }) {
     getProduct()
   }, [slug])
 
+  // ✅ Detect if current slug belongs to a deleted variant
+  useEffect(() => {
+    if (!product) return
+
+    const allVariantSlugs = [
+      product.slug, // parent slug
+      ...(product.variants?.colors?.map(c => c.slug) || []),
+      ...(product.variants?.models?.map(m => m.slug) || []),
+    ]
+
+    // if current slug isn't part of parent or variants, redirect
+    if (!allVariantSlugs.includes(slug)) {
+      const parentUrl = `/products/${category}/${product.slug}`
+      console.log(`🔁 Variant no longer exists. Redirecting to parent: ${parentUrl}`)
+      router.push(parentUrl)
+    }
+  }, [product, slug, category, router])
+
   // ✅ Detect clamping
   useEffect(() => {
     const checkClamp = () => {
@@ -258,6 +276,8 @@ export default function ProductDetails({ params }) {
           setMainImage={setMainImage}
           user={user}
           handleRemoveImage={handleRemoveImage}
+          variantImage={product.selectedVariant?.images?.[0]?.s3Url}
+          variantName={product.selectedVariant?.name}
         />
 
         {/* Details */}
@@ -378,7 +398,7 @@ export default function ProductDetails({ params }) {
       </Dialog>
 
       {/* ✅ Edit & Remove Product Modals */}
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
+      <Dialog open={openEdit} onClose={() => setOpenEdit(false)} maxWidth="md" fullWidth>
         <DialogTitle>Edit Product Details</DialogTitle>
         <DialogContent>
           <EditProductForm
