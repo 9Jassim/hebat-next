@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import Client from "@/lib/api"
 import { Button } from "@mui/material"
 
-// ✅ Helper slugify
+// Helper slugify (still used only for parent or other optional logic)
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -20,13 +20,18 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [variants, setVariants] = useState({ colors: [], models: [] })
   const [showVariants, setShowVariants] = useState(false)
 
+  const [isDirty, setIsDirty] = useState(false) // 🔥 track changes
+
   const categoryRef = useRef(null)
   const modelRef = useRef(null)
+  const barcodeRef = useRef(null)
   const nameRef = useRef(null)
   const descriptionRef = useRef(null)
   const manualRef = useRef(null)
 
-  // ✅ Fetch categories
+  const markDirty = () => setIsDirty(true)
+
+  // Fetch categories
   useEffect(() => {
     const getCategories = async () => {
       try {
@@ -37,44 +42,58 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     getCategories()
   }, [])
 
-  // ✅ Load product data
+  // Load product
   useEffect(() => {
     if (!product) return
-    if (modelRef.current) modelRef.current.value = product.model || ""
-    if (nameRef.current) nameRef.current.value = product.name || ""
-    if (descriptionRef.current) descriptionRef.current.value = product.description || ""
+
+    modelRef.current.value = product.model || ""
+    barcodeRef.current.value = product.barcode || ""
+    nameRef.current.value = product.name || ""
+    descriptionRef.current.value = product.description || ""
+
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
+
+    setIsDirty(false)
   }, [product])
 
-  // ✅ Category handlers
+  // Category handlers
   const handleSelectCategory = e => {
+    markDirty()
     const id = e.target.value
     if (id && !selectedCategories.includes(id)) {
       setSelectedCategories(prev => [...prev, id])
     }
   }
+
   const removeCategory = id => {
+    markDirty()
     setSelectedCategories(prev => prev.filter(cat => cat !== id))
   }
 
-  // ✅ Color variant handlers
+  // Color variant handlers
   const updateColorVariant = (index, field, value) => {
+    markDirty()
     const updated = [...variants.colors]
     updated[index][field] = value
     setVariants(prev => ({ ...prev, colors: updated }))
   }
 
   const updateColorImage = (index, file) => {
+    markDirty()
     const updated = [...variants.colors]
+
     if (updated[index].preview) URL.revokeObjectURL(updated[index].preview)
-    updated[index].images = []
+
+    updated[index].images = [] // only 1 image allowed
     updated[index].newImage = file
     updated[index].preview = URL.createObjectURL(file)
+
     setVariants(prev => ({ ...prev, colors: updated }))
   }
 
   const addColorVariant = () => {
+    markDirty()
     setVariants(prev => ({
       ...prev,
       colors: [...prev.colors, { _id: null, name: "", images: [] }],
@@ -82,20 +101,23 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   }
 
   const removeColorVariant = index => {
+    markDirty()
     const updated = [...variants.colors]
     if (updated[index].preview) URL.revokeObjectURL(updated[index].preview)
     updated.splice(index, 1)
     setVariants(prev => ({ ...prev, colors: updated }))
   }
 
-  // ✅ Model variant handlers
+  // Model variant handlers
   const updateModelVariant = (index, value) => {
+    markDirty()
     const updated = [...variants.models]
     updated[index].name = value
     setVariants(prev => ({ ...prev, models: updated }))
   }
 
   const addModelVariant = () => {
+    markDirty()
     setVariants(prev => ({
       ...prev,
       models: [...prev.models, { _id: null, name: "" }],
@@ -103,27 +125,44 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   }
 
   const removeModelVariant = index => {
+    markDirty()
     const updated = [...variants.models]
     updated.splice(index, 1)
     setVariants(prev => ({ ...prev, models: updated }))
   }
 
-  // ✅ Submit edits
+  // ============================================================
+  // 🔥 Confirm Before Saving + Handle Dirty Tracking
+  // ============================================================
   const editProduct = async e => {
     e.preventDefault()
 
+    // If form has changes → ask before saving
+    if (isDirty) {
+      const confirmSave = window.confirm("Are you sure you want to save these changes?")
+      if (!confirmSave) return
+    }
+
+    await submitForm()
+  }
+
+  // ============================================================
+  // 🔥 Actual Submit Logic
+  // ============================================================
+  const submitForm = async () => {
     const formData = new FormData()
 
     formData.append("model", modelRef.current.value)
+    formData.append("barcode", barcodeRef.current.value)
     formData.append("name", nameRef.current.value)
     formData.append("description", descriptionRef.current.value)
+
     selectedCategories.forEach(cat => formData.append("categories", cat))
 
     if (manualRef.current.files[0]) {
       formData.append("manual", manualRef.current.files[0])
     }
 
-    // ✅ Build variants (no slug)
     const plainVariants = {
       colors: variants.colors.map(v => ({
         _id: v._id ? String(v._id) : null,
@@ -137,12 +176,12 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
     formData.append("variants", JSON.stringify(plainVariants))
 
-    // ✅ Attach color images
+    // Attach new color images
     variants.colors.forEach((v, idx) => {
-      const file = v.newImage
-      if (file instanceof File) {
+      if (v.newImage instanceof File) {
         const key = v._id ? `variant_color_image_${v._id}` : `variant_color_image_index_${idx}`
-        formData.append(key, file)
+
+        formData.append(key, v.newImage)
       }
     })
 
@@ -151,6 +190,8 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       })
+
+      setIsDirty(false)
       setProduct(res.data.product)
       handleCloseE()
     } catch (err) {
@@ -159,8 +200,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     }
   }
 
-  // ✅ Add new category inline
+  // Add new category inline
   const addCategory = async () => {
+    markDirty()
     try {
       const res = await Client.post(
         "/products/category",
@@ -173,6 +215,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     } catch {}
   }
 
+  // ============================================================
+  // RENDER
+  // ============================================================
   return (
     <div className="max-h-[75vh] overflow-y-auto px-1 sm:px-2">
       <form onSubmit={editProduct} className="bg-white rounded-xl p-4 sm:p-6">
@@ -180,22 +225,38 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+          {/* Model */}
           <div>
             <label className="block mb-1 text-sm font-medium">Model</label>
             <input
               ref={modelRef}
+              onChange={markDirty}
               type="text"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               placeholder="Product model"
             />
           </div>
 
+          {/* Barcode */}
           <div>
+            <label className="block mb-1 text-sm font-medium">Barcode</label>
+            <input
+              ref={barcodeRef}
+              onChange={markDirty}
+              type="text"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              placeholder="Product barcode"
+            />
+          </div>
+
+          {/* Name */}
+          <div className="sm:col-span-2">
             <label className="block mb-1 text-sm font-medium">Name</label>
             <input
               ref={nameRef}
+              onChange={markDirty}
               type="text"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
               placeholder="Product name"
             />
           </div>
@@ -206,8 +267,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
           <label className="block mb-1 text-sm font-medium">Description</label>
           <textarea
             ref={descriptionRef}
+            onChange={markDirty}
             rows="3"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
           ></textarea>
         </div>
 
@@ -216,7 +278,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
           <label className="block mb-2 text-sm font-medium text-gray-900">Categories</label>
           <select
             onChange={handleSelectCategory}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50"
           >
             <option value="">--Select Category--</option>
             {categories.map(cat => (
@@ -261,6 +323,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
               <input
                 type="text"
                 ref={categoryRef}
+                onChange={markDirty}
                 className="block p-2 border border-gray-300 rounded-lg bg-gray-50 text-sm flex-1"
                 placeholder="New category name"
               />
@@ -280,6 +343,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
           <label className="block mb-2 text-sm font-medium text-gray-900">Manual</label>
           <input
             ref={manualRef}
+            onChange={markDirty}
             type="file"
             name="manual"
             className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
@@ -314,13 +378,14 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                     >
                       ✕
                     </button>
+
                     <div className="flex items-center gap-2 mb-2">
                       <input
                         type="text"
                         value={color.name}
                         onChange={e => updateColorVariant(i, "name", e.target.value)}
                         placeholder="Color name"
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
                       />
                       <input
                         type="file"
@@ -329,6 +394,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                         className="text-xs"
                       />
                     </div>
+
                     <div className="flex justify-center mt-2">
                       {color.preview ? (
                         <img
@@ -376,12 +442,13 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                     >
                       ✕
                     </button>
+
                     <input
                       type="text"
                       value={m.name}
                       onChange={e => updateModelVariant(i, e.target.value)}
                       placeholder="Model name"
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
                     />
                   </div>
                 ))}
