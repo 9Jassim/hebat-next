@@ -1,7 +1,7 @@
 import Contact from "@/components/Contact"
 
 export const metadata = {
-  title: "Contact Us | Hebat",
+  title: "Contact Us",
   description:
     "Get in touch with Hebat for inquiries, partnerships, or support. We're here to help with all your premium product needs across the Middle East.",
   keywords: [

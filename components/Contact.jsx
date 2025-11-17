@@ -1,6 +1,45 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Client from "@/lib/api"
 
 export default function Contact() {
+  const router = useRouter()
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const res = await Client.post("/contact", form)
+
+      if (res.status === 200) {
+        router.push("/thank-you")
+      } else {
+        alert(res.data?.message || "Something went wrong.")
+      }
+    } catch (err) {
+      console.error("❌ Contact form error:", err)
+      alert(err?.response?.data?.message || "Server error. Try again later.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <section className="pt-[50px] pb-20 bg-gray-50 text-gray-900">
       <div className="max-w-5xl mx-auto px-6">
@@ -48,6 +87,7 @@ export default function Contact() {
               </div>
             </div>
 
+            {/* Follow Us (UNCHANGED, EXACT COPY) */}
             <div className="mt-8">
               <h3 className="font-semibold text-gray-800 mb-2">Follow Us</h3>
               <div className="flex justify-start space-x-3 flex-wrap">
@@ -87,7 +127,7 @@ export default function Contact() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M21.7 8.037a4.26 4.26 0 0 0-.789-1.964 2.84 2.84 0 0 0-1.984-.839c-2.767-.2-6.926-.2-6.926-.2s-4.157 0-6.928.2a2.836 2.836 0 0 0-1.983.839 4.225 4.225 0 0 0-.79 1.965 30.146 30.146 0 0 0-.2 3.206v1.5a30.12 30.12 0 0 0 .2 3.206c.094.712.364 1.39.784 1.972.604.536 1.38.837 2.187.848 1.583.151 6.731.2 6.731.2s4.161 0 6.928-.2a2.844 2.844 0 0 0 1.985-.84 4.27 4.27 0 0 0 .787-1.965 30.12 30.12 0 0 0 .2-3.206v-1.516a30.672 30.672 0 0 0-.202-3.206Zm-11.692 6.554v-5.62l5.4 2.819-5.4 2.801Z"
+                      d="M21.7 8.037a4.26 4.26 0 0 0-.789-1.964 2.84 2.84 0 0 0-1.984-.839c-2.767-.2-6.926-.2-6.926-.2s-4.157 0-6.928.2a2.836 2.836 0 0 0-1.983.839 4.225 4.225 0 0 0-.79 1.965 30.146 30.146 0 0 0-.2 3.206v1.5a30.12 30.12 0 0 0 .2 3.206c.094.712.364 1.39.784 1.972.604.536 1.38.837 2.187.848 1.583.151 6.731.2 6.731.2s4.161 0 6.928-.2a2.844 2.844 0 0 0 1.985-.84 4.27 4.27 0 0 0 .787-1.965 30.12 30.12 0 0 0 .2-3.206v-1.516a30.672 30.672 0 0 0-.202-3.206ZM10.008 14.59v-5.62l5.4 2.819-5.4 2.801Z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -121,7 +161,7 @@ export default function Contact() {
                     viewBox="0 0 16 16"
                     fill="currentColor"
                   >
-                    <path d="M15.943 11.526c-.111-.303-.323-.465-.564-.599a1.416 1.416 0 0 0-.123-.064l-.219-.111c-.752-.399-1.339-.902-1.746-1.498a3.387 3.387 0 0 1-.3-.531c-.034-.1-.032-.156-.008-.207a.338.338 0 0 1 .097-.1c.129-.086.262-.173.352-.231c.162-.104.289-.187.371-.245c.309-.216.525-.446.66-.702a1.397 1.397 0 0 0 .069-1.16c-.205-.538-.713-.872-1.329-.872a1.829 1.829 0 0 0-.487.065c.006-.368-.002-.757-.035-1.139c-.116-1.344-.587-2.048-1.077-2.61a4.294 4.294 0 0 0-1.095-.881C9.764.216 8.92 0 7.999 0c-.92 0-1.76.216-2.505.641c-.412.232-.782.53-1.097.883c-.49.562-.96 1.267-1.077 2.61c-.033.382-.04.772-.036 1.138a1.83 1.83 0 0 0-.487-.065c-.615 0-1.124.335-1.328.873a1.398 1.398 0 0 0 .067 1.161c.136.256.352.486.66.701c.082.058.21.14.371.246l.339.221a.38.38 0 0 1 .109.11c.026.053.027.11-.012.217a3.363 3.363 0 0 1-.295.52c-.398.583-.968 1.077-1.696 1.472c-.385.204-.786.34-.955.8c-.128.348-.044.743.28 1.075c.119.125.257.23.409.31a4.43 4.43 0 0 0 1 .4a.66.66 0 0 1 .202.09c.118.104.102.26.259.488c.079.118.18.22.296.3c.33.229.701.243 1.095.258c.355.014.758.03 1.217.18c.19.064.389.186.618.328c.55.338 1.305.802 2.566.802c1.262 0 2.02-.466 2.576-.806c.227-.14.424-.26.609-.321c.46-.152.863-.168 1.218-.181c.393-.015.764-.03.095-.258Z" />
+                    <path d="M15.943 11.526c-.111-.303-.323-.465-.564-.599a1.416 1.416 0 0 0-.123-.064l-.219-.111c-.752-.399-1.339-.902-1.746-1.498a3.387 3.387 0 0 1-.3-.531c-.034-.1-.032-.156-.008-.207a.338.338 0 0 1 .097-.1c.129-.086.262-.173.352-.231c.162-.104.289-.187.371-.245c.309-.216.525-.446.66-.702a1.397 1.397 0 0 0 .069-1.16c-.205-.538-.713-.872-1.329-.872a1.829 1.829 0 0 0-.487.065c.006-.368-.002-.757-.035-1.139c-.116-1.344-.587-2.048-1.077-2.61a4.294 4.294 0 0 0-1.095-.881C9.764.216 8.92 0 7.999 0c-.92 0-1.76.216-2.505.641c-.412.232-.782.53-1.097.883c-.49.562-.96 1.267-1.077 2.61c-.033.382-.04.772-.036 1.138a1.83 1.83 0 0 0-.487-.065c-.615 0-1.124.335-1.328.873a1.398 1.398 0 0 0 .067 1.161c.136.256.352.486.66.701c.082.058.21.14.371.246l.339.221a.38.38 0 0 1 .109.11c.026.053.027.11-.012.217a3.363 3.363 0 0 1-.295.52c-.398.583-.968 1.077-1.696 1.472c-.385.204-.786.34-.955.8c-.128.348-.044.743.28 1.075c.119.125.257.23.409.31a4.43 4.43 0 0 0 1 .4a.66.66 0 0 1 .202.09c.118.104.102.26.259.488c.079.118.18.22.296.3c.33.229.701.243 1.095.258c.355.014.758.03 1.217.18c.19.064.389.186.618.328c.55.338 1.305.802 2.566.802c1.262 0 2.02-.466 2.576-.806c.227-.14.424-.26.609-.321c.46-.152.863-.168 1.218-.181c.393-.015.764-.03.95-.258Z" />
                   </svg>
                 </Link>
               </div>
@@ -131,24 +171,16 @@ export default function Contact() {
           {/* Contact Form */}
           <div className="bg-white shadow-lg rounded-2xl p-8 border border-yellow-200">
             <h2 className="text-2xl font-semibold text-yellow-500 mb-6">Send Us a Message</h2>
-            <form
-              action="https://formsubmit.co/c9a872ab0e1040e48e0fe8d14d09e49a"
-              method="POST"
-              className="space-y-5"
-            >
-              <input type="hidden" name="_captcha" value="false" />
-              <input
-                type="hidden"
-                name="_next"
-                value={`${process.env.NEXT_PUBLIC_URL}/thank-you`}
-              />
-              <input type="hidden" name="_template" value="table" />
+
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Name</label>
                 <input
                   type="text"
                   name="name"
                   required
+                  value={form.name}
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 />
               </div>
@@ -159,6 +191,8 @@ export default function Contact() {
                   type="email"
                   name="email"
                   required
+                  value={form.email}
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 />
               </div>
@@ -169,15 +203,18 @@ export default function Contact() {
                   name="message"
                   rows="4"
                   required
+                  value={form.message}
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg transition-all shadow-md"
+                disabled={loading}
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg transition-all shadow-md disabled:opacity-50"
               >
-                Send Message
+                {loading ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>

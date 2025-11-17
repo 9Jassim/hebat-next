@@ -332,6 +332,15 @@ export default function Nav() {
                     </li>
                     <li>
                       <Link
+                        href="/admin/contacts"
+                        onClick={closeMenus}
+                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Contact Messages
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
                         href="/admin/banners"
                         onClick={closeMenus}
                         className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
@@ -434,6 +443,15 @@ export default function Nav() {
                             className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                           >
                             Newsletter
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/admin/contacts"
+                            onClick={closeMenus}
+                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Contact Messages
                           </Link>
                         </li>
                         <li>
