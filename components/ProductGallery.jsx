@@ -156,7 +156,7 @@ export default function ProductGallery({
                 draggable={false}
                 onDragStart={e => e.preventDefault()}
                 onClick={() => goToIndex(index)}
-                className={`w-20 h-20 rounded-lg object-contain cursor-pointer ${
+                className={`w-24 h-24 rounded-lg object-contain cursor-pointer ${
                   mainImage === img.s3Url ? "ring-2 ring-yellow-500" : ""
                 }`}
               />
