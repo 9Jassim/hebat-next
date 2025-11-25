@@ -119,9 +119,8 @@ export default function ProductGallery({
 
   return (
     <div className="order-1 lg:order-2 select-none relative">
-      {/* ---------------------------------------- */}
-      {/* MAIN IMAGE (FAST <img> FOR INITIAL LOAD) */}
-      {/* ---------------------------------------- */}
+      {/* MAIN IMAGE  */}
+
       <div
         ref={containerRef}
         className="relative w-full rounded-2xl overflow-hidden shadow-md bg-white border border-gray-200"
@@ -129,7 +128,12 @@ export default function ProductGallery({
         onMouseUp={onPointerUp}
         onTouchStart={onPointerDown}
         onTouchEnd={onPointerUp}
-        style={{ height: "400px" }}
+        style={{
+          height: "400px",
+
+          touchAction: "pan-x", // allow horizontal only
+          overscrollBehaviorY: "none", // block vertical bounce
+        }}
       >
         <img
           src={mainImage || "/hebat_product_fill.png"}
@@ -162,9 +166,7 @@ export default function ProductGallery({
         )}
       </div>
 
-      {/* ---------------------------------------- */}
-      {/* THUMBNAILS (ONLY SHOW WHEN ALL LOADED)   */}
-      {/* ---------------------------------------- */}
+      {/* THUMBNAILS */}
 
       <div
         ref={thumbsRef}
@@ -173,7 +175,9 @@ export default function ProductGallery({
           transition-opacity duration-500
           ${allThumbsLoaded ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
-        style={{ minHeight: "100px" }} /* prevents jump */
+        style={{
+          minHeight: "100px",
+        }}
       >
         {combinedImages.map((img, index) => (
           <div
@@ -195,9 +199,9 @@ export default function ProductGallery({
               alt={img.name}
               fill
               sizes="86px"
+              onClick={() => goToIndex(index)}
               onLoadingComplete={handleThumbLoaded}
               className="object-contain cursor-pointer"
-              onClick={() => goToIndex(index)}
             />
 
             {/* Remove button */}
