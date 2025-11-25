@@ -139,19 +139,26 @@ export default function Footer() {
           <h3 className="text-sm font-semibold uppercase text-yellow-500">
             Subscribe to our Newsletter
           </h3>
-          <form onSubmit={handleSubscribe} className="flex w-full max-w-xs space-x-2">
+
+          <form
+            onSubmit={handleSubscribe}
+            className="grid grid-cols-[1fr_auto] gap-2 w-full max-w-xs"
+          >
             <input
               type="email"
               required
               placeholder="Your email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-md text-gray-900 text-sm border border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full px-3 py-2 rounded-md text-gray-900 text-sm border border-gray-300
+                 focus:ring-yellow-500 focus:border-yellow-500"
             />
+
             <button
               type="submit"
               disabled={status === "loading"}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-md font-medium text-sm transition disabled:opacity-50"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md 
+                 font-medium text-sm transition disabled:opacity-50 whitespace-nowrap"
             >
               {status === "loading" ? "..." : "Subscribe"}
             </button>
