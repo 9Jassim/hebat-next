@@ -168,7 +168,7 @@ export default function Nav() {
             <Link
               href="/"
               onClick={closeMenus}
-              className="flex items-center space-x-3 select-none transition-transform duration-300 ease-out w-40"
+              className="flex items-center space-x-3 select-none transition-transform duration-300 ease-out w-28 md:w-40"
             >
               <img
                 src="/hebat_logo.png"
