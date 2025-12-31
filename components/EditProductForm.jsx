@@ -19,6 +19,8 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [newCategory, setNewCategory] = useState(false)
   const [variants, setVariants] = useState({ colors: [], models: [] })
   const [showVariants, setShowVariants] = useState(false)
+  const [existingManual, setExistingManual] = useState(null)
+  const [removeManual, setRemoveManual] = useState(false)
 
   const [isDirty, setIsDirty] = useState(false) // 🔥 track changes
 
@@ -53,6 +55,12 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
+
+    setExistingManual(product.manual?.s3Url ? product.manual : null)
+    setRemoveManual(false)
+
+    // also clear file input when switching products
+    if (manualRef.current) manualRef.current.value = ""
 
     setIsDirty(false)
   }, [product])
@@ -159,7 +167,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
     selectedCategories.forEach(cat => formData.append("categories", cat))
 
-    if (manualRef.current.files[0]) {
+    formData.append("removeManual", removeManual ? "true" : "false")
+
+    if (!removeManual && manualRef.current.files[0]) {
       formData.append("manual", manualRef.current.files[0])
     }
 
@@ -193,6 +203,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
       setIsDirty(false)
       setProduct(res.data.product)
+
+      setExistingManual(res.data.product?.manual?.s3Url ? res.data.product.manual : null)
+
       handleCloseE()
     } catch (err) {
       console.error("❌ Error updating product:", err)
@@ -341,9 +354,60 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
         {/* Manual */}
         <div className="mb-4">
           <label className="block mb-2 text-sm font-medium text-gray-900">Manual</label>
+
+          {existingManual && !removeManual && (
+            <div className="flex items-center justify-between gap-2 p-2 mb-2 border border-gray-200 rounded-lg bg-gray-50">
+              <a
+                href={existingManual.s3Url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm underline text-blue-600 truncate"
+                title={existingManual.name}
+              >
+                {existingManual.name || "View manual"}
+              </a>
+
+              <button
+                type="button"
+                className="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                onClick={() => {
+                  markDirty()
+                  setRemoveManual(true)
+                  // clear any newly selected file
+                  if (manualRef.current) manualRef.current.value = ""
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          )}
+
+          {existingManual && removeManual && (
+            <div className="flex items-center justify-between gap-2 p-2 mb-2 border border-yellow-200 rounded-lg bg-yellow-50">
+              <span className="text-sm text-yellow-800 truncate">
+                Manual will be removed on save.
+              </span>
+
+              <button
+                type="button"
+                className="text-xs px-2 py-1 rounded bg-gray-700 text-white hover:bg-gray-800"
+                onClick={() => {
+                  markDirty()
+                  setRemoveManual(false)
+                }}
+              >
+                Undo
+              </button>
+            </div>
+          )}
+
           <input
             ref={manualRef}
-            onChange={markDirty}
+            onChange={e => {
+              markDirty()
+              // if user selects a new manual, cancel remove state
+              if (e.target.files?.[0]) setRemoveManual(false)
+            }}
             type="file"
             name="manual"
             className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
