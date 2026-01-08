@@ -2,12 +2,40 @@
 
 import "@/app/globals.css"
 import { useEffect } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 import { AuthProvider } from "@/context/AuthContext"
 import { Toaster } from "react-hot-toast"
 import Footer from "@/components/Footer"
 import Nav from "@/components/Nav"
 
 export default function Providers({ children }) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // ✅ Disable browser scroll restoration (prevents fighting your scrollTo)
+  useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual"
+    }
+  }, [])
+
+  // ✅ Scroll to top on every navigation (pathname + query changes)
+  useEffect(() => {
+    // If you use hash links, keep this guard (optional)
+    if (typeof window !== "undefined" && window.location.hash) return
+
+    // Run after layout settles (sticky header / paddingTop changes)
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+
+      // In case scrolling is happening inside a container:
+      const main = document.querySelector("main")
+      if (main) main.scrollTop = 0
+    })
+  }, [pathname, searchParams])
+
   useEffect(() => {
     const updateNavHeight = () => {
       const nav = document.querySelector("nav")
@@ -23,7 +51,6 @@ export default function Providers({ children }) {
 
   return (
     <AuthProvider>
-      {/* This div recreates the old <body> flex behavior */}
       <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
         <header>
           <Nav />
