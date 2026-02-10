@@ -20,6 +20,7 @@ export default function NewProduct() {
   const [showVariants, setShowVariants] = useState(false)
 
   const [specifications, setSpecifications] = useState([{ name: "", value: "" }])
+  const [featuresText, setFeaturesText] = useState("")
 
   const categoryRef = useRef(null)
   const modelRef = useRef(null)
@@ -155,6 +156,16 @@ export default function NewProduct() {
       if (v.image) formData.append(`variant_color_image_${i}`, v.image)
     })
 
+    // ✅ Features (comma separated -> array)
+    const features = featuresText
+      .split(",")
+      .map(f => f.trim())
+      .filter(Boolean)
+
+    if (features.length > 0) {
+      formData.append("features", JSON.stringify(features))
+    }
+
     // ✅ Specifications (remove empty ones)
     const cleanSpecs = specifications.filter(s => s.name.trim() && s.value.trim())
 
@@ -244,6 +255,20 @@ export default function NewProduct() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product description"
             ></textarea>
+          </div>
+
+          {/* Features */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">Features</label>
+            <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
+
+            <textarea
+              rows="3"
+              value={featuresText}
+              onChange={e => setFeaturesText(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder=""
+            />
           </div>
 
           {/* Specifications */}

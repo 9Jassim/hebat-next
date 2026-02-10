@@ -4,26 +4,26 @@ import { useEffect, useState, useRef } from "react"
 import Client from "@/lib/api"
 import { Button } from "@mui/material"
 
-// Helper slugify (still used only for parent or other optional logic)
-const slugify = str =>
-  str
-    ?.toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-") || ""
-
 export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [categories, setCategories] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [newCategory, setNewCategory] = useState(false)
+
   const [variants, setVariants] = useState({ colors: [], models: [] })
   const [showVariants, setShowVariants] = useState(false)
+
   const [existingManual, setExistingManual] = useState(null)
   const [removeManual, setRemoveManual] = useState(false)
-  const [specifications, setSpecifications] = useState([])
 
-  const [isDirty, setIsDirty] = useState(false) // 🔥 track changes
+  // ✅ NEW
+  const [specifications, setSpecifications] = useState([])
+  const [features, setFeatures] = useState([])
+
+  // ✅ Hide/show toggles
+  const [showSpecifications, setShowSpecifications] = useState(false)
+  const [showFeatures, setShowFeatures] = useState(false)
+
+  const [isDirty, setIsDirty] = useState(false)
 
   const categoryRef = useRef(null)
   const modelRef = useRef(null)
@@ -56,17 +56,26 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
+
     setSpecifications(product.specifications || [])
+    setFeatures(product.features || [])
+
     setExistingManual(product.manual?.s3Url ? product.manual : null)
     setRemoveManual(false)
 
-    // also clear file input when switching products
     if (manualRef.current) manualRef.current.value = ""
+
+    // Reset toggles
+    setShowVariants(false)
+    setShowSpecifications(false)
+    setShowFeatures(false)
 
     setIsDirty(false)
   }, [product])
 
-  // Category handlers
+  // ============================
+  // Categories
+  // ============================
   const handleSelectCategory = e => {
     markDirty()
     const id = e.target.value
@@ -80,7 +89,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setSelectedCategories(prev => prev.filter(cat => cat !== id))
   }
 
-  // Color variant handlers
+  // ============================
+  // Variants - Colors
+  // ============================
   const updateColorVariant = (index, field, value) => {
     markDirty()
     const updated = [...variants.colors]
@@ -117,7 +128,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setVariants(prev => ({ ...prev, colors: updated }))
   }
 
-  // Model variant handlers
+  // ============================
+  // Variants - Models
+  // ============================
   const updateModelVariant = (index, value) => {
     markDirty()
     const updated = [...variants.models]
@@ -140,21 +153,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setVariants(prev => ({ ...prev, models: updated }))
   }
 
-  //  Confirm Before Saving + Handle Dirty Tracking
-  const editProduct = async e => {
-    e.preventDefault()
-
-    // If form has changes → ask before saving
-    if (isDirty) {
-      const confirmSave = window.confirm("Are you sure you want to save these changes?")
-      if (!confirmSave) return
-    }
-
-    await submitForm()
-  }
-
-  // Specifications handlers
-
+  // ============================
+  // Specifications
+  // ============================
   const addSpecification = () => {
     markDirty()
     setSpecifications(prev => [...prev, { name: "", value: "" }])
@@ -172,7 +173,43 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setSpecifications(prev => prev.filter((_, i) => i !== index))
   }
 
-  //  submit Logic
+  // ============================
+  // Features
+  // ============================
+  const addFeature = () => {
+    markDirty()
+    setFeatures(prev => [...prev, ""])
+  }
+
+  const updateFeature = (index, value) => {
+    markDirty()
+    const updated = [...features]
+    updated[index] = value
+    setFeatures(updated)
+  }
+
+  const removeFeature = index => {
+    markDirty()
+    setFeatures(prev => prev.filter((_, i) => i !== index))
+  }
+
+  // ============================
+  // Confirm Save
+  // ============================
+  const editProduct = async e => {
+    e.preventDefault()
+
+    if (isDirty) {
+      const confirmSave = window.confirm("Are you sure you want to save these changes?")
+      if (!confirmSave) return
+    }
+
+    await submitForm()
+  }
+
+  // ============================
+  // Submit
+  // ============================
   const submitForm = async () => {
     const formData = new FormData()
 
@@ -189,6 +226,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
       formData.append("manual", manualRef.current.files[0])
     }
 
+    // Variants
     const plainVariants = {
       colors: variants.colors.map(v => ({
         _id: v._id ? String(v._id) : null,
@@ -206,20 +244,17 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     variants.colors.forEach((v, idx) => {
       if (v.newImage instanceof File) {
         const key = v._id ? `variant_color_image_${v._id}` : `variant_color_image_index_${idx}`
-
         formData.append(key, v.newImage)
       }
     })
 
-    // Specifications
+    // ✅ Specifications
     const cleanSpecs = specifications.filter(s => s.name?.trim() && s.value?.trim())
+    formData.append("specifications", JSON.stringify(cleanSpecs))
 
-    if (cleanSpecs.length > 0) {
-      formData.append("specifications", JSON.stringify(cleanSpecs))
-    } else {
-      // optional: clear specs if all removed
-      formData.append("specifications", JSON.stringify([]))
-    }
+    // ✅ Features
+    const cleanFeatures = features.map(f => f.trim()).filter(Boolean)
+    formData.append("features", JSON.stringify(cleanFeatures))
 
     try {
       const res = await Client.put(`/products/${product._id}`, formData, {
@@ -254,9 +289,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     } catch {}
   }
 
-  // ============================================================
+  // ============================
   // RENDER
-  // ============================================================
+  // ============================
   return (
     <div className="max-h-[75vh] overflow-y-auto px-1 sm:px-2">
       <form onSubmit={editProduct} className="bg-white rounded-xl p-4 sm:p-6">
@@ -264,7 +299,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          {/* Model */}
           <div>
             <label className="block mb-1 text-sm font-medium">Model</label>
             <input
@@ -276,7 +310,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             />
           </div>
 
-          {/* Barcode */}
           <div>
             <label className="block mb-1 text-sm font-medium">Barcode</label>
             <input
@@ -288,7 +321,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             />
           </div>
 
-          {/* Name */}
           <div className="sm:col-span-2">
             <label className="block mb-1 text-sm font-medium">Name</label>
             <input
@@ -310,56 +342,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             rows="3"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
           ></textarea>
-        </div>
-
-        {/* Specifications */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-2">Specifications</h3>
-
-          <div className="space-y-2">
-            {specifications.map((spec, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
-              >
-                <input
-                  type="text"
-                  value={spec.name}
-                  onChange={e => updateSpecification(i, "name", e.target.value)}
-                  placeholder="Specification name"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
-                />
-
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={spec.value}
-                    onChange={e => updateSpecification(i, "value", e.target.value)}
-                    placeholder="Value"
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => removeSpecification(i)}
-                    className="px-2 rounded bg-red-600 text-white text-xs hover:bg-red-700"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Button
-            type="button"
-            onClick={addSpecification}
-            variant="contained"
-            size="small"
-            className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
-          >
-            + Add Specification
-          </Button>
         </div>
 
         {/* Categories */}
@@ -449,7 +431,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                 onClick={() => {
                   markDirty()
                   setRemoveManual(true)
-                  // clear any newly selected file
                   if (manualRef.current) manualRef.current.value = ""
                 }}
               >
@@ -481,7 +462,6 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             ref={manualRef}
             onChange={e => {
               markDirty()
-              // if user selects a new manual, cancel remove state
               if (e.target.files?.[0]) setRemoveManual(false)
             }}
             type="file"
@@ -491,7 +471,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
         </div>
 
         {/* Variants */}
-        <div className="border-t border-gray-200 pt-4">
+        <div className="border-t border-gray-200 pt-4 mb-4">
           <button
             type="button"
             onClick={() => setShowVariants(!showVariants)}
@@ -601,6 +581,116 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                   + Add Model
                 </Button>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Specifications Toggle */}
+        <div className="border-t border-gray-200 pt-4 mb-4">
+          <button
+            type="button"
+            onClick={() => setShowSpecifications(!showSpecifications)}
+            className="text-sm font-medium text-yellow-600 hover:underline"
+          >
+            {showSpecifications ? "Hide Specifications" : "Edit Specifications"}
+          </button>
+
+          {showSpecifications && (
+            <div className="mt-3">
+              <div className="space-y-2">
+                {specifications.map((spec, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
+                  >
+                    <input
+                      type="text"
+                      value={spec.name}
+                      onChange={e => updateSpecification(i, "name", e.target.value)}
+                      placeholder="Specification name"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                    />
+
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={spec.value}
+                        onChange={e => updateSpecification(i, "value", e.target.value)}
+                        placeholder="Value"
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => removeSpecification(i)}
+                        className="px-2 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                onClick={addSpecification}
+                variant="contained"
+                size="small"
+                className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
+              >
+                + Add Specification
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Features Toggle */}
+        <div className="border-t border-gray-200 pt-4 mb-4">
+          <button
+            type="button"
+            onClick={() => setShowFeatures(!showFeatures)}
+            className="text-sm font-medium text-yellow-600 hover:underline"
+          >
+            {showFeatures ? "Hide Features" : "Edit Features"}
+          </button>
+
+          {showFeatures && (
+            <div className="mt-3">
+              <div className="space-y-2">
+                {features.map((feature, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
+                  >
+                    <input
+                      type="text"
+                      value={feature}
+                      onChange={e => updateFeature(i, e.target.value)}
+                      placeholder="Feature text..."
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(i)}
+                      className="px-2 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                onClick={addFeature}
+                variant="contained"
+                size="small"
+                className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
+              >
+                + Add Feature
+              </Button>
             </div>
           )}
         </div>

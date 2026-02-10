@@ -14,6 +14,7 @@ import ProductGallery from "@/components/ProductGallery"
 import ShareButtons from "@/components/ShareButtons"
 import ProductVariants from "@/components/ProductVariants"
 import ProductSpecifications from "@/components/ProductSpecifications"
+import ProductFeatures from "@/components/ProductFeatures"
 
 import Link from "next/link"
 
@@ -272,15 +273,21 @@ export default function ProductDetails({ params }) {
       {/* ✅ Product Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* 🖼️ Image Gallery */}
-        <ProductGallery
-          images={images}
-          mainImage={mainImage}
-          setMainImage={setMainImage}
-          user={user}
-          handleRemoveImage={handleRemoveImage}
-          variantImage={product.selectedVariant?.images?.[0]?.s3Url}
-          variantName={product.selectedVariant?.name}
-        />
+        <div className="lg:sticky self-start" style={{ top: "calc(var(--nav-height) + 24px)" }}>
+          <ProductGallery
+            images={images}
+            mainImage={mainImage}
+            setMainImage={setMainImage}
+            user={user}
+            handleRemoveImage={handleRemoveImage}
+            variantImage={product.selectedVariant?.images?.[0]?.s3Url}
+            variantName={product.selectedVariant?.name}
+          />
+
+          <div className="mt-4">
+            <ShareButtons product={product} />
+          </div>
+        </div>
 
         {/* Details */}
         <div className="order-2 lg:order-1">
@@ -313,6 +320,8 @@ export default function ProductDetails({ params }) {
 
           {product.variants && <ProductVariants product={product} />}
 
+          <ProductFeatures features={product.features} />
+
           <ProductSpecifications specifications={product.specifications} />
 
           <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-2">Manual</h2>
@@ -328,8 +337,6 @@ export default function ProductDetails({ params }) {
           ) : (
             <p className="text-gray-600 text-sm">No manual available</p>
           )}
-
-          <ShareButtons product={product} />
         </div>
       </div>
 
