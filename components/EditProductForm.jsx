@@ -21,6 +21,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [showVariants, setShowVariants] = useState(false)
   const [existingManual, setExistingManual] = useState(null)
   const [removeManual, setRemoveManual] = useState(false)
+  const [specifications, setSpecifications] = useState([])
 
   const [isDirty, setIsDirty] = useState(false) // 🔥 track changes
 
@@ -55,7 +56,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
 
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
-
+    setSpecifications(product.specifications || [])
     setExistingManual(product.manual?.s3Url ? product.manual : null)
     setRemoveManual(false)
 
@@ -139,9 +140,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setVariants(prev => ({ ...prev, models: updated }))
   }
 
-  // ============================================================
-  // 🔥 Confirm Before Saving + Handle Dirty Tracking
-  // ============================================================
+  //  Confirm Before Saving + Handle Dirty Tracking
   const editProduct = async e => {
     e.preventDefault()
 
@@ -154,9 +153,26 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     await submitForm()
   }
 
-  // ============================================================
-  // 🔥 Actual Submit Logic
-  // ============================================================
+  // Specifications handlers
+
+  const addSpecification = () => {
+    markDirty()
+    setSpecifications(prev => [...prev, { name: "", value: "" }])
+  }
+
+  const updateSpecification = (index, field, value) => {
+    markDirty()
+    const updated = [...specifications]
+    updated[index][field] = value
+    setSpecifications(updated)
+  }
+
+  const removeSpecification = index => {
+    markDirty()
+    setSpecifications(prev => prev.filter((_, i) => i !== index))
+  }
+
+  //  submit Logic
   const submitForm = async () => {
     const formData = new FormData()
 
@@ -194,6 +210,16 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
         formData.append(key, v.newImage)
       }
     })
+
+    // Specifications
+    const cleanSpecs = specifications.filter(s => s.name?.trim() && s.value?.trim())
+
+    if (cleanSpecs.length > 0) {
+      formData.append("specifications", JSON.stringify(cleanSpecs))
+    } else {
+      // optional: clear specs if all removed
+      formData.append("specifications", JSON.stringify([]))
+    }
 
     try {
       const res = await Client.put(`/products/${product._id}`, formData, {
@@ -284,6 +310,56 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             rows="3"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
           ></textarea>
+        </div>
+
+        {/* Specifications */}
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">Specifications</h3>
+
+          <div className="space-y-2">
+            {specifications.map((spec, i) => (
+              <div
+                key={i}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
+              >
+                <input
+                  type="text"
+                  value={spec.name}
+                  onChange={e => updateSpecification(i, "name", e.target.value)}
+                  placeholder="Specification name"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                />
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={spec.value}
+                    onChange={e => updateSpecification(i, "value", e.target.value)}
+                    placeholder="Value"
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => removeSpecification(i)}
+                    className="px-2 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            type="button"
+            onClick={addSpecification}
+            variant="contained"
+            size="small"
+            className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
+          >
+            + Add Specification
+          </Button>
         </div>
 
         {/* Categories */}

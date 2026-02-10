@@ -13,6 +13,8 @@ import EditProductForm from "@/components/EditProductForm"
 import ProductGallery from "@/components/ProductGallery"
 import ShareButtons from "@/components/ShareButtons"
 import ProductVariants from "@/components/ProductVariants"
+import ProductSpecifications from "@/components/ProductSpecifications"
+
 import Link from "next/link"
 
 // ✅ Helper functions
@@ -310,6 +312,8 @@ export default function ProductDetails({ params }) {
           )}
 
           {product.variants && <ProductVariants product={product} />}
+
+          <ProductSpecifications specifications={product.specifications} />
 
           <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-2">Manual</h2>
           {product.manual ? (
