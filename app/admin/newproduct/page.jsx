@@ -19,6 +19,9 @@ export default function NewProduct() {
   const [variants, setVariants] = useState({ colors: [], models: [] })
   const [showVariants, setShowVariants] = useState(false)
 
+  const [specifications, setSpecifications] = useState([{ name: "", value: "" }])
+  const [featuresText, setFeaturesText] = useState("")
+
   const categoryRef = useRef(null)
   const modelRef = useRef(null)
   const barcodeRef = useRef(null)
@@ -64,6 +67,21 @@ export default function NewProduct() {
 
   const removeCategory = id => {
     setSelectedCategories(prev => prev.filter(catId => catId !== id))
+  }
+
+  // ✅ Specifications
+  const addSpecification = () => {
+    setSpecifications(prev => [...prev, { name: "", value: "" }])
+  }
+
+  const updateSpecification = (index, field, value) => {
+    const updated = [...specifications]
+    updated[index][field] = value
+    setSpecifications(updated)
+  }
+
+  const removeSpecification = index => {
+    setSpecifications(prev => prev.filter((_, i) => i !== index))
   }
 
   // ✅ Variants
@@ -137,6 +155,23 @@ export default function NewProduct() {
     variants.colors.forEach((v, i) => {
       if (v.image) formData.append(`variant_color_image_${i}`, v.image)
     })
+
+    // ✅ Features (comma separated -> array)
+    const features = featuresText
+      .split(",")
+      .map(f => f.trim())
+      .filter(Boolean)
+
+    if (features.length > 0) {
+      formData.append("features", JSON.stringify(features))
+    }
+
+    // ✅ Specifications (remove empty ones)
+    const cleanSpecs = specifications.filter(s => s.name.trim() && s.value.trim())
+
+    if (cleanSpecs.length > 0) {
+      formData.append("specifications", JSON.stringify(cleanSpecs))
+    }
 
     try {
       const res = await Client.post("/products", formData, {
@@ -220,6 +255,70 @@ export default function NewProduct() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product description"
             ></textarea>
+          </div>
+
+          {/* Features */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">Features</label>
+            <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
+
+            <textarea
+              rows="3"
+              value={featuresText}
+              onChange={e => setFeaturesText(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder=""
+            />
+          </div>
+
+          {/* Specifications */}
+          <div>
+            <h2 className="text-md font-semibold text-gray-800 mb-2">Specifications</h2>
+
+            <div className="space-y-3">
+              {specifications.map((spec, i) => (
+                <div
+                  key={i}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-lg p-3 bg-gray-50"
+                >
+                  <input
+                    type="text"
+                    value={spec.name}
+                    onChange={e => updateSpecification(i, "name", e.target.value)}
+                    placeholder="Specification name"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                  />
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={spec.value}
+                      onChange={e => updateSpecification(i, "value", e.target.value)}
+                      placeholder="Value"
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => removeSpecification(i)}
+                      className="px-3 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              onClick={addSpecification}
+              variant="contained"
+              size="small"
+              className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-3"
+            >
+              + Add Specification
+            </Button>
           </div>
 
           {/* Categories */}
