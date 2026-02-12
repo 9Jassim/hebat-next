@@ -237,8 +237,8 @@ export default function ProductDetails({ params }) {
           Home
         </Link>
         <span>/</span>
-        <Link href="/products" className="hover:text-yellow-600 font-medium">
-          Products
+        <Link href={`/products/${category}`} className="hover:text-yellow-600 font-medium">
+          {product.categories[0].name}
         </Link>
         <span>/</span>
         <span className="text-gray-800 font-semibold">{product.name}</span>
