@@ -76,8 +76,10 @@ export default function RootLayout({ children }) {
             logo: `${SITE_URL}/favicon.ico`,
           })}
         </Script>
+        {children}
+        {/* <Providers>
 
-        <Providers>{children}</Providers>
+        </Providers> */}
 
         {/* Google Analytics */}
         <Script
