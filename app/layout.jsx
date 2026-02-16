@@ -3,6 +3,10 @@ import Providers from "./providers"
 import "./globals.css"
 
 export const metadata = {
+  robots: {
+    index: true,
+    follow: true,
+  },
   title: {
     default: "Hebat | Premium Products",
     template: "%s | Hebat",
