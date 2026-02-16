@@ -2,6 +2,10 @@ import Script from "next/script"
 import Providers from "./providers"
 import "./globals.css"
 
+const SITE_URL = process.env.NEXT_PUBLIC_URL?.startsWith("http")
+  ? process.env.NEXT_PUBLIC_URL
+  : "https://hebatofficial.com"
+
 export const metadata = {
   robots: {
     index: true,
@@ -41,36 +45,25 @@ export const metadata = {
     "best prices",
     "quality products",
     "هيبات",
-    " منتجات هيبات",
-    "هيبت",
     "تسوق أونلاين",
-    "تسوق عبر الإنترنت",
-    "متجر البحرين",
-    "متجر إلكتروني",
-    "الإلكترونيات",
-    "الأجهزة المنزلية",
-    "الأدوات",
-    "إكسسوارات",
-    "منتجات منزلية",
-    "معدات رياضية",
-    "منتجات عالية الجودة",
-    "أفضل الأسعار",
-    "عروض تسوق",
-    "صفقات حصرية",
+    "البحرين",
+    "الشرق الأوسط",
+    "أكسسوارات",
+    "أجهزة منزلية",
+    "إلكترونيات",
+    "رياضة",
+    "هواء طلق",
+    "عروض",
     "توصيل سريع",
     "دفع آمن",
-    "تسوق البحرين",
-    "الشرق الأوسط",
-    "منتجات هيبات",
+    "منتجات عالية الجودة",
   ],
-  metadataBase:
-    process.env.NODE_ENV === "production"
-      ? new URL(process.env.NEXT_PUBLIC_URL)
-      : new URL("http://localhost:4000"),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     locale: "en_GB",
     siteName: "Hebat",
+    url: SITE_URL,
   },
 }
 
@@ -78,46 +71,46 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* ✅ Google Fonts */}
+        {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* ✅ Google Search Console Verification */}
+
+        {/* Google Search Console Verification */}
         <meta
           name="google-site-verification"
           content="9u5ismbnFFNwT5yBsgLnl8M6OyjhfgFxhPXFN2cYneg"
         />
 
-        {/* ✅ Site name for Google and Social */}
         <meta property="og:site_name" content="Hebat" />
 
-        {/* ✅ Structured Data for Google (WebSite schema) */}
+        {/* WebSite Schema */}
         <Script id="structured-data" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Hebat",
             alternateName: "Hebat Official",
-            url: `${process.env.NEXT_PUBLIC_URL}`,
+            url: SITE_URL,
             potentialAction: {
               "@type": "SearchAction",
-              target: `${process.env.NEXT_PUBLIC_URL}/search?q={search_term_string}`,
+              target: `${SITE_URL}/search?q={search_term_string}`,
               "query-input": "required name=search_term_string",
             },
           })}
         </Script>
 
-        {/* ✅ Organization schema for stronger brand identity */}
+        {/* Organization Schema */}
         <Script id="organization-schema" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Hebat",
-            url: `${process.env.NEXT_PUBLIC_URL}`,
-            logo: `${process.env.NEXT_PUBLIC_URL}/favicon.ico`,
+            url: SITE_URL,
+            logo: `${SITE_URL}/favicon.ico`,
           })}
         </Script>
       </head>
@@ -125,7 +118,7 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>{children}</Providers>
 
-        {/* ✅ Google Analytics (afterInteractive = safe) */}
+        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-L2PNGGS7JL"
           strategy="afterInteractive"
