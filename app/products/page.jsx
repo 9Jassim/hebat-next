@@ -1,5 +1,7 @@
 import Products from "@/components/Products"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: "Products",
   description:
