@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
-import Head from "next/head"
 
 // ✅ Slugify helper
 const slugify = str =>
@@ -25,7 +24,7 @@ const deslugify = str =>
 export default function Products() {
   const params = useParams()
 
-  // 🔍 Query params (SEO-safe replacement for useSearchParams)
+  // 🔍 Query params
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategoryFromQuery, setSelectedCategoryFromQuery] = useState(null)
 
@@ -35,10 +34,7 @@ export default function Products() {
     setSearchQuery(sp.get("search")?.trim() || "")
   }, [])
 
-  // 🔍 Path param
   const selectedCategoryFromPath = params?.category
-
-  // 🧠 Unified category (path has priority)
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
 
   const [products, setProducts] = useState([])
@@ -46,7 +42,6 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("All Products")
 
-  // 🔧 Normalize for consistent comparison
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
 
@@ -56,7 +51,6 @@ export default function Products() {
         const res = await Client.get("/products")
         let fetched = res.data.products || []
 
-        // ✅ Case 1: Category filter
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
           const filtered = fetched.filter(p =>
@@ -67,10 +61,7 @@ export default function Products() {
 
           setShowing(filtered)
           setDisplayCategory(deslugify(selectedCategory))
-        }
-
-        // ✅ Case 2: Search filter
-        else if (searchQuery) {
+        } else if (searchQuery) {
           const query = searchQuery.toLowerCase()
           const filtered = fetched.filter(
             p =>
@@ -81,10 +72,7 @@ export default function Products() {
 
           setShowing(filtered)
           setDisplayCategory(`Search results for "${searchQuery}"`)
-        }
-
-        // ✅ Case 3: Default (All Products — deduped)
-        else {
+        } else {
           const uniqueProducts = Array.from(
             new Map(fetched.map(p => [p._id || p.slug, p])).values()
           )
@@ -116,15 +104,20 @@ export default function Products() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hebat.com/" },
-      { "@type": "ListItem", position: 2, name: "Products", item: "https://hebat.com/products" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hebatofficial.com/" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Products",
+        item: "https://hebatofficial.com/products",
+      },
       ...(selectedCategory
         ? [
             {
               "@type": "ListItem",
               position: 3,
               name: displayCategory,
-              item: `https://hebat.com/products/${encodeURIComponent(
+              item: `https://hebatofficial.com/products/${encodeURIComponent(
                 selectedCategory.toLowerCase().replace(/\s+/g, "-")
               )}`,
             },
@@ -135,33 +128,20 @@ export default function Products() {
                 "@type": "ListItem",
                 position: 3,
                 name: `Search: ${searchQuery}`,
-                item: `https://hebat.com/products?search=${encodeURIComponent(searchQuery)}`,
+                item: `https://hebatofficial.com/products?search=${encodeURIComponent(searchQuery)}`,
               },
             ]
           : []),
     ],
   }
 
-  // ✅ SEO
-  const pageTitle =
-    selectedCategory || searchQuery ? `${displayCategory} | Hebat` : "All Products | Hebat"
-
-  const pageDescription = selectedCategory
-    ? `Explore ${displayCategory} products from Hebat — premium quality and top performance.`
-    : searchQuery
-      ? `Search results for "${searchQuery}" from Hebat — explore our premium range.`
-      : "Explore all premium products from Hebat — trusted quality and style."
-
   return (
     <>
-      <Head>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
-      </Head>
+      {/* ✅ Structured Data (App Router Safe) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
         {/* Breadcrumb */}
