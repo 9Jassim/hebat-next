@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams, useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 import Head from "next/head"
@@ -23,13 +23,20 @@ const deslugify = str =>
     .replace(/\b\w/g, c => c.toUpperCase()) || ""
 
 export default function Products() {
-  const searchParams = useSearchParams()
   const params = useParams()
 
-  // 🔍 Inputs
-  const selectedCategoryFromQuery = searchParams.get("category")
-  const searchQuery = searchParams.get("search")?.trim() || ""
-  const selectedCategoryFromPath = params?.category // e.g. "sports-and-outdoors"
+  // 🔍 Query params (SEO-safe replacement for useSearchParams)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategoryFromQuery, setSelectedCategoryFromQuery] = useState(null)
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    setSelectedCategoryFromQuery(sp.get("category"))
+    setSearchQuery(sp.get("search")?.trim() || "")
+  }, [])
+
+  // 🔍 Path param
+  const selectedCategoryFromPath = params?.category
 
   // 🧠 Unified category (path has priority)
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
@@ -49,7 +56,7 @@ export default function Products() {
         const res = await Client.get("/products")
         let fetched = res.data.products || []
 
-        // ✅ Case 1: Category filter (check if product has that category slug)
+        // ✅ Case 1: Category filter
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
           const filtered = fetched.filter(p =>
@@ -71,6 +78,7 @@ export default function Products() {
               p.model?.toLowerCase().includes(query) ||
               p.barcode?.toLowerCase().includes(query)
           )
+
           setShowing(filtered)
           setDisplayCategory(`Search results for "${searchQuery}"`)
         }
@@ -80,6 +88,7 @@ export default function Products() {
           const uniqueProducts = Array.from(
             new Map(fetched.map(p => [p._id || p.slug, p])).values()
           )
+
           setShowing(uniqueProducts)
           setDisplayCategory("All Products")
         }
@@ -136,6 +145,7 @@ export default function Products() {
   // ✅ SEO
   const pageTitle =
     selectedCategory || searchQuery ? `${displayCategory} | Hebat` : "All Products | Hebat"
+
   const pageDescription = selectedCategory
     ? `Explore ${displayCategory} products from Hebat — premium quality and top performance.`
     : searchQuery
@@ -196,10 +206,9 @@ export default function Products() {
                 <Link
                   key={product.slug}
                   href={`/products/${slugify(firstCat)}/${product.slug}`}
-                  className="group" // ✅ move group here so hover propagates
+                  className="group"
                 >
                   <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
-                    {/* Image Frame */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
                       <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md flex items-center justify-center">
                         <img
@@ -207,27 +216,11 @@ export default function Products() {
                           alt={product.name}
                           loading="lazy"
                           decoding="async"
-                          className="
-                    object-contain 
-                    w-full h-full
-                    scale-100
-                    transition-transform duration-500 ease-in-out
-                    group-hover:scale-110  /* ✅ now works */
-                    will-change-transform
-                  "
-                          style={{
-                            transformOrigin: "center center",
-                            backfaceVisibility: "hidden",
-                            WebkitFontSmoothing: "antialiased",
-                            imageRendering: "high-quality",
-                            filter: "brightness(1.02) contrast(1.04)",
-                          }}
+                          className="object-contain w-full h-full scale-100 transition-transform duration-500 ease-in-out group-hover:scale-110 will-change-transform"
                         />
-                        <div className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-500 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100"></div>
                       </div>
                     </div>
 
-                    {/* Product Info */}
                     <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
                       <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
                         {product.name}

@@ -2,7 +2,7 @@
 
 import "@/app/globals.css"
 import { useEffect } from "react"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { AuthProvider } from "@/context/AuthContext"
 import { Toaster } from "react-hot-toast"
 import Footer from "@/components/Footer"
@@ -10,7 +10,6 @@ import Nav from "@/components/Nav"
 
 export default function Providers({ children }) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   // ✅ Disable browser scroll restoration (prevents fighting your scrollTo)
   useEffect(() => {
@@ -19,7 +18,7 @@ export default function Providers({ children }) {
     }
   }, [])
 
-  // ✅ Scroll to top on every navigation (pathname + query changes)
+  // ✅ Scroll to top on every navigation (pathname changes)
   useEffect(() => {
     // If you use hash links, keep this guard (optional)
     if (typeof window !== "undefined" && window.location.hash) return
@@ -34,7 +33,7 @@ export default function Providers({ children }) {
       const main = document.querySelector("main")
       if (main) main.scrollTop = 0
     })
-  }, [pathname, searchParams])
+  }, [pathname])
 
   useEffect(() => {
     const updateNavHeight = () => {
