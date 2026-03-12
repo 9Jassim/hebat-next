@@ -102,6 +102,7 @@ export default function EditCategories({ onClose, onUpdated }) {
           category={editingCategory}
           onSave={handleSave}
           onCancel={() => setEditingCategory(null)}
+          categories={categories}
         />
       ) : categories.length > 0 ? (
         <ul className="divide-y divide-gray-200">

@@ -5,7 +5,6 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 
-// ✅ Slugify helper
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -14,7 +13,6 @@ const slugify = str =>
     .trim()
     .replace(/\s+/g, "-") || ""
 
-// ✅ Deslugify helper
 const deslugify = str =>
   str
     ?.replace(/-/g, " ")
@@ -24,82 +22,49 @@ const deslugify = str =>
 export default function Products() {
   const params = useParams()
 
-  // 🔍 Query params
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCategoryFromQuery, setSelectedCategoryFromQuery] = useState(null)
-
-  useEffect(() => {
-    const sp = new URLSearchParams(window.location.search)
-    setSelectedCategoryFromQuery(sp.get("category"))
-    setSearchQuery(sp.get("search")?.trim() || "")
-  }, [])
-
-  const selectedCategoryFromPath = params?.category
-  const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
+  const category = params?.category || null
+  const subcategory = params?.subcategory || null
 
   const [products, setProducts] = useState([])
-  const [showing, setShowing] = useState([])
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("All Products")
-
-  const normalize = str =>
-    str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await Client.get("/products")
-        let fetched = res.data.products || []
+        let res
 
-        if (selectedCategory) {
-          const normalizedQuery = normalize(selectedCategory)
-          const filtered = fetched.filter(p =>
-            Array.isArray(p.categories)
-              ? p.categories.some(c => normalize(slugify(c?.name)) === normalizedQuery)
-              : p.category && normalize(slugify(p.category.name)) === normalizedQuery
-          )
-
-          setShowing(filtered)
-          setDisplayCategory(deslugify(selectedCategory))
-        } else if (searchQuery) {
-          const query = searchQuery.toLowerCase()
-          const filtered = fetched.filter(
-            p =>
-              p.name.toLowerCase().includes(query) ||
-              p.model?.toLowerCase().includes(query) ||
-              p.barcode?.toLowerCase().includes(query)
-          )
-
-          setShowing(filtered)
-          setDisplayCategory(`Search results for "${searchQuery}"`)
+        if (category && subcategory) {
+          res = await Client.get(`/products/category/${category}/${subcategory}`)
+          setDisplayCategory(deslugify(subcategory))
+        } else if (category) {
+          res = await Client.get(`/products/category/${category}`)
+          setDisplayCategory(deslugify(category))
         } else {
-          const uniqueProducts = Array.from(
-            new Map(fetched.map(p => [p._id || p.slug, p])).values()
-          )
-
-          setShowing(uniqueProducts)
+          res = await Client.get("/products")
           setDisplayCategory("All Products")
         }
 
-        setProducts(fetched)
+        setProducts(res.data.products || [])
       } catch (err) {
         console.error("❌ Error loading products:", err)
+        setProducts([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchProducts()
-  }, [selectedCategory, searchQuery])
+  }, [category, subcategory])
 
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh] text-gray-700">
         Loading products...
       </div>
     )
+  }
 
-  // ✅ Breadcrumb JSON-LD
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -111,40 +76,37 @@ export default function Products() {
         name: "Products",
         item: "https://hebatofficial.com/products",
       },
-      ...(selectedCategory
+      ...(category
         ? [
             {
               "@type": "ListItem",
               position: 3,
-              name: displayCategory,
-              item: `https://hebatofficial.com/products/${encodeURIComponent(
-                selectedCategory.toLowerCase().replace(/\s+/g, "-")
-              )}`,
+              name: deslugify(category),
+              item: `https://hebatofficial.com/products/${category}`,
             },
           ]
-        : searchQuery
-          ? [
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: `Search: ${searchQuery}`,
-                item: `https://hebatofficial.com/products?search=${encodeURIComponent(searchQuery)}`,
-              },
-            ]
-          : []),
+        : []),
+      ...(subcategory
+        ? [
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: deslugify(subcategory),
+              item: `https://hebatofficial.com/products/${category}/${subcategory}`,
+            },
+          ]
+        : []),
     ],
   }
 
   return (
     <>
-      {/* ✅ Structured Data (App Router Safe) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
-        {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">
             <Link href="/" className="hover:text-yellow-600 font-medium">
@@ -154,38 +116,51 @@ export default function Products() {
             <Link href="/products" className="hover:text-yellow-600 font-medium">
               Products
             </Link>
-            {(selectedCategory || searchQuery) && (
+
+            {category && (
               <>
                 <span>/</span>
-                <span className="text-gray-800 font-semibold capitalize">{displayCategory}</span>
+                <Link
+                  href={`/products/${category}`}
+                  className="hover:text-yellow-600 font-medium capitalize"
+                >
+                  {deslugify(category)}
+                </Link>
+              </>
+            )}
+
+            {subcategory && (
+              <>
+                <span>/</span>
+                <span className="text-gray-800 font-semibold capitalize">
+                  {deslugify(subcategory)}
+                </span>
               </>
             )}
           </nav>
         </div>
 
-        {/* Header */}
         <div className="w-full max-w-6xl mb-3">
           <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2 capitalize">
             {displayCategory}
           </h1>
           <p className="text-gray-700 text-sm font-medium text-left">
-            Showing {showing.length} product{showing.length !== 1 && "s"}
+            Showing {products.length} product{products.length !== 1 && "s"}
           </p>
         </div>
 
-        {/* Product Grid */}
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
-          {showing.length > 0 ? (
-            showing.map(product => {
+          {products.length > 0 ? (
+            products.map(product => {
               const firstCat =
                 Array.isArray(product.categories) && product.categories.length > 0
                   ? product.categories[0]?.name
-                  : product.category?.name || "others"
+                  : "others"
 
               return (
                 <Link
                   key={product.slug}
-                  href={`/products/${slugify(firstCat)}/${product.slug}`}
+                  href={`/products/${slugify(firstCat)}/product/${product.slug}`}
                   className="group"
                 >
                   <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
@@ -215,11 +190,7 @@ export default function Products() {
               )
             })
           ) : (
-            <p className="text-gray-600 text-sm text-center">
-              {searchQuery
-                ? `No products found matching "${searchQuery}".`
-                : "No products found in this category."}
-            </p>
+            <p className="text-gray-600 text-sm text-center">No products found in this category.</p>
           )}
         </div>
       </div>

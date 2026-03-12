@@ -1,8 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
+import { useEffect, useState, useRef } from "react"
 import Client from "@/lib/api"
 
 const slugify = str =>
@@ -13,83 +12,139 @@ const slugify = str =>
     .trim()
     .replace(/\s+/g, "-") || ""
 
-export default function CategoryBar({ refreshTrigger }) {
-  const pathname = usePathname()
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
+const buildCategoryTree = categories => {
+  const map = {}
+  const roots = []
 
-  const currentCategoryFromPath =
-    pathname?.startsWith("/products/") && pathname.split("/")[2] ? pathname.split("/")[2] : null
-  const isProductsPage = pathname?.startsWith("/products")
+  categories.forEach(cat => {
+    map[cat._id] = { ...cat, children: [] }
+  })
+
+  categories.forEach(cat => {
+    if (cat.parent) {
+      const parentId = cat.parent?._id || cat.parent
+      map[parentId]?.children.push(map[cat._id])
+    } else {
+      roots.push(map[cat._id])
+    }
+  })
+
+  return roots
+}
+
+export default function CategoryBar({ refreshTrigger }) {
+  const [categories, setCategories] = useState([])
+  const [activeCategory, setActiveCategory] = useState(null)
+
+  const navRef = useRef(null)
 
   useEffect(() => {
-    let active = true
     const fetchCategories = async () => {
-      try {
-        const res = await Client.get("/products/category", { withCredentials: true })
-        if (active) setCategories(res.data.categories || [])
-      } catch (err) {
-        console.error("❌ Categories fetch error:", err)
-      } finally {
-        if (active) setLoading(false)
-      }
+      const res = await Client.get("/products/category")
+      setCategories(buildCategoryTree(res.data.categories || []))
     }
+
     fetchCategories()
-    const t = setTimeout(fetchCategories, 1500)
-    return () => {
-      active = false
-      clearTimeout(t)
-    }
   }, [refreshTrigger])
 
+  // close when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = e => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setActiveCategory(null)
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick)
+    document.addEventListener("touchstart", handleOutsideClick)
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick)
+      document.removeEventListener("touchstart", handleOutsideClick)
+    }
+  }, [])
+
+  const isMobile = () => window.innerWidth < 768
+
+  const handleClick = (e, cat) => {
+    const hasChildren = cat.children.length > 0
+
+    if (isMobile() && hasChildren) {
+      e.preventDefault()
+      setActiveCategory(activeCategory?._id === cat._id ? null : cat)
+    } else {
+      setActiveCategory(null)
+    }
+  }
+
+  const handleMouseEnter = cat => {
+    if (!isMobile() && cat.children.length > 0) {
+      setActiveCategory(cat)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (!isMobile()) {
+      setActiveCategory(null)
+    }
+  }
+
   return (
-    <div className="sticky top-[100px] md:top-[80px] left-0 right-0 z-40 bg-black border-t border-gray-800 shadow-sm">
-      <div className="max-w-screen-xl mx-auto flex items-center py-2 px-2 relative">
-        {loading ? (
-          <p className="text-gray-400 text-sm py-1">Loading categories...</p>
-        ) : (
-          <>
-            {/* 🧷 Fixed “All Products” on the left */}
-            <div className="flex-shrink-0 sticky left-0 z-10 bg-black pr-3">
+    <div
+      ref={navRef}
+      className="sticky top-[100px] md:top-[80px] z-40 bg-black border-t border-gray-800"
+    >
+      <div className="max-w-screen-xl mx-auto relative" onMouseLeave={handleMouseLeave}>
+        <div className="flex items-center py-2 px-2">
+          <Link href="/products" className="px-3 py-2 text-white hover:text-yellow-500">
+            All Products
+          </Link>
+
+          <div className="flex space-x-4 ml-4 overflow-x-auto no-scrollbar">
+            {categories.map(cat => {
+              const slug = slugify(cat.name)
+              const hasChildren = cat.children.length > 0
+
+              return (
+                <Link
+                  key={cat._id}
+                  href={`/products/${slug}`}
+                  onClick={e => handleClick(e, cat)}
+                  onMouseEnter={() => handleMouseEnter(cat)}
+                  className="px-3 py-2 whitespace-nowrap text-white hover:text-yellow-500"
+                >
+                  {cat.name}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {activeCategory && activeCategory.children.length > 0 && (
+          <div className="absolute top-full left-0 w-full bg-black border-t border-gray-800 shadow-lg">
+            <div className="max-w-screen-xl mx-auto py-3 px-2">
+              {activeCategory.children.map(sub => (
+                <Link
+                  key={sub._id}
+                  href={`/products/${slugify(activeCategory.name)}?subcategory=${slugify(
+                    sub.name
+                  )}`}
+                  className="block px-3 py-2 text-gray-300 hover:text-yellow-500"
+                  onClick={() => setActiveCategory(null)}
+                >
+                  {sub.name}
+                </Link>
+              ))}
+
               <Link
-                href="/products"
-                className={`whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${
-                  isProductsPage && !currentCategoryFromPath
-                    ? "text-yellow-500 font-semibold underline underline-offset-4"
-                    : "text-white hover:text-yellow-500"
-                }`}
+                href={`/products/${slugify(activeCategory.name)}`}
+                className="block px-3 py-2 text-white hover:text-yellow-500 mt-2"
+                onClick={() => setActiveCategory(null)}
               >
-                All Products
+                View All
               </Link>
             </div>
-
-            {/* Scrollable categories */}
-            <div className="flex-1 overflow-x-auto no-scrollbar">
-              <div className="flex space-x-3 md:space-x-4">
-                {categories.length ? (
-                  categories.map(c => {
-                    const catSlug = slugify(c.name)
-                    const isActive = currentCategoryFromPath === catSlug
-                    return (
-                      <Link
-                        key={c._id}
-                        href={`/products/${catSlug}`}
-                        className={`whitespace-nowrap px-3 py-2 rounded-md text-sm sm:text-base transition-colors ${
-                          isActive
-                            ? "text-yellow-500 font-semibold underline underline-offset-4"
-                            : "text-white hover:text-yellow-500"
-                        }`}
-                      >
-                        {c.name}
-                      </Link>
-                    )
-                  })
-                ) : (
-                  <p className="text-gray-400 text-sm py-1">No categories found</p>
-                )}
-              </div>
-            </div>
-          </>
+          </div>
         )}
       </div>
     </div>
