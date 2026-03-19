@@ -100,13 +100,17 @@ export default function ProductDetails({ params }) {
     const checkClamp = () => {
       if (descRef.current) {
         const el = descRef.current
-        setIsClamped(el.scrollHeight > el.clientHeight + 1)
+
+        if (clamped) {
+          setIsClamped(el.scrollHeight > el.clientHeight + 1)
+        }
       }
     }
+
     checkClamp()
     window.addEventListener("resize", checkClamp)
     return () => window.removeEventListener("resize", checkClamp)
-  }, [product?.description])
+  }, [product?.description, clamped])
 
   // ✅ Remove product
   const handleRemove = async () => {
@@ -309,7 +313,7 @@ export default function ProductDetails({ params }) {
             {product.description}
           </p>
 
-          {isClamped && (
+          {(isClamped || !clamped) && (
             <button
               onClick={() => setClamped(!clamped)}
               className="text-yellow-600 hover:underline text-sm font-medium"
