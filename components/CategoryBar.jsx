@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState, useRef } from "react"
+import { usePathname } from "next/navigation"
 import Client from "@/lib/api"
 
 const slugify = str =>
@@ -32,12 +33,29 @@ const buildCategoryTree = categories => {
   return roots
 }
 
+// 🔍 Find active category OR parent if subcategory
+const findActiveCategory = (categories, slug) => {
+  for (const cat of categories) {
+    if (slugify(cat.name) === slug) return cat
+
+    const foundChild = cat.children.find(child => slugify(child.name) === slug)
+
+    if (foundChild) return cat
+  }
+
+  return null
+}
+
 export default function CategoryBar({ refreshTrigger }) {
   const [categories, setCategories] = useState([])
   const [activeCategory, setActiveCategory] = useState(null)
+  const scrollRef = useRef(null)
+  const [showFade, setShowFade] = useState(true)
 
   const navRef = useRef(null)
+  const pathname = usePathname()
 
+  // 📦 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await Client.get("/products/category")
@@ -47,7 +65,7 @@ export default function CategoryBar({ refreshTrigger }) {
     fetchCategories()
   }, [refreshTrigger])
 
-  // close when clicking outside
+  // ❌ Close dropdown when clicking outside
   useEffect(() => {
     const handleOutsideClick = e => {
       if (navRef.current && !navRef.current.contains(e.target)) {
@@ -66,6 +84,28 @@ export default function CategoryBar({ refreshTrigger }) {
 
   const isMobile = () => window.innerWidth < 768
 
+  // 📍 Get current slug from URL
+  const currentSlug = pathname.split("/")[2] || null
+
+  // 🎯 Get active category based on route
+  const activeFromRoute = findActiveCategory(categories, currentSlug)
+
+  // 🚀 Auto scroll active item into view
+  useEffect(() => {
+    const el = document.querySelector("[data-active='true']")
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      })
+    }
+  }, [activeFromRoute])
+
+  useEffect(() => {
+    handleScroll()
+  }, [categories])
+
   const handleClick = (e, cat) => {
     const hasChildren = cat.children.length > 0
 
@@ -73,7 +113,7 @@ export default function CategoryBar({ refreshTrigger }) {
       e.preventDefault()
       setActiveCategory(activeCategory?._id === cat._id ? null : cat)
     } else {
-      setActiveCategory(null)
+      setActiveCategory(cat)
     }
   }
 
@@ -89,37 +129,73 @@ export default function CategoryBar({ refreshTrigger }) {
     }
   }
 
+  const handleScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5
+    setShowFade(!isAtEnd)
+  }
+
   return (
     <div
       ref={navRef}
       className="sticky top-[100px] md:top-[80px] z-40 bg-black border-t border-gray-800"
     >
       <div className="max-w-screen-xl mx-auto relative" onMouseLeave={handleMouseLeave}>
-        <div className="flex items-center py-2 px-2">
-          <Link href="/products" className="px-3 py-2 text-white hover:text-yellow-500">
-            All Products
-          </Link>
+        {/* ✅ Scrollable Category Bar */}
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto no-scrollbar px-2 py-2 space-x-4"
+          >
+            {/* All */}
+            <Link
+              href="/products"
+              data-active={!currentSlug}
+              onClick={() => setActiveCategory(null)}
+              onMouseEnter={() => {
+                if (!isMobile()) setActiveCategory(null)
+              }}
+              className={`px-3 py-2 whitespace-nowrap border-b-2 ${
+                !currentSlug ? "text-yellow-500 border-yellow-500" : "text-white border-transparent"
+              }`}
+            >
+              All
+            </Link>
 
-          <div className="flex space-x-4 ml-4 overflow-x-auto no-scrollbar">
+            {/* Categories */}
             {categories.map(cat => {
               const slug = slugify(cat.name)
-              const hasChildren = cat.children.length > 0
+              const isActive = activeFromRoute?._id === cat._id
 
               return (
                 <Link
                   key={cat._id}
                   href={`/products/${slug}`}
+                  data-active={isActive}
                   onClick={e => handleClick(e, cat)}
                   onMouseEnter={() => handleMouseEnter(cat)}
-                  className="px-3 py-2 whitespace-nowrap text-white hover:text-yellow-500"
+                  className={`px-3 py-2 whitespace-nowrap border-b-2 transition ${
+                    isActive
+                      ? "text-yellow-500 border-yellow-500"
+                      : "text-white border-transparent hover:text-yellow-500"
+                  }`}
                 >
                   {cat.name}
                 </Link>
               )
             })}
           </div>
+
+          {/* Gradient fade */}
+          {showFade && (
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black to-transparent transition-opacity duration-200" />
+          )}
         </div>
 
+        {/* Dropdown */}
         {activeCategory && activeCategory.children.length > 0 && (
           <div className="absolute top-full left-0 w-full bg-black border-t border-gray-800 shadow-lg">
             <div className="max-w-screen-xl mx-auto py-3 px-2">
