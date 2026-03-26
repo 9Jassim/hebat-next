@@ -4,9 +4,11 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
+import { useLanguage } from "@/context/LanguageContext"
 
 export default function Contact() {
   const router = useRouter()
+  const { t, p } = useLanguage()
 
   const [form, setForm] = useState({
     name: "",
@@ -28,7 +30,7 @@ export default function Contact() {
       const res = await Client.post("/contact", form)
 
       if (res.status === 200) {
-        router.push("/thank-you")
+        router.push(p("/thank-you"))
       } else {
         alert(res.data?.message || "Something went wrong.")
       }
@@ -45,52 +47,38 @@ export default function Contact() {
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <h1 className="text-4xl sm:text-5xl font-bold text-black text-center mb-6">
-          Contact <span className="text-yellow-500 ">Us</span>
+          {t("contact")}
         </h1>
-        <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">
-          Have questions or need assistance? We’d love to hear from you! Whether you’re a customer,
-          supplier, or partner — our team is always ready to help.
-        </p>
+        <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">{t("contactIntro")}</p>
 
         {/* Contact Grid */}
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Info */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-yellow-500 mb-4">Get in Touch</h2>
-            <p className="text-gray-700">
-              Our support team is available to help with product questions, order assistance, or
-              partnership inquiries.
-            </p>
+            <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t("getInTouch")}</h2>
+            <p className="text-gray-700">{t("supportText")}</p>
 
             <div className="space-y-4">
-              {/* <div>
-                <h3 className="font-semibold text-gray-800">Email</h3>
-                <Link
-                  href="mailto:info@hebat.com"
-                  className="text-yellow-600 hover:text-yellow-700"
-                >
-                  info@hebat.com
-                </Link>
-              </div> */}
-
               <div>
-                <h3 className="font-semibold text-gray-800">Phone</h3>
-                <p className="text-gray-700">+973 66600457</p>
+                <h3 className="font-semibold text-gray-800">{t("phone")}</h3>
+                <p className="text-gray-700 text-left rtl:text-right" dir="ltr">
+                  +973 66600457
+                </p>
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-800">Office</h3>
+                <h3 className="font-semibold text-gray-800">{t("office")}</h3>
                 <p className="text-gray-700">
-                  Tubli, Bahrain
+                  {t("location")}
                   <br />
                 </p>
               </div>
             </div>
 
-            {/* Follow Us (UNCHANGED, EXACT COPY) */}
+            {/* Follow Us */}
             <div className="mt-8">
-              <h3 className="font-semibold text-gray-800 mb-2">Follow Us</h3>
-              <div className="flex justify-start space-x-3 flex-wrap">
+              <h3 className="font-semibold text-gray-800 mb-2">{t("followUs")}</h3>
+              <div className="flex justify-start gap-3 flex-wrap">
                 {/* Instagram */}
                 <Link
                   href="https://www.instagram.com/morslon.bh?utm_source=hebat&utm_medium=app&utm_campaign=sociallink"
@@ -170,11 +158,13 @@ export default function Contact() {
 
           {/* Contact Form */}
           <div className="bg-white shadow-lg rounded-2xl p-8 border border-yellow-200">
-            <h2 className="text-2xl font-semibold text-yellow-500 mb-6">Send Us a Message</h2>
+            <h2 className="text-2xl font-semibold text-yellow-500 mb-6">{t("sendUsMessage")}</h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Name</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  {t("namePlaceholder")}
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -186,7 +176,9 @@ export default function Contact() {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Email</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  {t("emailPlaceholder")}
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -198,7 +190,9 @@ export default function Contact() {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Message</label>
+                <label className="block text-gray-700 font-medium mb-2">
+                  {t("messagePlaceholder")}
+                </label>
                 <textarea
                   name="message"
                   rows="4"
@@ -214,7 +208,7 @@ export default function Contact() {
                 disabled={loading}
                 className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded-lg transition-all shadow-md disabled:opacity-50"
               >
-                {loading ? "Sending..." : "Send Message"}
+                {loading ? t("sending") : t("sendBtn")}
               </button>
             </form>
           </div>

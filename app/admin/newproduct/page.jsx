@@ -10,7 +10,6 @@ export default function NewProduct() {
   const { user } = useAuth()
 
   const [categories, setCategories] = useState([])
-  const [newCategory, setNewCategory] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState([])
 
   const [images, setImages] = useState([])
@@ -19,14 +18,18 @@ export default function NewProduct() {
   const [variants, setVariants] = useState({ colors: [], models: [] })
   const [showVariants, setShowVariants] = useState(false)
 
-  const [specifications, setSpecifications] = useState([{ name: "", value: "" }])
+  const [specifications, setSpecifications] = useState([
+    { name: "", value: "", name_ar: "", value_ar: "" },
+  ])
   const [featuresText, setFeaturesText] = useState("")
+  const [featuresArText, setFeaturesArText] = useState("")
 
-  const categoryRef = useRef(null)
   const modelRef = useRef(null)
   const barcodeRef = useRef(null)
   const nameRef = useRef(null)
+  const nameArRef = useRef(null)
   const descriptionRef = useRef(null)
+  const descriptionArRef = useRef(null)
   const manualRef = useRef(null)
   const imagesRef = useRef(null)
 
@@ -139,7 +142,9 @@ export default function NewProduct() {
     formData.append("model", modelRef.current.value)
     formData.append("barcode", barcodeRef.current.value)
     formData.append("name", nameRef.current.value)
+    formData.append("name_ar", nameArRef.current.value)
     formData.append("description", descriptionRef.current.value)
+    formData.append("description_ar", descriptionArRef.current.value)
     selectedCategories.forEach(cat => formData.append("categories", cat))
     if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0])
     images.forEach(file => formData.append("images", file))
@@ -166,8 +171,25 @@ export default function NewProduct() {
       formData.append("features", JSON.stringify(features))
     }
 
+    // ✅ Arabic Features
+    const features_ar = featuresArText
+      .split(",")
+      .map(f => f.trim())
+      .filter(Boolean)
+
+    if (features_ar.length > 0) {
+      formData.append("features_ar", JSON.stringify(features_ar))
+    }
+
     // ✅ Specifications (remove empty ones)
-    const cleanSpecs = specifications.filter(s => s.name.trim() && s.value.trim())
+    const cleanSpecs = specifications
+      .filter(s => s.name.trim() && s.value.trim())
+      .map(s => ({
+        name: s.name,
+        value: s.value,
+        name_ar: s.name_ar || "",
+        value_ar: s.value_ar || "",
+      }))
 
     if (cleanSpecs.length > 0) {
       formData.append("specifications", JSON.stringify(cleanSpecs))
@@ -238,7 +260,7 @@ export default function NewProduct() {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Name</label>
+            <label className="block mb-1 text-sm font-medium">Name (English)</label>
             <input
               ref={nameRef}
               type="text"
@@ -248,7 +270,18 @@ export default function NewProduct() {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Description</label>
+            <label className="block mb-1 text-sm font-medium">Name (Arabic)</label>
+            <input
+              ref={nameArRef}
+              type="text"
+              dir="rtl"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder="Product name (AR)"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium">Description (English)</label>
             <textarea
               ref={descriptionRef}
               rows="4"
@@ -257,15 +290,39 @@ export default function NewProduct() {
             ></textarea>
           </div>
 
+          <div>
+            <label className="block mb-1 text-sm font-medium">Description (Arabic)</label>
+            <textarea
+              ref={descriptionArRef}
+              rows="4"
+              dir="rtl"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder="Product description (Arabic)"
+            ></textarea>
+          </div>
+
           {/* Features */}
           <div>
-            <label className="block mb-1 text-sm font-medium">Features</label>
+            <label className="block mb-1 text-sm font-medium">Features (English)</label>
             <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
-
             <textarea
               rows="3"
               value={featuresText}
               onChange={e => setFeaturesText(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder=""
+            />
+          </div>
+
+          {/* Arabic Features */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">Features (Arabic)</label>
+            <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
+            <textarea
+              rows="3"
+              dir="rtl"
+              value={featuresArText}
+              onChange={e => setFeaturesArText(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder=""
             />
@@ -285,19 +342,33 @@ export default function NewProduct() {
                     type="text"
                     value={spec.name}
                     onChange={e => updateSpecification(i, "name", e.target.value)}
-                    placeholder="Specification name"
+                    placeholder="Name (EN)"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                   />
-
+                  <input
+                    type="text"
+                    value={spec.name_ar || ""}
+                    onChange={e => updateSpecification(i, "name_ar", e.target.value)}
+                    placeholder="Name (AR)"
+                    dir="rtl"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                  />
+                  <input
+                    type="text"
+                    value={spec.value}
+                    onChange={e => updateSpecification(i, "value", e.target.value)}
+                    placeholder="Value (EN)"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                  />
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={spec.value}
-                      onChange={e => updateSpecification(i, "value", e.target.value)}
-                      placeholder="Value"
+                      value={spec.value_ar || ""}
+                      onChange={e => updateSpecification(i, "value_ar", e.target.value)}
+                      placeholder="Value (AR)"
+                      dir="rtl"
                       className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                     />
-
                     <button
                       type="button"
                       onClick={() => removeSpecification(i)}

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
+import { useLanguage } from "@/context/LanguageContext"
 
-// ✅ Slugify helper
+// ✅ Slugify helper (EN only for URLs)
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -23,8 +24,8 @@ const deslugify = str =>
 
 export default function Products() {
   const params = useParams()
+  const { isAr, p, t } = useLanguage()
 
-  // 🔍 Query params
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategoryFromQuery, setSelectedCategoryFromQuery] = useState(null)
 
@@ -37,10 +38,9 @@ export default function Products() {
   const selectedCategoryFromPath = params?.category
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
 
-  const [products, setProducts] = useState([])
   const [showing, setShowing] = useState([])
   const [loading, setLoading] = useState(true)
-  const [displayCategory, setDisplayCategory] = useState("All Products")
+  const [displayCategory, setDisplayCategory] = useState("")
 
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
@@ -49,39 +49,48 @@ export default function Products() {
     const fetchProducts = async () => {
       try {
         const res = await Client.get("/products")
-        let fetched = res.data.products || []
+        const fetched = res.data.products || []
 
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
-          const filtered = fetched.filter(p =>
-            Array.isArray(p.categories)
-              ? p.categories.some(c => normalize(slugify(c?.name)) === normalizedQuery)
-              : p.category && normalize(slugify(p.category.name)) === normalizedQuery
+
+          const filtered = fetched.filter(pr =>
+            Array.isArray(pr.categories)
+              ? pr.categories.some(c => normalize(slugify(c?.name)) === normalizedQuery)
+              : pr.category && normalize(slugify(pr.category.name)) === normalizedQuery
           )
 
           setShowing(filtered)
-          setDisplayCategory(deslugify(selectedCategory))
+
+          // ✅ Get Arabic category name for display
+          const matchedCategory =
+            filtered[0]?.categories?.find(c => slugify(c.name) === selectedCategory) ||
+            filtered[0]?.category
+
+          setDisplayCategory(
+            isAr && matchedCategory?.name_ar ? matchedCategory.name_ar : deslugify(selectedCategory)
+          )
         } else if (searchQuery) {
           const query = searchQuery.toLowerCase()
+
           const filtered = fetched.filter(
-            p =>
-              p.name.toLowerCase().includes(query) ||
-              p.model?.toLowerCase().includes(query) ||
-              p.barcode?.toLowerCase().includes(query)
+            pr =>
+              pr.name.toLowerCase().includes(query) ||
+              pr.name_ar?.includes(query) ||
+              pr.model?.toLowerCase().includes(query) ||
+              pr.barcode?.toLowerCase().includes(query)
           )
 
           setShowing(filtered)
           setDisplayCategory(`Search results for "${searchQuery}"`)
         } else {
           const uniqueProducts = Array.from(
-            new Map(fetched.map(p => [p._id || p.slug, p])).values()
+            new Map(fetched.map(pr => [pr._id || pr.slug, pr])).values()
           )
 
           setShowing(uniqueProducts)
-          setDisplayCategory("All Products")
+          setDisplayCategory(t("allProducts"))
         }
-
-        setProducts(fetched)
       } catch (err) {
         console.error("❌ Error loading products:", err)
       } finally {
@@ -90,12 +99,12 @@ export default function Products() {
     }
 
     fetchProducts()
-  }, [selectedCategory, searchQuery])
+  }, [selectedCategory, searchQuery, isAr])
 
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-[60vh] text-gray-700">
-        Loading products...
+        {t("loadingProducts")}
       </div>
     )
 
@@ -137,7 +146,6 @@ export default function Products() {
 
   return (
     <>
-      {/* ✅ Structured Data (App Router Safe) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -147,12 +155,12 @@ export default function Products() {
         {/* Breadcrumb */}
         <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
           <nav className="flex items-center space-x-2">
-            <Link href="/" className="hover:text-yellow-600 font-medium">
-              Home
+            <Link href={p("/")} className="hover:text-yellow-600 font-medium">
+              {t("home")}
             </Link>
             <span>/</span>
-            <Link href="/products" className="hover:text-yellow-600 font-medium">
-              Products
+            <Link href={p("/products")} className="hover:text-yellow-600 font-medium">
+              {t("products")}
             </Link>
             {(selectedCategory || searchQuery) && (
               <>
@@ -166,10 +174,10 @@ export default function Products() {
         {/* Header */}
         <div className="w-full max-w-6xl mb-3">
           <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2 capitalize">
-            {displayCategory}
+            {displayCategory || t("allProducts")}
           </h1>
-          <p className="text-gray-700 text-sm font-medium text-left">
-            Showing {showing.length} product{showing.length !== 1 && "s"}
+          <p className="text-gray-700 text-sm font-medium text-start">
+            {t("showing")} {showing.length} {showing.length !== 1 ? t("products") : t("product")}
           </p>
         </div>
 
@@ -177,15 +185,17 @@ export default function Products() {
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
           {showing.length > 0 ? (
             showing.map(product => {
-              const firstCat =
+              const firstCatObj =
                 Array.isArray(product.categories) && product.categories.length > 0
-                  ? product.categories[0]?.name
-                  : product.category?.name || "others"
+                  ? product.categories[0]
+                  : product.category
+
+              const firstCatSlug = firstCatObj?.name || "others"
 
               return (
                 <Link
                   key={product.slug}
-                  href={`/products/${slugify(firstCat)}/${product.slug}`}
+                  href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
                   className="group"
                 >
                   <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
@@ -193,21 +203,26 @@ export default function Products() {
                       <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md flex items-center justify-center">
                         <img
                           src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                          alt={product.name}
+                          alt={isAr && product.name_ar ? product.name_ar : product.name}
                           loading="lazy"
                           decoding="async"
-                          className="object-contain w-full h-full scale-100 transition-transform duration-500 ease-in-out group-hover:scale-110 will-change-transform"
+                          className="object-contain w-full h-full scale-100 transition-transform duration-500 ease-in-out group-hover:scale-110"
                         />
                       </div>
                     </div>
 
-                    <div className="flex flex-col justify-between px-3 pb-3 text-left flex-grow">
+                    <div className="flex flex-col justify-between px-3 pb-3 text-start flex-grow">
                       <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
-                        {product.name}
+                        {isAr && product.name_ar ? product.name_ar : product.name}
                       </h5>
+
                       <div className="text-xs text-gray-600 space-y-[2px]">
-                        <p>Model: {product.model || "N/A"}</p>
-                        <p>Barcode: {product.barcode || "N/A"}</p>
+                        <p>
+                          {t("model")}: {product.model || "N/A"}
+                        </p>
+                        <p>
+                          {t("barcode")}: {product.barcode || "N/A"}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -216,9 +231,7 @@ export default function Products() {
             })
           ) : (
             <p className="text-gray-600 text-sm text-center">
-              {searchQuery
-                ? `No products found matching "${searchQuery}".`
-                : "No products found in this category."}
+              {searchQuery ? `${t("noResults")} "${searchQuery}".` : t("noProducts")}
             </p>
           )}
         </div>

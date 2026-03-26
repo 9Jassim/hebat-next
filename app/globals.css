@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 html {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-poppins), "Poppins", sans-serif;
+}
+
+html[dir="rtl"] {
+  font-family: var(--font-cairo), "Cairo", sans-serif;
 }
 
 /* small defaults */

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useState, useRef } from "react"
 import { usePathname } from "next/navigation"
 import Client from "@/lib/api"
+import { useLanguage } from "@/context/LanguageContext"
 
 const slugify = str =>
   str
@@ -47,6 +48,7 @@ const findActiveCategory = (categories, slug) => {
 }
 
 export default function CategoryBar({ refreshTrigger }) {
+  const { isAr, p, t } = useLanguage()
   const [categories, setCategories] = useState([])
   const [activeCategory, setActiveCategory] = useState(null)
   const scrollRef = useRef(null)
@@ -84,8 +86,13 @@ export default function CategoryBar({ refreshTrigger }) {
 
   const isMobile = () => window.innerWidth < 768
 
-  // 📍 Get current slug from URL
-  const currentSlug = pathname.split("/")[2] || null
+  // 📍 Get current slug from URL (works for both /products/x and /ar/products/x)
+  const basePath = isAr ? "/ar/products" : "/products"
+  const isProductsPage = pathname === basePath
+  const pathParts = pathname.split("/")
+  const currentSlug = isAr
+    ? pathParts[3] || null   // /ar/products/[slug]
+    : pathParts[2] || null   // /products/[slug]
 
   // 🎯 Get active category based on route
   const activeFromRoute = findActiveCategory(categories, currentSlug)
@@ -148,32 +155,31 @@ export default function CategoryBar({ refreshTrigger }) {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto no-scrollbar px-2 py-2 space-x-4"
+            className="flex overflow-x-auto no-scrollbar px-2 py-2 gap-4"
           >
             {/* All */}
             <Link
-              href="/products"
-              data-active={!currentSlug}
+              href={p("/products")}
+              data-active={isProductsPage}
               onClick={() => setActiveCategory(null)}
-              onMouseEnter={() => {
-                if (!isMobile()) setActiveCategory(null)
-              }}
+              onMouseEnter={() => { if (!isMobile()) setActiveCategory(null) }}
               className={`px-3 py-2 whitespace-nowrap border-b-2 ${
-                !currentSlug ? "text-yellow-500 border-yellow-500" : "text-white border-transparent"
+                isProductsPage ? "text-yellow-500 border-yellow-500" : "text-white border-transparent"
               }`}
             >
-              All
+              {t("all")}
             </Link>
 
             {/* Categories */}
             {categories.map(cat => {
               const slug = slugify(cat.name)
               const isActive = activeFromRoute?._id === cat._id
+              const displayName = isAr && cat.name_ar ? cat.name_ar : cat.name
 
               return (
                 <Link
                   key={cat._id}
-                  href={`/products/${slug}`}
+                  href={p(`/products/${slug}`)}
                   data-active={isActive}
                   onClick={e => handleClick(e, cat)}
                   onMouseEnter={() => handleMouseEnter(cat)}
@@ -183,7 +189,7 @@ export default function CategoryBar({ refreshTrigger }) {
                       : "text-white border-transparent hover:text-yellow-500"
                   }`}
                 >
-                  {cat.name}
+                  {displayName}
                 </Link>
               )
             })}
@@ -191,31 +197,31 @@ export default function CategoryBar({ refreshTrigger }) {
 
           {/* Gradient fade */}
           {showFade && (
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black to-transparent transition-opacity duration-200" />
+            <div className="pointer-events-none absolute end-0 top-0 h-full w-10 ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-black to-transparent transition-opacity duration-200" />
           )}
         </div>
 
         {/* Dropdown */}
         {activeCategory && activeCategory.children.length > 0 && (
-          <div className="absolute top-full left-0 w-full bg-black border-t border-gray-800 shadow-lg">
+          <div className="absolute top-full start-0 w-full bg-black border-t border-gray-800 shadow-lg">
             <div className="max-w-screen-xl mx-auto py-3 px-2">
               {activeCategory.children.map(sub => (
                 <Link
                   key={sub._id}
-                  href={`/products/${slugify(sub.name)}`}
+                  href={p(`/products/${slugify(sub.name)}`)}
                   className="block px-3 py-2 text-gray-300 hover:text-yellow-500"
                   onClick={() => setActiveCategory(null)}
                 >
-                  {sub.name}
+                  {isAr && sub.name_ar ? sub.name_ar : sub.name}
                 </Link>
               ))}
 
               <Link
-                href={`/products/${slugify(activeCategory.name)}`}
+                href={p(`/products/${slugify(activeCategory.name)}`)}
                 className="block px-3 py-2 text-white hover:text-yellow-500 mt-2"
                 onClick={() => setActiveCategory(null)}
               >
-                View All
+                {t("viewAll")}
               </Link>
             </div>
           </div>

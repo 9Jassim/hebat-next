@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 export default function EditForm({ category = {}, categories = [], onSave, onCancel }) {
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     parent: "",
   })
 
@@ -13,6 +14,7 @@ export default function EditForm({ category = {}, categories = [], onSave, onCan
   useEffect(() => {
     setForm({
       name: category?.name || "",
+      name_ar: category?.name_ar || "",
       parent: category?.parent?._id || category?.parent || "",
     })
   }, [category])
@@ -42,12 +44,25 @@ export default function EditForm({ category = {}, categories = [], onSave, onCan
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Category Name */}
       <div>
-        <label className="block text-sm font-medium">Name</label>
+        <label className="block text-sm font-medium">Name (English)</label>
         <input
           name="name"
           value={form.name}
           onChange={handleChange}
           className="w-full border rounded p-2 bg-gray-50 text-black"
+        />
+      </div>
+
+      {/* Category Name Arabic */}
+      <div>
+        <label className="block text-sm font-medium">Name (Arabic)</label>
+        <input
+          name="name_ar"
+          value={form.name_ar}
+          onChange={handleChange}
+          dir="rtl"
+          className="w-full border rounded p-2 bg-gray-50 text-black"
+          placeholder="Category name in Arabic"
         />
       </div>
 
