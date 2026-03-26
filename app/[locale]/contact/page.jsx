@@ -2,8 +2,7 @@ import Contact from "@/components/Contact"
 
 export const metadata = {
   title: "Contact Us",
-  description:
-    "Get in touch with Hebat for inquiries, partnerships, or support.",
+  description: "Get in touch with Hebat for inquiries, partnerships, or support.",
   openGraph: {
     title: "Contact Hebat | We're Here to Help",
     description: "Reach out to Hebat for questions, partnerships, or product support.",

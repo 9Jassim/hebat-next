@@ -218,11 +218,12 @@ export default function ProductDetails({ params }) {
       </div>
     )
 
-  const displayName = isAr && product.name_ar
-    ? product.selectedVariant?.name
-      ? `${product.name_ar} – ${product.selectedVariant.name}`
-      : product.name_ar
-    : product.displayName || product.name
+  const displayName =
+    isAr && product.name_ar
+      ? product.selectedVariant?.name
+        ? `${product.name_ar} – ${product.selectedVariant.name}`
+        : product.name_ar
+      : product.displayName || product.name
 
   const description = isAr && product.description_ar ? product.description_ar : product.description
 
@@ -237,7 +238,9 @@ export default function ProductDetails({ params }) {
         </Link>
         <span>/</span>
         <Link href={p(`/products/${category}`)} className="hover:text-yellow-600 font-medium">
-          {isAr && product.categories[0]?.name_ar ? product.categories[0].name_ar : product.categories[0]?.name}
+          {isAr && product.categories[0]?.name_ar
+            ? product.categories[0].name_ar
+            : product.categories[0]?.name}
         </Link>
         <span>/</span>
         <span className="text-gray-800 font-semibold">{displayName}</span>
@@ -290,9 +293,7 @@ export default function ProductDetails({ params }) {
 
         {/* Details */}
         <div className="order-2 lg:order-1">
-          <h1 className="block text-2xl font-bold text-yellow-500 mb-3">
-            {displayName}
-          </h1>
+          <h1 className="block text-2xl font-bold text-yellow-500 mb-3">{displayName}</h1>
           <p className="text-gray-700 text-sm mb-2">
             <strong>{t("barcode")}:</strong> {product.barcode || "N/A"}
           </p>

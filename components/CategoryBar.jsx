@@ -91,8 +91,8 @@ export default function CategoryBar({ refreshTrigger }) {
   const isProductsPage = pathname === basePath
   const pathParts = pathname.split("/")
   const currentSlug = isAr
-    ? pathParts[3] || null   // /ar/products/[slug]
-    : pathParts[2] || null   // /products/[slug]
+    ? pathParts[3] || null // /ar/products/[slug]
+    : pathParts[2] || null // /products/[slug]
 
   // 🎯 Get active category based on route
   const activeFromRoute = findActiveCategory(categories, currentSlug)
@@ -162,9 +162,13 @@ export default function CategoryBar({ refreshTrigger }) {
               href={p("/products")}
               data-active={isProductsPage}
               onClick={() => setActiveCategory(null)}
-              onMouseEnter={() => { if (!isMobile()) setActiveCategory(null) }}
+              onMouseEnter={() => {
+                if (!isMobile()) setActiveCategory(null)
+              }}
               className={`px-3 py-2 whitespace-nowrap border-b-2 ${
-                isProductsPage ? "text-yellow-500 border-yellow-500" : "text-white border-transparent"
+                isProductsPage
+                  ? "text-yellow-500 border-yellow-500"
+                  : "text-white border-transparent"
               }`}
             >
               {t("all")}

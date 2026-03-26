@@ -138,9 +138,7 @@ export default function Footer() {
 
         {/* RIGHT — Newsletter */}
         <div className="flex flex-col items-center sm:items-end space-y-3">
-          <h3 className="text-sm font-semibold uppercase text-yellow-500">
-            {t("newsletter")}
-          </h3>
+          <h3 className="text-sm font-semibold uppercase text-yellow-500">{t("newsletter")}</h3>
 
           <form
             onSubmit={handleSubscribe}

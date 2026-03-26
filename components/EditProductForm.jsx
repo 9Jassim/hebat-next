@@ -200,14 +200,20 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setFeatures(prev => prev.filter((_, i) => i !== index))
   }
 
-  const addFeatureAr = () => { markDirty(); setFeaturesAr(prev => [...prev, ""]) }
+  const addFeatureAr = () => {
+    markDirty()
+    setFeaturesAr(prev => [...prev, ""])
+  }
   const updateFeatureAr = (index, value) => {
     markDirty()
     const updated = [...features_ar]
     updated[index] = value
     setFeaturesAr(updated)
   }
-  const removeFeatureAr = index => { markDirty(); setFeaturesAr(prev => prev.filter((_, i) => i !== index)) }
+  const removeFeatureAr = index => {
+    markDirty()
+    setFeaturesAr(prev => prev.filter((_, i) => i !== index))
+  }
 
   // ============================
   // Confirm Save

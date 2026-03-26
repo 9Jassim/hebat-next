@@ -45,10 +45,34 @@ export default async function sitemap() {
 
   // Static pages
   const staticEntries = [
-    ...entry({ enPath: "/", arPath: "/ar/", lastModified: now, changeFrequency: "weekly", priority: 1.0 }),
-    ...entry({ enPath: "/products", arPath: "/ar/products", lastModified: now, changeFrequency: "weekly", priority: 0.9 }),
-    ...entry({ enPath: "/about", arPath: "/ar/about", lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
-    ...entry({ enPath: "/contact", arPath: "/ar/contact", lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
+    ...entry({
+      enPath: "/",
+      arPath: "/ar/",
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 1.0,
+    }),
+    ...entry({
+      enPath: "/products",
+      arPath: "/ar/products",
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    }),
+    ...entry({
+      enPath: "/about",
+      arPath: "/ar/about",
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }),
+    ...entry({
+      enPath: "/contact",
+      arPath: "/ar/contact",
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }),
   ]
 
   try {

@@ -55,11 +55,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      dir="ltr"
-      className={`${poppins.variable} ${cairo.variable}`}
-    >
+    <html lang="en" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
       <body>
         <Script id="structured-data" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({

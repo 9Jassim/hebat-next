@@ -12,13 +12,14 @@ export async function generateMetadata({ params }) {
     const displayName = selectedVariant?.name
       ? `${isAr && product.name_ar ? product.name_ar : product.name} – ${selectedVariant.name}`
       : isAr && product.name_ar
-      ? product.name_ar
-      : product.name
+        ? product.name_ar
+        : product.name
 
-    const description = isAr && product.description_ar
-      ? product.description_ar
-      : product.description ||
-        `Discover ${displayName} — premium ${product.category?.name || category} from Hebat.`
+    const description =
+      isAr && product.description_ar
+        ? product.description_ar
+        : product.description ||
+          `Discover ${displayName} — premium ${product.category?.name || category} from Hebat.`
 
     const imageUrl =
       selectedVariant?.images?.[0]?.s3Url || product.images?.[0]?.s3Url || "/hebat_cover.png"
