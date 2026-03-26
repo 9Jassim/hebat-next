@@ -3,8 +3,10 @@ import toast from "react-hot-toast"
 import { useState } from "react"
 import Link from "next/link"
 import Client from "@/lib/api"
+import { useLanguage } from "@/context/LanguageContext"
 
 export default function Footer() {
+  const { t, p } = useLanguage()
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState("")
 
@@ -38,7 +40,7 @@ export default function Footer() {
       <div className="w-full max-w-screen-xl mx-auto p-6 md:py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
         {/* LEFT — Contact Info + Socials */}
         <div className="flex flex-col items-center sm:items-start space-y-3">
-          <p className="text-sm text-center sm:text-left">
+          <p className="text-sm text-center sm:text-start">
             <span className="font-semibold uppercase">WhatsApp:</span> +973 66600457
             <br />
             {/* <span className="font-semibold uppercase">Email:</span> info@hebat.com */}
@@ -126,19 +128,17 @@ export default function Footer() {
 
         {/* MIDDLE — About / Contact */}
         <div className="flex flex-col items-center justify-center space-y-2">
-          <Link href="/about" className="hover:text-yellow-500 text-sm font-medium">
-            About Us
+          <Link href={p("/about")} className="hover:text-yellow-500 text-sm font-medium">
+            {t("about")}
           </Link>
-          <Link href="/contact" className="hover:text-yellow-500 text-sm font-medium">
-            Contact Us
+          <Link href={p("/contact")} className="hover:text-yellow-500 text-sm font-medium">
+            {t("contact")}
           </Link>
         </div>
 
         {/* RIGHT — Newsletter */}
         <div className="flex flex-col items-center sm:items-end space-y-3">
-          <h3 className="text-sm font-semibold uppercase text-yellow-500">
-            Subscribe to our Newsletter
-          </h3>
+          <h3 className="text-sm font-semibold uppercase text-yellow-500">{t("newsletter")}</h3>
 
           <form
             onSubmit={handleSubscribe}
@@ -147,7 +147,7 @@ export default function Footer() {
             <input
               type="email"
               required
-              placeholder="Your email"
+              placeholder={t("yourEmail")}
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full px-3 py-2 rounded-md text-gray-900 text-sm border border-gray-300
@@ -157,10 +157,10 @@ export default function Footer() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md 
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md
                  font-medium text-sm transition disabled:opacity-50 whitespace-nowrap"
             >
-              {status === "loading" ? "..." : "Subscribe"}
+              {status === "loading" ? "..." : t("subscribe")}
             </button>
           </form>
         </div>
@@ -169,8 +169,8 @@ export default function Footer() {
       {/* Bottom Line */}
       <hr className="border-gray-800" />
       <p className="text-center text-sm text-gray-400 py-4">
-        © {new Date().getFullYear()} <span className="text-yellow-500 font-semibold">Hebat</span>.
-        All Rights Reserved.
+        © {new Date().getFullYear()}{" "}
+        <span className="text-yellow-500 font-semibold">Hebat | هيبات</span>. All Rights Reserved.
       </p>
     </footer>
   )

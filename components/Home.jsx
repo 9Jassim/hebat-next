@@ -2,50 +2,44 @@
 
 import Link from "next/link"
 import Banners from "@/components/Banners"
+import { useLanguage } from "@/context/LanguageContext"
+
+const content = {
+  en: {
+    heading: "HEBAT",
+    body: "Our products are selected for quality, variety, and customer satisfaction.\n\nWith a keen eye for detail, we ensure a delightful shopping experience that keeps you coming back.\n\nCustomer satisfaction is our top priority. We strive to provide the best products to meet your needs.\n\nVisit our shop website.",
+    cta: "Visit Morslon",
+  },
+  ar: {
+    heading: "هيبات",
+    body: "منتجاتنا مختارة بعناية لتحقيق الجودة والتنوع ورضا العملاء.\n\nنحرص على تقديم تجربة تسوق ممتعة تجعلك تعود إلينا مراراً.\n\nرضا العميل هو أولويتنا القصوى، ونسعى دائماً لتقديم أفضل المنتجات التي تلبي احتياجاتك.\n\nزر موقع متجرنا الإلكتروني.",
+    cta: "زيارة مورسلون",
+  },
+}
 
 export default function Home() {
+  const { locale, p } = useLanguage()
+  const { heading, body, cta } = content[locale] || content.en
+
   return (
     <section className="relative overflow-hidden bg-gray-50 p-10">
-      {/* Subtle yellow accent background */}
-      <div className="absolute right-0 top-0 w-full h-full bg-gradient-to-l from-yellow-50 via-white to-white -z-10"></div>
+      <div className="absolute end-0 top-0 w-full h-full ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-yellow-50 via-white to-white -z-10"></div>
 
-      {/* === Full-width for phones, same container for desktop === */}
       <div className="w-full mb-16 lg:px-8">
         <div className="lg:mx-auto lg:max-w-7xl">
           <Banners />
         </div>
       </div>
 
-      {/* === Content Grid === */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-10 relative">
-        <div
-          className="
-            mx-auto 
-            grid 
-            grid-cols-1 
-            lg:grid-cols-2 
-            lg:gap-x-20 
-            items-center
-          "
-        >
+        <div className="mx-auto grid grid-cols-1 lg:grid-cols-2 lg:gap-x-20 items-center">
           {/* Text Section */}
-          <div className="flex flex-col justify-center lg:pr-8">
+          <div className="flex flex-col justify-center lg:pe-8">
             <div className="lg:max-w-lg">
-              <p className="text-3xl font-bold tracking-tight text-yellow-500 sm:text-4xl">HEBAT</p>
-              <p className="mt-6 text-lg leading-8 text-gray-800">
-                Our products are selected for quality, variety, and customer satisfaction.
-                <br />
-                <br />
-                With a keen eye for detail, we ensure a delightful shopping experience that keeps
-                you coming back.
-                <br />
-                <br />
-                Customer satisfaction is our top priority. We strive to provide the best products to
-                meet your needs.
-                <br />
-                <br />
-                Visit our shop website.
+              <p className="text-3xl font-bold tracking-tight text-yellow-500 sm:text-4xl">
+                {heading}
               </p>
+              <p className="mt-6 text-lg leading-8 text-gray-800 whitespace-pre-line">{body}</p>
 
               <button
                 onClick={() => window.open("https://morslon.com/", "_blank")}
@@ -61,7 +55,7 @@ export default function Home() {
                 >
                   <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
                 </svg>
-                Visit Morslon
+                {cta}
               </button>
             </div>
           </div>
@@ -69,43 +63,14 @@ export default function Home() {
           {/* Image Section */}
           <div className="flex justify-center items-center relative mt-12 lg:mt-0">
             <Link
-              href="/products"
-              className="
-                relative
-                block
-                w-[90%]
-                md:w-[34rem]
-                lg:w-[38rem]
-                transition-transform 
-                duration-500 
-                ease-in-out
-                hover:scale-105
-              "
+              href={p("/products")}
+              className="relative block w-[90%] md:w-[34rem] lg:w-[38rem] transition-transform duration-500 ease-in-out hover:scale-105"
             >
-              <div
-                className="
-                  absolute 
-                  inset-0 
-                  bg-yellow-400 
-                  rounded-3xl 
-                  -rotate-3 
-                  translate-x-3 
-                  translate-y-3 
-                  opacity-20
-                "
-              ></div>
-
+              <div className="absolute inset-0 bg-yellow-400 rounded-3xl -rotate-3 translate-x-3 translate-y-3 opacity-20"></div>
               <img
                 src="/hebat_cover.png"
                 alt="Hebat Product Showcase"
-                className="
-                  relative 
-                  w-full 
-                  rounded-3xl 
-                  shadow-2xl 
-                  object-contain 
-                  max-h-[28rem]
-                "
+                className="relative w-full rounded-3xl shadow-2xl object-contain max-h-[28rem]"
               />
             </Link>
           </div>

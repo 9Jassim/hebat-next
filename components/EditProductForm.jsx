@@ -18,6 +18,8 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   // ✅ NEW
   const [specifications, setSpecifications] = useState([])
   const [features, setFeatures] = useState([])
+  const [features_ar, setFeaturesAr] = useState([])
+  const [showFeaturesAr, setShowFeaturesAr] = useState(false)
 
   // ✅ Hide/show toggles
   const [showSpecifications, setShowSpecifications] = useState(false)
@@ -29,7 +31,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const modelRef = useRef(null)
   const barcodeRef = useRef(null)
   const nameRef = useRef(null)
+  const nameArRef = useRef(null)
   const descriptionRef = useRef(null)
+  const descriptionArRef = useRef(null)
   const manualRef = useRef(null)
 
   const markDirty = () => setIsDirty(true)
@@ -52,13 +56,16 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     modelRef.current.value = product.model || ""
     barcodeRef.current.value = product.barcode || ""
     nameRef.current.value = product.name || ""
+    if (nameArRef.current) nameArRef.current.value = product.name_ar || ""
     descriptionRef.current.value = product.description || ""
+    if (descriptionArRef.current) descriptionArRef.current.value = product.description_ar || ""
 
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
 
     setSpecifications(product.specifications || [])
     setFeatures(product.features || [])
+    setFeaturesAr(product.features_ar || [])
 
     setExistingManual(product.manual?.s3Url ? product.manual : null)
     setRemoveManual(false)
@@ -193,6 +200,21 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setFeatures(prev => prev.filter((_, i) => i !== index))
   }
 
+  const addFeatureAr = () => {
+    markDirty()
+    setFeaturesAr(prev => [...prev, ""])
+  }
+  const updateFeatureAr = (index, value) => {
+    markDirty()
+    const updated = [...features_ar]
+    updated[index] = value
+    setFeaturesAr(updated)
+  }
+  const removeFeatureAr = index => {
+    markDirty()
+    setFeaturesAr(prev => prev.filter((_, i) => i !== index))
+  }
+
   // ============================
   // Confirm Save
   // ============================
@@ -216,7 +238,9 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     formData.append("model", modelRef.current.value)
     formData.append("barcode", barcodeRef.current.value)
     formData.append("name", nameRef.current.value)
+    formData.append("name_ar", nameArRef.current?.value || "")
     formData.append("description", descriptionRef.current.value)
+    formData.append("description_ar", descriptionArRef.current?.value || "")
 
     selectedCategories.forEach(cat => formData.append("categories", cat))
 
@@ -255,6 +279,10 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     // ✅ Features
     const cleanFeatures = features.map(f => f.trim()).filter(Boolean)
     formData.append("features", JSON.stringify(cleanFeatures))
+
+    // ✅ Arabic Features
+    const cleanFeaturesAr = features_ar.map(f => f.trim()).filter(Boolean)
+    formData.append("features_ar", JSON.stringify(cleanFeaturesAr))
 
     try {
       const res = await Client.put(`/products/${product._id}`, formData, {
@@ -322,7 +350,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block mb-1 text-sm font-medium">Name</label>
+            <label className="block mb-1 text-sm font-medium">Name (English)</label>
             <input
               ref={nameRef}
               onChange={markDirty}
@@ -331,16 +359,41 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
               placeholder="Product name"
             />
           </div>
+
+          <div className="sm:col-span-2">
+            <label className="block mb-1 text-sm font-medium">Name (Arabic)</label>
+            <input
+              ref={nameArRef}
+              onChange={markDirty}
+              type="text"
+              dir="rtl"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              placeholder="Product name in Arabic"
+            />
+          </div>
         </div>
 
         {/* Description */}
         <div className="mb-3">
-          <label className="block mb-1 text-sm font-medium">Description</label>
+          <label className="block mb-1 text-sm font-medium">Description (English)</label>
           <textarea
             ref={descriptionRef}
             onChange={markDirty}
             rows="3"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          ></textarea>
+        </div>
+
+        {/* Description Arabic */}
+        <div className="mb-3">
+          <label className="block mb-1 text-sm font-medium">Description (Arabic)</label>
+          <textarea
+            ref={descriptionArRef}
+            onChange={markDirty}
+            rows="3"
+            dir="rtl"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            placeholder="Product description in Arabic"
           ></textarea>
         </div>
 
@@ -607,19 +660,33 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                       type="text"
                       value={spec.name}
                       onChange={e => updateSpecification(i, "name", e.target.value)}
-                      placeholder="Specification name"
+                      placeholder="Name (EN)"
                       className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
                     />
-
+                    <input
+                      type="text"
+                      value={spec.name_ar || ""}
+                      onChange={e => updateSpecification(i, "name_ar", e.target.value)}
+                      placeholder="Name (AR)"
+                      dir="rtl"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                    />
+                    <input
+                      type="text"
+                      value={spec.value}
+                      onChange={e => updateSpecification(i, "value", e.target.value)}
+                      placeholder="Value (EN)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                    />
                     <div className="flex gap-2">
                       <input
                         type="text"
-                        value={spec.value}
-                        onChange={e => updateSpecification(i, "value", e.target.value)}
-                        placeholder="Value"
+                        value={spec.value_ar || ""}
+                        onChange={e => updateSpecification(i, "value_ar", e.target.value)}
+                        placeholder="Value (AR)"
+                        dir="rtl"
                         className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
                       />
-
                       <button
                         type="button"
                         onClick={() => removeSpecification(i)}
@@ -690,6 +757,55 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
                 className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
               >
                 + Add Feature
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Arabic Features Toggle */}
+        <div className="border-t border-gray-200 pt-4 mb-4">
+          <button
+            type="button"
+            onClick={() => setShowFeaturesAr(!showFeaturesAr)}
+            className="text-sm font-medium text-yellow-600 hover:underline"
+          >
+            {showFeaturesAr ? "Hide Features (Arabic)" : "Edit Features (Arabic)"}
+          </button>
+
+          {showFeaturesAr && (
+            <div className="mt-3">
+              <div className="space-y-2">
+                {features_ar.map((feature, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
+                  >
+                    <input
+                      type="text"
+                      value={feature}
+                      onChange={e => updateFeatureAr(i, e.target.value)}
+                      placeholder="Feature text (Arabic)..."
+                      dir="rtl"
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFeatureAr(i)}
+                      className="px-2 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <Button
+                type="button"
+                onClick={addFeatureAr}
+                variant="contained"
+                size="small"
+                className="!bg-yellow-500 hover:!bg-yellow-600 text-white text-xs mt-2"
+              >
+                + Add Feature (Arabic)
               </Button>
             </div>
           )}

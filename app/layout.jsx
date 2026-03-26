@@ -1,11 +1,18 @@
 import "./globals.css"
-import Providers from "./providers"
 import Script from "next/script"
-import { Poppins } from "next/font/google"
+import { Poppins, Cairo } from "next/font/google"
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+})
+
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cairo",
   display: "swap",
 })
 
@@ -48,36 +55,20 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={poppins.className}>
+    <html lang="en" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
       <body>
-        {/* JSON-LD (safe here) */}
         <Script id="structured-data" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Hebat",
-            alternateName: "Hebat Official",
+            alternateName: ["Hebat Official", "هيبات", "هبات", "hbat"],
             url: SITE_URL,
-            potentialAction: {
-              "@type": "SearchAction",
-              target: `${SITE_URL}/search?q={search_term_string}`,
-              "query-input": "required name=search_term_string",
-            },
           })}
         </Script>
 
-        <Script id="organization-schema" type="application/ld+json" strategy="afterInteractive">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Hebat",
-            url: SITE_URL,
-            logo: `${SITE_URL}/favicon.ico`,
-          })}
-        </Script>
-        <Providers>{children}</Providers>
+        {children}
 
-        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-L2PNGGS7JL"
           strategy="afterInteractive"

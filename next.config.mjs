@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
 
+  // ✅ Disable Google font fetching during build (fix Vercel timeout)
+  optimizeFonts: false,
+
   images: {
     remotePatterns: [
       {
