@@ -213,8 +213,50 @@ export default function ProductDetails({ params }) {
 
   if (!product)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-700">
-        {t("loadingProduct")}
+      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+        {/* Breadcrumb skeleton */}
+        <div className="flex items-center gap-2 mb-6">
+          <div className="h-4 bg-gray-200 rounded w-12" />
+          <div className="h-4 bg-gray-200 rounded w-2" />
+          <div className="h-4 bg-gray-200 rounded w-24" />
+          <div className="h-4 bg-gray-200 rounded w-2" />
+          <div className="h-4 bg-gray-200 rounded w-36" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+          {/* Gallery skeleton */}
+          <div>
+            <div className="w-full aspect-square bg-gray-200 rounded-2xl mb-3" />
+            <div className="flex gap-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="w-20 h-20 bg-gray-200 rounded-xl flex-shrink-0" />
+              ))}
+            </div>
+          </div>
+
+          {/* Details skeleton */}
+          <div className="space-y-3">
+            <div className="h-7 bg-gray-200 rounded w-3/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/3" />
+            <div className="h-4 bg-gray-200 rounded w-1/4" />
+            <div className="h-5 bg-gray-200 rounded w-28 mt-4" />
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-200 rounded w-5/6" />
+              <div className="h-4 bg-gray-200 rounded w-4/5" />
+            </div>
+            <div className="space-y-2 pt-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-4 bg-gray-200 rounded w-2/3" />
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2 pt-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-4 bg-gray-200 rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     )
 

@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 import { useLanguage } from "@/context/LanguageContext"
+
+const PAGE_SIZE = 20
 
 // ✅ Slugify helper (EN only for URLs)
 const slugify = str =>
@@ -21,6 +23,26 @@ const deslugify = str =>
     ?.replace(/-/g, " ")
     .replace(/\band\b/g, "&")
     .replace(/\b\w/g, c => c.toUpperCase()) || ""
+
+function ProductCardSkeleton() {
+  return (
+    <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm flex flex-col h-[340px] animate-pulse">
+      <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
+        <div className="w-full h-full rounded-xl bg-gray-200" />
+      </div>
+      <div className="flex flex-col justify-between px-3 pb-3 flex-grow">
+        <div className="space-y-2 mt-1">
+          <div className="h-4 bg-gray-200 rounded w-4/5" />
+          <div className="h-4 bg-gray-200 rounded w-3/5" />
+        </div>
+        <div className="space-y-[6px]">
+          <div className="h-3 bg-gray-200 rounded w-2/3" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function Products() {
   const params = useParams()
@@ -41,6 +63,8 @@ export default function Products() {
   const [showing, setShowing] = useState([])
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("")
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const sentinelRef = useRef(null)
 
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
@@ -101,10 +125,47 @@ export default function Products() {
     fetchProducts()
   }, [selectedCategory, searchQuery, isAr])
 
+  // Reset visible count when results change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE)
+  }, [showing])
+
+  // Infinite scroll sentinel
+  const handleSentinel = useCallback(
+    entries => {
+      if (entries[0].isIntersecting && visibleCount < showing.length) {
+        setVisibleCount(prev => prev + PAGE_SIZE)
+      }
+    },
+    [visibleCount, showing.length]
+  )
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(handleSentinel, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [handleSentinel])
+
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-gray-700">
-        {t("loadingProducts")}
+      <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
+        {/* Breadcrumb skeleton */}
+        <div className="w-full max-w-6xl mb-2">
+          <div className="h-4 bg-gray-200 rounded w-48 animate-pulse" />
+        </div>
+        {/* Header skeleton */}
+        <div className="w-full max-w-6xl mb-3 space-y-2">
+          <div className="h-8 bg-gray-200 rounded w-56 animate-pulse" />
+          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+        </div>
+        {/* Grid skeleton */}
+        <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     )
 
@@ -143,6 +204,8 @@ export default function Products() {
           : []),
     ],
   }
+
+  const visibleProducts = showing.slice(0, visibleCount)
 
   return (
     <>
@@ -183,8 +246,8 @@ export default function Products() {
 
         {/* Product Grid */}
         <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
-          {showing.length > 0 ? (
-            showing.map(product => {
+          {visibleProducts.length > 0 ? (
+            visibleProducts.map(product => {
               const firstCatObj =
                 Array.isArray(product.categories) && product.categories.length > 0
                   ? product.categories[0]
@@ -235,6 +298,9 @@ export default function Products() {
             </p>
           )}
         </div>
+
+        {/* Infinite scroll sentinel */}
+        {visibleCount < showing.length && <div ref={sentinelRef} className="w-full h-10 mt-4" />}
       </div>
     </>
   )
