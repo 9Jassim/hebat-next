@@ -19,8 +19,12 @@ export function useLanguage() {
   // Prefix path with /ar when Arabic
   const p = path => (isAr ? `/ar${path}` : path)
 
-  // Toggle URL: strip or add /ar prefix
-  const toggleHref = isAr ? pathname.replace(/^\/ar/, "") || "/" : `/ar${pathname}`
+  // Toggle URL: strip or add /ar prefix (admin pages have no Arabic version)
+  const toggleHref = pathname.startsWith("/admin")
+    ? pathname
+    : isAr
+    ? pathname.replace(/^\/ar/, "") || "/"
+    : `/ar${pathname}`
 
   return { locale, isAr, t, p, toggleHref }
 }

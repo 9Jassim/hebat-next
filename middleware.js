@@ -10,6 +10,13 @@ const ADMIN_PROTECTED = [
 export function middleware(req) {
   const { pathname } = req.nextUrl
 
+  // Redirect /ar/admin/* → /admin/* (admin has no Arabic version)
+  if (pathname.startsWith("/ar/admin")) {
+    const url = req.nextUrl.clone()
+    url.pathname = pathname.replace(/^\/ar/, "")
+    return NextResponse.redirect(url)
+  }
+
   // Admin auth check (unchanged)
   if (pathname.startsWith("/admin")) {
     if (ADMIN_PROTECTED.some(p => pathname.startsWith(p))) {
