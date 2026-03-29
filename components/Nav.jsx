@@ -24,6 +24,8 @@ export default function Nav() {
 
   const [open, setOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
+  const [navVisible, setNavVisible] = useState(true)
+  const lastScrollY = useRef(0)
   const [showCategories, setShowCategories] = useState(false)
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState("")
@@ -49,6 +51,35 @@ export default function Nav() {
     }
     fetchProducts()
   }, [refreshTrigger])
+
+  useEffect(() => {
+    const getScrollY = () =>
+      (document.scrollingElement || document.documentElement).scrollTop
+
+    const handleScroll = () => {
+      const current = getScrollY()
+      if (current < 10) {
+        setNavVisible(true)
+      } else if (current > lastScrollY.current) {
+        setNavVisible(false)
+      } else {
+        setNavVisible(true)
+      }
+      lastScrollY.current = current
+    }
+
+    // Listen on every possible scroll container
+    const scrollEl = document.scrollingElement || document.documentElement
+    scrollEl.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    document.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => {
+      scrollEl.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("scroll", handleScroll)
+      document.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = e => {
@@ -140,7 +171,14 @@ export default function Nav() {
 
   return (
     <>
-      <nav ref={navRef} className="fixed top-0 left-0 w-full z-50 bg-black shadow-md">
+      <nav
+        ref={navRef}
+        className="fixed top-0 left-0 w-full z-50 bg-black shadow-md"
+        style={{
+          transform: navVisible ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.3s ease",
+        }}
+      >
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2">
           {/* Top Row */}
           <div className="flex justify-between items-center w-full md:w-auto">
@@ -344,6 +382,15 @@ export default function Nav() {
                         Manage Banners
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        href="/admin/homepage"
+                        onClick={closeMenus}
+                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                      >
+                        Homepage Settings
+                      </Link>
+                    </li>
                     <li className="border-t border-gray-700">
                       <button
                         onClick={async () => {
@@ -454,6 +501,15 @@ export default function Nav() {
                             className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
                           >
                             Manage Banners
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/admin/homepage"
+                            onClick={closeMenus}
+                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
+                          >
+                            Homepage Settings
                           </Link>
                         </li>
                         <li className="border-t border-gray-700">
