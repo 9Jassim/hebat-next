@@ -129,14 +129,14 @@ export default function Home() {
       // Build category tree so every root cat has its children attached
       const allCats = catRes.data.categories || []
       const catMap = {}
-      allCats.forEach(cat => { catMap[cat._id] = { ...cat, children: [] } })
+      allCats.forEach(cat => {
+        catMap[cat._id] = { ...cat, children: [] }
+      })
       allCats.forEach(cat => {
         const parentId = cat.parent?._id || cat.parent
         if (parentId && catMap[parentId]) catMap[parentId].children.push(catMap[cat._id])
       })
-      const rootsWithChildren = allCats
-        .filter(cat => !cat.parent)
-        .map(cat => catMap[cat._id])
+      const rootsWithChildren = allCats.filter(cat => !cat.parent).map(cat => catMap[cat._id])
 
       if (config?.featuredCategories?.length) {
         const configIds = new Set(config.featuredCategories.map(c => c._id || c))
@@ -281,48 +281,49 @@ export default function Home() {
 
             {/* Subcategory expand panel — spans all columns */}
             <AnimatePresence>
-              {expandedCat && (() => {
-                const expandedIdx = categories.findIndex(c => c._id === expandedCat)
-                const cat = categories[expandedIdx]
-                if (!cat?.children?.length) return null
-                const gradient = GRADIENTS[expandedIdx % GRADIENTS.length]
-                return (
-                  <motion.div
-                    key={expandedCat}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="col-span-full overflow-hidden"
-                  >
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2 pb-1">
-                      {cat.children.map((sub, si) => {
-                        const subName = isAr && sub.name_ar ? sub.name_ar : sub.name
-                        return (
-                          <motion.div
-                            key={sub._id}
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2, delay: si * 0.04 }}
-                          >
-                            <Link
-                              href={p(`/products/${slugify(sub.name)}`)}
-                              className={`group relative flex items-center justify-between gap-2 px-4 py-3 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}
+              {expandedCat &&
+                (() => {
+                  const expandedIdx = categories.findIndex(c => c._id === expandedCat)
+                  const cat = categories[expandedIdx]
+                  if (!cat?.children?.length) return null
+                  const gradient = GRADIENTS[expandedIdx % GRADIENTS.length]
+                  return (
+                    <motion.div
+                      key={expandedCat}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="col-span-full overflow-hidden"
+                    >
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2 pb-1">
+                        {cat.children.map((sub, si) => {
+                          const subName = isAr && sub.name_ar ? sub.name_ar : sub.name
+                          return (
+                            <motion.div
+                              key={sub._id}
+                              initial={{ opacity: 0, y: 8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.2, delay: si * 0.04 }}
                             >
-                              {/* White wash to create a pastel/tinted look */}
-                              <div className="absolute inset-0 bg-white/50 group-hover:bg-white/40 transition-colors" />
-                              <span className="relative z-10 text-gray-800 font-semibold text-sm leading-snug">
-                                {subName}
-                              </span>
-                              <ChevronDown className="relative z-10 w-3.5 h-3.5 text-gray-600 -rotate-90 flex-shrink-0 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                            </Link>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  </motion.div>
-                )
-              })()}
+                              <Link
+                                href={p(`/products/${slugify(sub.name)}`)}
+                                className={`group relative flex items-center justify-between gap-2 px-4 py-3 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}
+                              >
+                                {/* White wash to create a pastel/tinted look */}
+                                <div className="absolute inset-0 bg-white/50 group-hover:bg-white/40 transition-colors" />
+                                <span className="relative z-10 text-gray-800 font-semibold text-sm leading-snug">
+                                  {subName}
+                                </span>
+                                <ChevronDown className="relative z-10 w-3.5 h-3.5 text-gray-600 -rotate-90 flex-shrink-0 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                              </Link>
+                            </motion.div>
+                          )
+                        })}
+                      </div>
+                    </motion.div>
+                  )
+                })()}
             </AnimatePresence>
           </div>
         </FadeUp>
@@ -382,9 +383,7 @@ export default function Home() {
                     <p className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-yellow-500 transition-colors leading-snug">
                       {name}
                     </p>
-                    {product.model && (
-                      <p className="text-xs text-gray-400 mt-1">{product.model}</p>
-                    )}
+                    {product.model && <p className="text-xs text-gray-400 mt-1">{product.model}</p>}
                   </div>
                 </Link>
               )

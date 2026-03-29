@@ -53,8 +53,7 @@ export default function Nav() {
   }, [refreshTrigger])
 
   useEffect(() => {
-    const getScrollY = () =>
-      (document.scrollingElement || document.documentElement).scrollTop
+    const getScrollY = () => (document.scrollingElement || document.documentElement).scrollTop
 
     const handleScroll = () => {
       const current = getScrollY()

@@ -54,15 +54,11 @@ export default function AdminHomepagePage() {
   }, [])
 
   const toggleCategory = id => {
-    setSelectedCategoryIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+    setSelectedCategoryIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
   }
 
   const toggleProduct = id => {
-    setSelectedProductIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+    setSelectedProductIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
   }
 
   const handleSave = async () => {
