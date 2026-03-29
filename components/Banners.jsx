@@ -81,7 +81,7 @@ export default function Banners({ images }) {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Track (no height hacks; track takes container height) */}
-      <motion.div className="flex w-full h-full" animate={controls}>
+      <motion.div className="flex w-full h-full" dir="ltr" animate={controls}>
         {banners.map((b, i) => (
           <div key={i} className="w-full h-full flex-shrink-0">
             <Link href={b.path || "#"} className="block w-full h-full">
