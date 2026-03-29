@@ -300,9 +300,7 @@ export default function Products() {
         </div>
 
         {/* Infinite scroll sentinel */}
-        {visibleCount < showing.length && (
-          <div ref={sentinelRef} className="w-full h-10 mt-4" />
-        )}
+        {visibleCount < showing.length && <div ref={sentinelRef} className="w-full h-10 mt-4" />}
       </div>
     </>
   )

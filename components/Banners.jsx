@@ -60,11 +60,22 @@ export default function Banners({ images }) {
 
   const currentAspect = ratios[index] || "16 / 9"
 
-  if (!len)
+  // Show skeleton until banners load AND first image ratio is known
+  if (!len || !ratios[0])
     return (
-      <div className="w-full rounded-3xl overflow-hidden shadow-2xl">
-        <div style={{ aspectRatio: "16 / 9" }} className="bg-gray-100 w-full" />
-      </div>
+      <>
+        {/* Hidden preloader: triggers image load + captures ratios without displaying */}
+        {len > 0 && (
+          <div className="hidden" aria-hidden="true">
+            {banners.map((b, i) => (
+              <img key={i} src={b.image?.s3Url} onLoad={handleImgLoad(i)} alt="" />
+            ))}
+          </div>
+        )}
+        <div className="w-full rounded-3xl overflow-hidden shadow-2xl">
+          <div style={{ aspectRatio: "16 / 9" }} className="bg-gray-100 animate-pulse w-full" />
+        </div>
+      </>
     )
 
   return (

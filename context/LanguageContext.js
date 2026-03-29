@@ -23,8 +23,8 @@ export function useLanguage() {
   const toggleHref = pathname.startsWith("/admin")
     ? pathname
     : isAr
-    ? pathname.replace(/^\/ar/, "") || "/"
-    : `/ar${pathname}`
+      ? pathname.replace(/^\/ar/, "") || "/"
+      : `/ar${pathname}`
 
   return { locale, isAr, t, p, toggleHref }
 }
