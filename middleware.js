@@ -5,6 +5,7 @@ const ADMIN_PROTECTED = [
   "/admin/newsletter",
   "/admin/banners",
   "/admin/contacts",
+  "/admin/homepage",
 ]
 
 export function middleware(req) {
