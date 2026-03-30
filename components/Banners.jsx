@@ -18,6 +18,7 @@ export default function Banners({ images }) {
 
   const dragStartX = useRef(null)
   const hasDragged = useRef(false)
+  const indexRef = useRef(1)
 
   // Load banners
   useEffect(() => {
@@ -41,6 +42,38 @@ export default function Banners({ images }) {
     if (i === len + 1) return 0
     return i - 1
   }
+
+  // Keep indexRef in sync so visibility handler always has the latest index
+  useEffect(() => {
+    indexRef.current = index
+  }, [index])
+
+  // Pause + re-sync when tab is hidden/shown to prevent animation jump on return
+  useEffect(() => {
+    if (!len) return
+    const handleVisibility = () => {
+      if (document.hidden) {
+        setPaused(true)
+      } else {
+        // Stop any in-flight animation and snap to current position instantly
+        controls.stop()
+        const i = indexRef.current
+        // If stuck on a clone, resolve to the real slide
+        if (i === 0) {
+          controls.set({ x: `-${len * 100}%` })
+          setIndex(len)
+        } else if (i === len + 1) {
+          controls.set({ x: `-100%` })
+          setIndex(1)
+        } else {
+          controls.set({ x: `-${i * 100}%` })
+        }
+        setPaused(false)
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
+  }, [len, controls])
 
   // Auto-slide
   useEffect(() => {
