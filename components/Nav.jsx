@@ -60,7 +60,8 @@ export default function Nav() {
     const getSearchEl = () => searchSectionRef.current
     const getCatEl = () => categoryBarWrapRef.current
 
-    const showCollapsibles = () => {
+    const showAll = () => {
+      nav.style.transform = "translateY(0)"
       const s = getSearchEl()
       const c = getCatEl()
       if (s) {
@@ -72,7 +73,12 @@ export default function Nav() {
         c.style.opacity = "1"
       }
     }
-    const hideCollapsibles = () => {
+
+    const hideDesktop = () => {
+      nav.style.transform = "translateY(-110%)"
+    }
+
+    const hideMobile = () => {
       const s = getSearchEl()
       const c = getCatEl()
       if (s) {
@@ -85,25 +91,35 @@ export default function Nav() {
       }
     }
 
-    const handleScroll = () => {
-      const y = window.scrollY ?? window.pageYOffset ?? document.documentElement.scrollTop ?? 0
-      const mobile = window.innerWidth < 768
+    // Accumulate scroll delta — only act after 50px sustained scroll in one direction.
+    // This prevents glitching from mobile address-bar hide/show (which causes ~44px jitter).
+    const THRESHOLD = 50
+    let debt = 0
 
-      if (y <= 5) {
-        if (mobile) showCollapsibles()
-        else nav.style.transform = "translateY(0)"
-      } else if (y > lastScrollY.current + 5) {
-        if (mobile) hideCollapsibles()
-        else nav.style.transform = "translateY(-110%)"
-      } else if (y < lastScrollY.current - 5) {
-        if (mobile) showCollapsibles()
-        else nav.style.transform = "translateY(0)"
-      }
+    const handleScroll = () => {
+      const y = window.scrollY || 0
+      const delta = y - lastScrollY.current
       lastScrollY.current = y
+
+      if (y <= 10) {
+        debt = 0
+        showAll()
+        return
+      }
+
+      debt += delta
+      if (debt > THRESHOLD) {
+        debt = THRESHOLD
+        if (window.innerWidth < 768) hideMobile()
+        else hideDesktop()
+      } else if (debt < -THRESHOLD) {
+        debt = -THRESHOLD
+        showAll()
+      }
     }
 
-    // On breakpoint change reset everything so nothing gets stuck
     const handleResize = () => {
+      debt = 0
       nav.style.transform = ""
       const s = getSearchEl()
       const c = getCatEl()
@@ -115,13 +131,13 @@ export default function Nav() {
         c.style.maxHeight = ""
         c.style.opacity = ""
       }
-      lastScrollY.current = window.scrollY ?? 0
+      lastScrollY.current = window.scrollY || 0
     }
 
-    document.addEventListener("scroll", handleScroll, { passive: true, capture: true })
+    window.addEventListener("scroll", handleScroll, { passive: true })
     window.addEventListener("resize", handleResize, { passive: true })
     return () => {
-      document.removeEventListener("scroll", handleScroll, { capture: true })
+      window.removeEventListener("scroll", handleScroll)
       window.removeEventListener("resize", handleResize)
     }
   }, [])
