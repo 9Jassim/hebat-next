@@ -8,9 +8,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const SWIPE_THRESHOLD = 50
 
+// Module-level cache — survives component unmount/remount (page navigation)
+let _cachedBanners = null
+let _cachedRatios = []
+
 export default function Banners({ images }) {
-  const [banners, setBanners] = useState([])
-  const [ratios, setRatios] = useState([])
+  const [banners, setBanners] = useState(_cachedBanners ?? [])
+  const [ratios, setRatios] = useState(_cachedRatios)
   // index into the extended track: 0 = clone of last, 1..len = real slides, len+1 = clone of first
   const [index, setIndex] = useState(1)
   const [paused, setPaused] = useState(false)
@@ -20,13 +24,19 @@ export default function Banners({ images }) {
   const hasDragged = useRef(false)
   const indexRef = useRef(1)
 
-  // Load banners
+  // Load banners (skip fetch if already cached)
   useEffect(() => {
     if (images?.length) {
-      setBanners(images.map(url => ({ image: { s3Url: url }, path: "#" })))
-    } else {
+      const mapped = images.map(url => ({ image: { s3Url: url }, path: "#" }))
+      _cachedBanners = mapped
+      setBanners(mapped)
+    } else if (!_cachedBanners) {
       Client.get("/banner")
-        .then(res => setBanners(res.data.banners || []))
+        .then(res => {
+          const data = res.data.banners || []
+          _cachedBanners = data
+          setBanners(data)
+        })
         .catch(err => console.error("❌ Failed to fetch banners:", err))
     }
   }, [images])
@@ -115,6 +125,7 @@ export default function Banners({ images }) {
     setRatios(prev => {
       const copy = [...prev]
       copy[i] = `${naturalWidth} / ${naturalHeight}`
+      _cachedRatios = copy
       return copy
     })
   }
