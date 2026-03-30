@@ -60,17 +60,37 @@ export default function Nav() {
     const getSearchEl = () => searchSectionRef.current
     const getCatEl = () => categoryBarWrapRef.current
 
-    const showAll = () => {
-      nav.style.transform = "translateY(0)"
+    const clearMobileStyles = () => {
       const s = getSearchEl()
       const c = getCatEl()
       if (s) {
-        s.style.maxHeight = "200px"
-        s.style.opacity = "1"
+        s.style.maxHeight = ""
+        s.style.opacity = ""
+        s.style.overflow = ""
       }
       if (c) {
-        c.style.maxHeight = "200px"
-        c.style.opacity = "1"
+        c.style.maxHeight = ""
+        c.style.opacity = ""
+        c.style.overflow = ""
+      }
+    }
+
+    const showAll = () => {
+      nav.style.transform = "translateY(0)"
+      if (window.innerWidth < 768) {
+        const s = getSearchEl()
+        const c = getCatEl()
+        if (s) {
+          s.style.maxHeight = "200px"
+          s.style.opacity = "1"
+        }
+        if (c) {
+          c.style.maxHeight = "200px"
+          c.style.opacity = "1"
+        }
+      } else {
+        // Clear any leftover mobile styles so desktop renders naturally
+        clearMobileStyles()
       }
     }
 
@@ -81,19 +101,21 @@ export default function Nav() {
     const hideMobile = () => {
       const s = getSearchEl()
       const c = getCatEl()
+      // Set overflow:hidden before collapsing so max-height transition works
       if (s) {
+        s.style.overflow = "hidden"
         s.style.maxHeight = "0px"
         s.style.opacity = "0"
       }
       if (c) {
+        c.style.overflow = "hidden"
         c.style.maxHeight = "0px"
         c.style.opacity = "0"
       }
     }
 
-    // Accumulate scroll delta — only act after 50px sustained scroll in one direction.
-    // This prevents glitching from mobile address-bar hide/show (which causes ~44px jitter).
-    const THRESHOLD = 50
+    // 80px threshold filters out mobile address-bar jitter (~44px) with a safe margin
+    const THRESHOLD = 80
     let debt = 0
 
     const handleScroll = () => {
@@ -121,23 +143,15 @@ export default function Nav() {
     const handleResize = () => {
       debt = 0
       nav.style.transform = ""
-      const s = getSearchEl()
-      const c = getCatEl()
-      if (s) {
-        s.style.maxHeight = ""
-        s.style.opacity = ""
-      }
-      if (c) {
-        c.style.maxHeight = ""
-        c.style.opacity = ""
-      }
+      clearMobileStyles()
       lastScrollY.current = window.scrollY || 0
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
+    // capture:true catches scroll fired on any container (main, body, window)
+    document.addEventListener("scroll", handleScroll, { passive: true, capture: true })
     window.addEventListener("resize", handleResize, { passive: true })
     return () => {
-      window.removeEventListener("scroll", handleScroll)
+      document.removeEventListener("scroll", handleScroll, { capture: true })
       window.removeEventListener("resize", handleResize)
     }
   }, [])
@@ -288,7 +302,7 @@ export default function Nav() {
           {/* Search Bar — wrapper collapses on mobile scroll */}
           <div
             ref={searchSectionRef}
-            className="order-3 md:order-none w-full md:flex-1 overflow-hidden"
+            className="order-3 md:order-none w-full md:flex-1"
             style={{ transition: "max-height 0.3s ease, opacity 0.3s ease" }}
           >
             <div
@@ -599,7 +613,7 @@ export default function Nav() {
         {/* CategoryBar */}
         <div
           ref={categoryBarWrapRef}
-          className="relative z-[40] mt-1 overflow-hidden"
+          className="relative z-[40] mt-1"
           style={{ transition: "max-height 0.3s ease, opacity 0.3s ease" }}
         >
           <CategoryBar refreshTrigger={refreshTrigger} />
