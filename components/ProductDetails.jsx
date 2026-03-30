@@ -331,6 +331,32 @@ export default function ProductDetails({ params }) {
           <div className="mt-4">
             <ShareButtons product={product} />
           </div>
+
+          {product.youtubeUrl &&
+            (() => {
+              // Extract video ID from any YouTube URL format
+              const match = product.youtubeUrl.match(
+                /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+              )
+              const videoId = match?.[1]
+              if (!videoId) return null
+              return (
+                <div className="mt-5">
+                  <div
+                    className="relative w-full rounded-2xl overflow-hidden shadow-md"
+                    style={{ paddingBottom: "56.25%" }}
+                  >
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="Product Video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                    />
+                  </div>
+                </div>
+              )
+            })()}
         </div>
 
         {/* Details */}

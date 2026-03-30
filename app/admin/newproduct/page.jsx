@@ -31,6 +31,7 @@ export default function NewProduct() {
   const descriptionRef = useRef(null)
   const descriptionArRef = useRef(null)
   const manualRef = useRef(null)
+  const youtubeUrlRef = useRef(null)
   const imagesRef = useRef(null)
 
   // ✅ Fetch categories
@@ -147,6 +148,7 @@ export default function NewProduct() {
     formData.append("description_ar", descriptionArRef.current.value)
     selectedCategories.forEach(cat => formData.append("categories", cat))
     if (manualRef.current.files[0]) formData.append("manual", manualRef.current.files[0])
+    if (youtubeUrlRef.current?.value) formData.append("youtubeUrl", youtubeUrlRef.current.value)
     images.forEach(file => formData.append("images", file))
 
     const plainVariants = {
@@ -467,6 +469,17 @@ export default function NewProduct() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* YouTube URL */}
+          <div>
+            <label className="block mb-1 text-sm font-medium">YouTube URL (optional)</label>
+            <input
+              ref={youtubeUrlRef}
+              type="url"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
           </div>
 
           {/* Manual */}
