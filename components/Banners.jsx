@@ -8,9 +8,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const SWIPE_THRESHOLD = 50
 
+// Module-level cache — survives component unmount/remount (page navigation)
+let _cachedBanners = null
+let _cachedRatios = []
+
 export default function Banners({ images }) {
-  const [banners, setBanners] = useState([])
-  const [ratios, setRatios] = useState([])
+  const [banners, setBanners] = useState(_cachedBanners ?? [])
+  const [ratios, setRatios] = useState(_cachedRatios)
   // index into the extended track: 0 = clone of last, 1..len = real slides, len+1 = clone of first
   const [index, setIndex] = useState(1)
   const [paused, setPaused] = useState(false)
@@ -18,14 +22,21 @@ export default function Banners({ images }) {
 
   const dragStartX = useRef(null)
   const hasDragged = useRef(false)
+  const indexRef = useRef(1)
 
-  // Load banners
+  // Load banners (skip fetch if already cached)
   useEffect(() => {
     if (images?.length) {
-      setBanners(images.map(url => ({ image: { s3Url: url }, path: "#" })))
-    } else {
+      const mapped = images.map(url => ({ image: { s3Url: url }, path: "#" }))
+      _cachedBanners = mapped
+      setBanners(mapped)
+    } else if (!_cachedBanners) {
       Client.get("/banner")
-        .then(res => setBanners(res.data.banners || []))
+        .then(res => {
+          const data = res.data.banners || []
+          _cachedBanners = data
+          setBanners(data)
+        })
         .catch(err => console.error("❌ Failed to fetch banners:", err))
     }
   }, [images])
@@ -41,6 +52,38 @@ export default function Banners({ images }) {
     if (i === len + 1) return 0
     return i - 1
   }
+
+  // Keep indexRef in sync so visibility handler always has the latest index
+  useEffect(() => {
+    indexRef.current = index
+  }, [index])
+
+  // Pause + re-sync when tab is hidden/shown to prevent animation jump on return
+  useEffect(() => {
+    if (!len) return
+    const handleVisibility = () => {
+      if (document.hidden) {
+        setPaused(true)
+      } else {
+        // Stop any in-flight animation and snap to current position instantly
+        controls.stop()
+        const i = indexRef.current
+        // If stuck on a clone, resolve to the real slide
+        if (i === 0) {
+          controls.set({ x: `-${len * 100}%` })
+          setIndex(len)
+        } else if (i === len + 1) {
+          controls.set({ x: `-100%` })
+          setIndex(1)
+        } else {
+          controls.set({ x: `-${i * 100}%` })
+        }
+        setPaused(false)
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
+  }, [len, controls])
 
   // Auto-slide
   useEffect(() => {
@@ -82,6 +125,7 @@ export default function Banners({ images }) {
     setRatios(prev => {
       const copy = [...prev]
       copy[i] = `${naturalWidth} / ${naturalHeight}`
+      _cachedRatios = copy
       return copy
     })
   }

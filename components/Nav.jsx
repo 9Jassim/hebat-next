@@ -24,7 +24,6 @@ export default function Nav() {
 
   const [open, setOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
-  const [navVisible, setNavVisible] = useState(true)
   const lastScrollY = useRef(0)
   const [showCategories, setShowCategories] = useState(false)
   const [products, setProducts] = useState([])
@@ -53,31 +52,25 @@ export default function Nav() {
   }, [refreshTrigger])
 
   useEffect(() => {
-    const getScrollY = () => (document.scrollingElement || document.documentElement).scrollTop
+    const nav = navRef.current
+    if (!nav) return
 
     const handleScroll = () => {
-      const current = getScrollY()
-      if (current < 10) {
-        setNavVisible(true)
-      } else if (current > lastScrollY.current) {
-        setNavVisible(false)
-      } else {
-        setNavVisible(true)
+      const y = window.scrollY ?? window.pageYOffset ?? document.documentElement.scrollTop ?? 0
+
+      if (y <= 5) {
+        nav.style.transform = "translateY(0)"
+      } else if (y > lastScrollY.current + 5) {
+        nav.style.transform = "translateY(-110%)"
+      } else if (y < lastScrollY.current - 5) {
+        nav.style.transform = "translateY(0)"
       }
-      lastScrollY.current = current
+      lastScrollY.current = y
     }
 
-    // Listen on every possible scroll container
-    const scrollEl = document.scrollingElement || document.documentElement
-    scrollEl.addEventListener("scroll", handleScroll, { passive: true })
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    document.addEventListener("scroll", handleScroll, { passive: true })
-
-    return () => {
-      scrollEl.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("scroll", handleScroll)
-      document.removeEventListener("scroll", handleScroll)
-    }
+    // capture:true fires for scroll on any element in the document
+    document.addEventListener("scroll", handleScroll, { passive: true, capture: true })
+    return () => document.removeEventListener("scroll", handleScroll, { capture: true })
   }, [])
 
   useEffect(() => {
@@ -173,10 +166,7 @@ export default function Nav() {
       <nav
         ref={navRef}
         className="fixed top-0 left-0 w-full z-50 bg-black shadow-md"
-        style={{
-          transform: navVisible ? "translateY(0)" : "translateY(-100%)",
-          transition: "transform 0.3s ease",
-        }}
+        style={{ transition: "transform 0.3s ease" }}
       >
         <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2">
           {/* Top Row */}
