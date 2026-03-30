@@ -34,6 +34,8 @@ export default function Nav() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const searchRef = useRef(null)
+  const searchSectionRef = useRef(null)
+  const categoryBarWrapRef = useRef(null)
   const resultsRef = useRef(null)
   const adminMenuRef = useRef(null)
   const navRef = useRef(null)
@@ -55,22 +57,73 @@ export default function Nav() {
     const nav = navRef.current
     if (!nav) return
 
+    const getSearchEl = () => searchSectionRef.current
+    const getCatEl = () => categoryBarWrapRef.current
+
+    const showCollapsibles = () => {
+      const s = getSearchEl()
+      const c = getCatEl()
+      if (s) {
+        s.style.maxHeight = "200px"
+        s.style.opacity = "1"
+      }
+      if (c) {
+        c.style.maxHeight = "200px"
+        c.style.opacity = "1"
+      }
+    }
+    const hideCollapsibles = () => {
+      const s = getSearchEl()
+      const c = getCatEl()
+      if (s) {
+        s.style.maxHeight = "0px"
+        s.style.opacity = "0"
+      }
+      if (c) {
+        c.style.maxHeight = "0px"
+        c.style.opacity = "0"
+      }
+    }
+
     const handleScroll = () => {
       const y = window.scrollY ?? window.pageYOffset ?? document.documentElement.scrollTop ?? 0
+      const mobile = window.innerWidth < 768
 
       if (y <= 5) {
-        nav.style.transform = "translateY(0)"
+        if (mobile) showCollapsibles()
+        else nav.style.transform = "translateY(0)"
       } else if (y > lastScrollY.current + 5) {
-        nav.style.transform = "translateY(-110%)"
+        if (mobile) hideCollapsibles()
+        else nav.style.transform = "translateY(-110%)"
       } else if (y < lastScrollY.current - 5) {
-        nav.style.transform = "translateY(0)"
+        if (mobile) showCollapsibles()
+        else nav.style.transform = "translateY(0)"
       }
       lastScrollY.current = y
     }
 
-    // capture:true fires for scroll on any element in the document
+    // On breakpoint change reset everything so nothing gets stuck
+    const handleResize = () => {
+      nav.style.transform = ""
+      const s = getSearchEl()
+      const c = getCatEl()
+      if (s) {
+        s.style.maxHeight = ""
+        s.style.opacity = ""
+      }
+      if (c) {
+        c.style.maxHeight = ""
+        c.style.opacity = ""
+      }
+      lastScrollY.current = window.scrollY ?? 0
+    }
+
     document.addEventListener("scroll", handleScroll, { passive: true, capture: true })
-    return () => document.removeEventListener("scroll", handleScroll, { capture: true })
+    window.addEventListener("resize", handleResize, { passive: true })
+    return () => {
+      document.removeEventListener("scroll", handleScroll, { capture: true })
+      window.removeEventListener("resize", handleResize)
+    }
   }, [])
 
   useEffect(() => {
@@ -216,66 +269,72 @@ export default function Nav() {
             </div>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar — wrapper collapses on mobile scroll */}
           <div
-            ref={searchRef}
-            onKeyDown={handleKeyDown}
-            className="relative w-full md:max-w-xl mx-auto mt-2 md:mt-0 order-3 md:order-none"
+            ref={searchSectionRef}
+            className="order-3 md:order-none w-full md:flex-1 overflow-hidden"
+            style={{ transition: "max-height 0.3s ease, opacity 0.3s ease" }}
           >
-            <input
-              type="text"
-              placeholder={t("search")}
-              value={search}
-              onChange={handleSearch}
-              onFocus={() => search && setShowDropdown(true)}
-              className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
-            />
+            <div
+              ref={searchRef}
+              onKeyDown={handleKeyDown}
+              className="relative w-full md:max-w-xl mx-auto mt-2 md:mt-0"
+            >
+              <input
+                type="text"
+                placeholder={t("search")}
+                value={search}
+                onChange={handleSearch}
+                onFocus={() => search && setShowDropdown(true)}
+                className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
+              />
 
-            {showDropdown && (
-              <div
-                ref={resultsRef}
-                className="absolute top-full start-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto"
-              >
-                {filtered.length ? (
-                  filtered.map((pr, i) => {
-                    const firstCategory =
-                      Array.isArray(pr.categories) && pr.categories.length > 0
-                        ? pr.categories[0]?.name
-                        : pr.category?.name || "others"
+              {showDropdown && (
+                <div
+                  ref={resultsRef}
+                  className="absolute top-full start-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto"
+                >
+                  {filtered.length ? (
+                    filtered.map((pr, i) => {
+                      const firstCategory =
+                        Array.isArray(pr.categories) && pr.categories.length > 0
+                          ? pr.categories[0]?.name
+                          : pr.category?.name || "others"
 
-                    return (
-                      <Link
-                        key={pr._id || i}
-                        href={p(`/products/${slugify(firstCategory)}/${pr.slug}`)}
-                        onClick={closeMenus}
-                        ref={el => (itemRefs.current[i] = el)}
-                        className={`group flex items-center gap-3 px-3 py-2 text-sm ${
-                          i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
-                        }`}
-                      >
-                        <div className="w-10 h-10 flex-shrink-0 rounded-md border border-gray-200 bg-white overflow-hidden">
-                          <img
-                            src={pr.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                            alt={pr.name}
-                            className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
-                          />
-                        </div>
-                        <div className="text-start">
-                          <p className="font-medium text-gray-900">
-                            {isAr && pr.name_ar ? pr.name_ar : pr.name}
-                          </p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {pr.model || "No model"} — {pr.barcode || "No barcode"}
-                          </p>
-                        </div>
-                      </Link>
-                    )
-                  })
-                ) : (
-                  <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
-                )}
-              </div>
-            )}
+                      return (
+                        <Link
+                          key={pr._id || i}
+                          href={p(`/products/${slugify(firstCategory)}/${pr.slug}`)}
+                          onClick={closeMenus}
+                          ref={el => (itemRefs.current[i] = el)}
+                          className={`group flex items-center gap-3 px-3 py-2 text-sm ${
+                            i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
+                          }`}
+                        >
+                          <div className="w-10 h-10 flex-shrink-0 rounded-md border border-gray-200 bg-white overflow-hidden">
+                            <img
+                              src={pr.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                              alt={pr.name}
+                              className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
+                            />
+                          </div>
+                          <div className="text-start">
+                            <p className="font-medium text-gray-900">
+                              {isAr && pr.name_ar ? pr.name_ar : pr.name}
+                            </p>
+                            <p className="text-xs text-gray-600 truncate">
+                              {pr.model || "No model"} — {pr.barcode || "No barcode"}
+                            </p>
+                          </div>
+                        </Link>
+                      )
+                    })
+                  ) : (
+                    <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Desktop Links */}
@@ -522,7 +581,11 @@ export default function Nav() {
         </div>
 
         {/* CategoryBar */}
-        <div className="relative z-[40] mt-1">
+        <div
+          ref={categoryBarWrapRef}
+          className="relative z-[40] mt-1 overflow-hidden"
+          style={{ transition: "max-height 0.3s ease, opacity 0.3s ease" }}
+        >
           <CategoryBar refreshTrigger={refreshTrigger} />
         </div>
       </nav>
