@@ -35,6 +35,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const descriptionRef = useRef(null)
   const descriptionArRef = useRef(null)
   const manualRef = useRef(null)
+  const youtubeUrlRef = useRef(null)
 
   const markDirty = () => setIsDirty(true)
 
@@ -59,6 +60,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     if (nameArRef.current) nameArRef.current.value = product.name_ar || ""
     descriptionRef.current.value = product.description || ""
     if (descriptionArRef.current) descriptionArRef.current.value = product.description_ar || ""
+    if (youtubeUrlRef.current) youtubeUrlRef.current.value = product.youtubeUrl || ""
 
     setSelectedCategories(product.categories?.map(cat => cat._id) || [])
     setVariants(product.variants || { colors: [], models: [] })
@@ -241,6 +243,7 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     formData.append("name_ar", nameArRef.current?.value || "")
     formData.append("description", descriptionRef.current.value)
     formData.append("description_ar", descriptionArRef.current?.value || "")
+    formData.append("youtubeUrl", youtubeUrlRef.current?.value || "")
 
     selectedCategories.forEach(cat => formData.append("categories", cat))
 
@@ -395,6 +398,18 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             placeholder="Product description in Arabic"
           ></textarea>
+        </div>
+
+        {/* YouTube Video */}
+        <div className="mb-3">
+          <label className="block mb-1 text-sm font-medium">YouTube URL (optional)</label>
+          <input
+            ref={youtubeUrlRef}
+            type="url"
+            onChange={markDirty}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
         </div>
 
         {/* Categories */}
