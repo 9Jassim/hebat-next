@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useRef, useCallback, useMemo, useState } from "react"
+import { createPortal } from "react-dom"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react"
 
 export default function ProductGallery({
   images = [],
@@ -73,6 +74,8 @@ export default function ProductGallery({
 
   const goToNext = () => goToIndex(indexRef.current + 1)
   const goToPrev = () => goToIndex(indexRef.current - 1)
+
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   // ------------------------------
   // Swipe + Momentum handling
@@ -167,6 +170,16 @@ export default function ProductGallery({
           className="w-full h-full object-contain p-2 pointer-events-none select-none"
         />
 
+        {/* Zoom button */}
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          className="absolute top-2 right-2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full z-10"
+          aria-label="Zoom image"
+        >
+          <ZoomIn size={18} />
+        </button>
+
         {combinedImages.length > 1 && (
           <>
             <button
@@ -187,6 +200,56 @@ export default function ProductGallery({
           </>
         )}
       </div>
+
+      {/* Lightbox — rendered via portal so it sits above the nav */}
+      {lightboxOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(false)}
+              className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/80 rounded-full p-2"
+              aria-label="Close"
+            >
+              <X size={24} />
+            </button>
+            {combinedImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={e => {
+                    e.stopPropagation()
+                    goToPrev()
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+                <button
+                  type="button"
+                  onClick={e => {
+                    e.stopPropagation()
+                    goToNext()
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
+                >
+                  <ChevronRight size={28} />
+                </button>
+              </>
+            )}
+            <img
+              src={mainImage || "/hebat_product_fill.png"}
+              alt="Zoomed product"
+              onClick={e => e.stopPropagation()}
+              className="max-w-[90vw] max-h-[90vh] object-contain rounded-xl select-none"
+              draggable={false}
+            />
+          </div>,
+          document.body
+        )}
 
       {/* THUMBNAILS */}
 
