@@ -20,7 +20,7 @@ const slugify = str =>
 export default function Nav() {
   const router = useRouter()
   const { user, logout } = useAuth()
-  const { t, p, isAr, toggleHref } = useLanguage()
+  const { t, p, isAr } = useLanguage()
 
   const [open, setOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
@@ -274,12 +274,12 @@ export default function Nav() {
 
             <div className="flex items-center gap-2 md:hidden">
               {/* Language toggle (mobile) */}
-              <Link
+              {/* <Link
                 href={toggleHref}
                 className="text-xs font-semibold text-yellow-400 border border-yellow-400 rounded px-2 py-1"
               >
                 {isAr ? "EN" : "عربي"}
-              </Link>
+              </Link> */}
 
               <button
                 onClick={() => setOpen(!open)}
@@ -381,12 +381,12 @@ export default function Nav() {
             </Link>
 
             {/* Language Toggle (desktop) */}
-            <Link
+            {/* <Link
               href={toggleHref}
               className="text-xs font-semibold text-yellow-400 border border-yellow-400 rounded px-2 py-1 hover:bg-yellow-400 hover:text-black transition"
             >
               {isAr ? "EN" : "عربي"}
-            </Link>
+            </Link> */}
 
             {/* Admin Controls */}
             {user && (
