@@ -285,7 +285,7 @@ export default function ProductGallery({
               fill
               sizes="86px"
               onClick={() => goToIndex(index)}
-              onLoadingComplete={handleThumbLoaded}
+              onLoad={handleThumbLoaded}
               className="object-contain cursor-pointer"
             />
 
