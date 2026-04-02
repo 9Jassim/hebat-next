@@ -22,7 +22,7 @@ export default function ProductGallery({
   // STATE: track loaded thumbnails
   // ------------------------------
   const [allThumbsLoaded, setAllThumbsLoaded] = useState(false)
-  const [loadedCount, setLoadedCount] = useState(0)
+  const loadedCount = useRef(0)
 
   // ---------------------------------
   // Combine images with variant image
@@ -43,13 +43,10 @@ export default function ProductGallery({
   }, [images, variantImage, variantName])
 
   const handleThumbLoaded = () => {
-    setLoadedCount(prev => {
-      const next = prev + 1
-      if (next === combinedImages.length) {
-        setAllThumbsLoaded(true)
-      }
-      return next
-    })
+    loadedCount.current += 1
+    if (loadedCount.current >= combinedImages.length) {
+      setAllThumbsLoaded(true)
+    }
   }
 
   // ------------------------------
