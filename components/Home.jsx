@@ -159,7 +159,7 @@ export default function Home() {
   }, [])
 
   return (
-    <section className="relative bg-gray-50 overflow-hidden">
+    <section className="relative bg-white overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 ltr:bg-gradient-to-br rtl:bg-gradient-to-bl from-yellow-50 via-white to-white -z-10" />
 

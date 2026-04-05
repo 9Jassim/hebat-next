@@ -50,7 +50,7 @@ export default function Providers({ children }) {
 
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+      <div className="min-h-screen flex flex-col bg-white text-gray-900">
         <header>
           <Nav />
         </header>

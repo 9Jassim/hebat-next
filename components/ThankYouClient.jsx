@@ -11,7 +11,7 @@ export default function ThankYou() {
     return () => clearTimeout(timer)
   }, [router])
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-900 px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white text-gray-900 px-6">
       {/* Card */}
       <div className="bg-white shadow-lg rounded-2xl  max-w-md text-center border-t-4 border-yellow-500">
         <div className="flex justify-center mb-4">

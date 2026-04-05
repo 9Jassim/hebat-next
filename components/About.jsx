@@ -7,7 +7,7 @@ export default function About() {
   const { isAr, t, p } = useLanguage()
 
   return (
-    <section className="pt-[50px] pb-20 bg-gray-50 text-gray-900">
+    <section className="pt-[50px] pb-20 bg-white text-gray-900">
       <div className="max-w-6xl mx-auto px-6">
         {/* Heading */}
         <h1 className="text-4xl sm:text-5xl font-bold text-black mb-6 text-center">
