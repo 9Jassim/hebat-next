@@ -18,7 +18,6 @@ export default function ShareButtons({ product }) {
   const text = encodeURIComponent(`Check out this product: ${product.name}`)
   const url = encodeURIComponent(currentUrl)
 
-  // ✅ Native mobile share
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
@@ -37,8 +36,8 @@ export default function ShareButtons({ product }) {
 
   return (
     <div className="mt-5">
-      <h2 className="text-xl font-semibold text-gray-900 mt-6 mb-2">Share Via</h2>
-      <div className="flex items-center gap-2 ml-0">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Share Via</h2>
+      <div className="flex items-center gap-2">
         {/* WhatsApp */}
         <a
           href={`https://wa.me/?text=${text}%20${url}`}

@@ -27,10 +27,12 @@ export default function ProductVariants({ product }) {
 
   return (
     <div className="mt-6 space-y-6">
-      {/* 🎨 Color Variants */}
+      {/* Color Variants */}
       {colors.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Colors</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+            Available Colors
+          </h3>
 
           <div className="flex flex-wrap gap-4">
             {colors.map(variant => {
@@ -67,7 +69,7 @@ export default function ProductVariants({ product }) {
                           filter: "brightness(1.02) contrast(1.04)",
                         }}
                       />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100"></div>
+                      <div className="absolute inset-0 pointer-events-none rounded-xl transition-opacity duration-300 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100" />
                     </div>
                   </div>
 
@@ -85,12 +87,13 @@ export default function ProductVariants({ product }) {
         </div>
       )}
 
-      {/* 📱 Model Variants */}
+      {/* Model Variants */}
       {models.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Compatible Models</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+            Compatible Models
+          </h3>
 
-          {/* ✅ Grid layout keeps alignment perfect */}
           <div className="grid gap-2 grid-cols-[repeat(auto-fill,minmax(9rem,1fr))]">
             {models.map(variant => {
               const isActive = variant.slug === currentSlug
@@ -99,11 +102,11 @@ export default function ProductVariants({ product }) {
                   key={variant.slug}
                   href={`/products/${categorySlug}/${variant.slug}`}
                   className={`min-h-[3.5rem] flex items-center justify-center text-center rounded-md border text-sm font-medium px-3 py-2 whitespace-normal break-normal leading-normal transition-colors duration-150
-    ${
-      isActive
-        ? "border-yellow-500 bg-yellow-100 text-yellow-700"
-        : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-yellow-100 hover:text-yellow-700"
-    }`}
+                    ${
+                      isActive
+                        ? "border-yellow-500 bg-yellow-100 text-yellow-700"
+                        : "border-gray-300 bg-gray-100 text-gray-800 hover:bg-yellow-100 hover:text-yellow-700"
+                    }`}
                 >
                   {variant.name.replaceAll(",", ", ")}
                 </Link>

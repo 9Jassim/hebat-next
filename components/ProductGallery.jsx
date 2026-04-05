@@ -18,15 +18,9 @@ export default function ProductGallery({
   const thumbsRef = useRef(null)
   const thumbRefs = useRef([])
 
-  // ------------------------------
-  // STATE: track loaded thumbnails
-  // ------------------------------
   const [allThumbsLoaded, setAllThumbsLoaded] = useState(false)
   const loadedCount = useRef(0)
 
-  // ---------------------------------
-  // Combine images with variant image
-  // ---------------------------------
   const combinedImages = useMemo(() => {
     if (variantImage && !images.some(img => img.s3Url === variantImage)) {
       return [
@@ -49,9 +43,6 @@ export default function ProductGallery({
     }
   }
 
-  // ------------------------------
-  // Sync selected index
-  // ------------------------------
   const indexRef = useRef(0)
 
   useEffect(() => {
@@ -74,9 +65,6 @@ export default function ProductGallery({
 
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
-  // ------------------------------
-  // Swipe + Momentum handling
-  // ------------------------------
   const startX = useRef(0)
   const startY = useRef(0)
   const startTime = useRef(0)
@@ -103,33 +91,21 @@ export default function ProductGallery({
     const absX = Math.abs(diffX)
     const absY = Math.abs(diffY)
 
-    // Only horizontal gestures
     if (absX > absY) {
-      const velocity = absX / duration // px per ms
-
-      // Momentum thresholds
+      const velocity = absX / duration
       if (absX > 50 || velocity > 0.5) {
-        if (diffX < 0) {
-          goToNext()
-        } else {
-          goToPrev()
-        }
+        if (diffX < 0) goToNext()
+        else goToPrev()
       }
     }
   }
 
-  // ------------------------------
-  // Ensure valid main image
-  // ------------------------------
   useEffect(() => {
     if (combinedImages.length > 0 && !combinedImages.find(img => img.s3Url === mainImage)) {
       setMainImage(combinedImages[0].s3Url)
     }
   }, [combinedImages, mainImage, setMainImage])
 
-  // ------------------------------
-  // Auto-scroll active thumbnail
-  // ------------------------------
   useEffect(() => {
     const activeIndex = combinedImages.findIndex(img => img.s3Url === mainImage)
     if (activeIndex >= 0 && thumbRefs.current[activeIndex]) {
@@ -144,7 +120,6 @@ export default function ProductGallery({
   return (
     <div className="order-1 lg:order-2 select-none relative">
       {/* MAIN IMAGE */}
-
       <div
         ref={containerRef}
         className="relative w-full rounded-2xl overflow-hidden shadow-md bg-white border border-gray-200"
@@ -154,7 +129,7 @@ export default function ProductGallery({
         onTouchEnd={onPointerUp}
         style={{
           height: "400px",
-          touchAction: "pan-y", // ✅ allow vertical scroll
+          touchAction: "pan-y",
         }}
       >
         <img
@@ -171,28 +146,29 @@ export default function ProductGallery({
         <button
           type="button"
           onClick={() => setLightboxOpen(true)}
-          className="absolute top-2 right-2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full z-10"
+          className="absolute top-2 end-2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full z-10"
           aria-label="Zoom image"
         >
           <ZoomIn size={18} />
         </button>
 
+        {/* Nav arrows — rtl:rotate-180 flips the chevron icon so it points the correct direction */}
         {combinedImages.length > 1 && (
           <>
             <button
               type="button"
               onClick={goToPrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
+              className="absolute start-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={20} className="rtl:rotate-180" />
             </button>
 
             <button
               type="button"
               onClick={goToNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
+              className="absolute end-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={20} className="rtl:rotate-180" />
             </button>
           </>
         )}
@@ -208,35 +184,31 @@ export default function ProductGallery({
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/80 rounded-full p-2"
+              className="absolute top-4 end-4 text-white bg-black/50 hover:bg-black/80 rounded-full p-2"
               aria-label="Close"
             >
               <X size={24} />
             </button>
+
             {combinedImages.length > 1 && (
               <>
                 <button
                   type="button"
-                  onClick={e => {
-                    e.stopPropagation()
-                    goToPrev()
-                  }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
+                  onClick={e => { e.stopPropagation(); goToPrev() }}
+                  className="absolute start-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
                 >
-                  <ChevronLeft size={28} />
+                  <ChevronLeft size={28} className="rtl:rotate-180" />
                 </button>
                 <button
                   type="button"
-                  onClick={e => {
-                    e.stopPropagation()
-                    goToNext()
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
+                  onClick={e => { e.stopPropagation(); goToNext() }}
+                  className="absolute end-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
                 >
-                  <ChevronRight size={28} />
+                  <ChevronRight size={28} className="rtl:rotate-180" />
                 </button>
               </>
             )}
+
             <img
               src={mainImage || "/hebat_product_fill.png"}
               alt="Zoomed product"
@@ -249,7 +221,6 @@ export default function ProductGallery({
         )}
 
       {/* THUMBNAILS */}
-
       <div
         ref={thumbsRef}
         className={`
@@ -257,9 +228,7 @@ export default function ProductGallery({
           transition-opacity duration-500
           ${allThumbsLoaded ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
-        style={{
-          minHeight: "100px",
-        }}
+        style={{ minHeight: "100px" }}
       >
         {combinedImages.map((img, index) => (
           <div
@@ -293,14 +262,14 @@ export default function ProductGallery({
               <button
                 type="button"
                 onClick={() => handleRemoveImage(img.s3Key)}
-                className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded-full p-1.5 hover:bg-red-600 shadow-md z-10"
+                className="absolute top-1 end-1 bg-black/70 text-white text-xs rounded-full p-1.5 hover:bg-red-600 shadow-md z-10"
               >
                 ✕
               </button>
             )}
 
             {img.isVariant && (
-              <span className="absolute bottom-1 left-1 text-[10px] text-yellow-700 font-medium bg-white/70 px-1 rounded z-10">
+              <span className="absolute bottom-1 start-1 text-[10px] text-yellow-700 font-medium bg-white/70 px-1 rounded z-10">
                 Variant
               </span>
             )}
