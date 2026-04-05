@@ -194,14 +194,20 @@ export default function ProductGallery({
               <>
                 <button
                   type="button"
-                  onClick={e => { e.stopPropagation(); goToPrev() }}
+                  onClick={e => {
+                    e.stopPropagation()
+                    goToPrev()
+                  }}
                   className="absolute start-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
                 >
                   <ChevronLeft size={28} className="rtl:rotate-180" />
                 </button>
                 <button
                   type="button"
-                  onClick={e => { e.stopPropagation(); goToNext() }}
+                  onClick={e => {
+                    e.stopPropagation()
+                    goToNext()
+                  }}
                   className="absolute end-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full"
                 >
                   <ChevronRight size={28} className="rtl:rotate-180" />

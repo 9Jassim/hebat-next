@@ -21,7 +21,6 @@ const buildCategoryTree = categories => {
   categories.forEach(cat => {
     map[cat._id] = { ...cat, children: [] }
   })
-
   categories.forEach(cat => {
     if (cat.parent) {
       const parentId = cat.parent?._id || cat.parent
@@ -34,16 +33,12 @@ const buildCategoryTree = categories => {
   return roots
 }
 
-// 🔍 Find active category OR parent if subcategory
 const findActiveCategory = (categories, slug) => {
   for (const cat of categories) {
     if (slugify(cat.name) === slug) return cat
-
     const foundChild = cat.children.find(child => slugify(child.name) === slug)
-
     if (foundChild) return cat
   }
-
   return null
 }
 
@@ -57,56 +52,47 @@ export default function CategoryBar({ refreshTrigger }) {
   const navRef = useRef(null)
   const pathname = usePathname()
 
-  // 📦 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await Client.get("/products/category")
       setCategories(buildCategoryTree(res.data.categories || []))
     }
-
     fetchCategories()
   }, [refreshTrigger])
 
-  // ❌ Close dropdown when clicking outside
   useEffect(() => {
     const handleOutsideClick = e => {
       if (navRef.current && !navRef.current.contains(e.target)) {
         setActiveCategory(null)
       }
     }
-
     document.addEventListener("mousedown", handleOutsideClick)
     document.addEventListener("touchstart", handleOutsideClick)
-
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick)
       document.removeEventListener("touchstart", handleOutsideClick)
     }
   }, [])
 
+  // Reset active category on scroll so stale state doesn't cause double-tap bug
+  useEffect(() => {
+    const reset = () => setActiveCategory(null)
+    document.addEventListener("scroll", reset, { passive: true, capture: true })
+    return () => document.removeEventListener("scroll", reset, { capture: true })
+  }, [])
+
   const isMobile = () => window.innerWidth < 768
 
-  // 📍 Get current slug from URL (works for both /products/x and /ar/products/x)
   const basePath = isAr ? "/ar/products" : "/products"
   const isProductsPage = pathname === basePath
   const pathParts = pathname.split("/")
-  const currentSlug = isAr
-    ? pathParts[3] || null // /ar/products/[slug]
-    : pathParts[2] || null // /products/[slug]
+  const currentSlug = isAr ? pathParts[3] || null : pathParts[2] || null
 
-  // 🎯 Get active category based on route
   const activeFromRoute = findActiveCategory(categories, currentSlug)
 
-  // 🚀 Auto scroll active item into view
   useEffect(() => {
     const el = document.querySelector("[data-active='true']")
-    if (el) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      })
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
   }, [activeFromRoute])
 
   useEffect(() => {
@@ -115,7 +101,6 @@ export default function CategoryBar({ refreshTrigger }) {
 
   const handleClick = (e, cat) => {
     const hasChildren = cat.children.length > 0
-
     if (isMobile() && hasChildren) {
       e.preventDefault()
       setActiveCategory(activeCategory?._id === cat._id ? null : cat)
@@ -125,21 +110,16 @@ export default function CategoryBar({ refreshTrigger }) {
   }
 
   const handleMouseEnter = cat => {
-    if (!isMobile()) {
-      setActiveCategory(cat.children.length ? cat : null)
-    }
+    if (!isMobile()) setActiveCategory(cat.children.length ? cat : null)
   }
 
   const handleMouseLeave = () => {
-    if (!isMobile()) {
-      setActiveCategory(null)
-    }
+    if (!isMobile()) setActiveCategory(null)
   }
 
   const handleScroll = () => {
     const el = scrollRef.current
     if (!el) return
-
     const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5
     setShowFade(!isAtEnd)
   }
@@ -147,15 +127,16 @@ export default function CategoryBar({ refreshTrigger }) {
   return (
     <div
       ref={navRef}
-      className="sticky top-[100px] md:top-[80px] z-40 bg-black border-t border-gray-800"
+      className="bg-[#111111]"
+      style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
     >
       <div className="max-w-screen-xl mx-auto relative" onMouseLeave={handleMouseLeave}>
-        {/* ✅ Scrollable Category Bar */}
+        {/* Horizontal scrollable category strip */}
         <div className="relative">
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto no-scrollbar px-2 py-2 gap-4"
+            className="flex overflow-x-auto no-scrollbar px-3 py-2 gap-1"
           >
             {/* All */}
             <Link
@@ -165,10 +146,10 @@ export default function CategoryBar({ refreshTrigger }) {
               onMouseEnter={() => {
                 if (!isMobile()) setActiveCategory(null)
               }}
-              className={`px-3 py-2 whitespace-nowrap border-b-2 ${
+              className={`px-3.5 py-1.5 rounded-full whitespace-nowrap text-sm font-medium transition-all duration-200 ${
                 isProductsPage
-                  ? "text-yellow-500 border-yellow-500"
-                  : "text-white border-transparent"
+                  ? "bg-yellow-500 text-black"
+                  : "text-gray-400 hover:text-white hover:bg-white/8"
               }`}
             >
               {t("all")}
@@ -187,45 +168,82 @@ export default function CategoryBar({ refreshTrigger }) {
                   data-active={isActive}
                   onClick={e => handleClick(e, cat)}
                   onMouseEnter={() => handleMouseEnter(cat)}
-                  className={`px-3 py-2 whitespace-nowrap border-b-2 transition ${
+                  className={`px-3.5 py-1.5 rounded-full whitespace-nowrap text-sm font-medium transition-all duration-200 flex items-center gap-1 ${
                     isActive
-                      ? "text-yellow-500 border-yellow-500"
-                      : "text-white border-transparent hover:text-yellow-500"
+                      ? "bg-yellow-500 text-black"
+                      : "text-gray-400 hover:text-white hover:bg-white/8"
                   }`}
                 >
                   {displayName}
+                  {cat.children.length > 0 && (
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="opacity-60"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  )}
                 </Link>
               )
             })}
           </div>
 
-          {/* Gradient fade */}
+          {/* Fade gradient */}
           {showFade && (
-            <div className="pointer-events-none absolute end-0 top-0 h-full w-10 ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-black to-transparent transition-opacity duration-200" />
+            <div className="pointer-events-none absolute end-0 top-0 h-full w-12 ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-[#111111] to-transparent" />
           )}
         </div>
 
-        {/* Dropdown */}
+        {/* Subcategory dropdown — vertical list */}
         {activeCategory && activeCategory.children.length > 0 && (
-          <div className="absolute top-full start-0 w-full bg-black border-t border-gray-800 shadow-lg">
-            <div className="max-w-screen-xl mx-auto py-3 px-2">
+          <div
+            className="absolute top-full start-0 w-full z-50"
+            style={{
+              background: "#151515",
+              borderTop: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            }}
+          >
+            <div className="flex flex-col py-2 max-w-screen-xl mx-auto">
               {activeCategory.children.map(sub => (
                 <Link
                   key={sub._id}
                   href={p(`/products/${slugify(sub.name)}`)}
-                  className="block px-3 py-2 text-gray-300 hover:text-yellow-500"
+                  className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150"
                   onClick={() => setActiveCategory(null)}
                 >
                   {isAr && sub.name_ar ? sub.name_ar : sub.name}
                 </Link>
               ))}
 
+              <div className="mx-3 my-1 border-t border-[#2a2a2a]" />
+
               <Link
                 href={p(`/products/${slugify(activeCategory.name)}`)}
-                className="block px-3 py-2 text-white hover:text-yellow-500 mt-2"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/8 transition-all duration-150 font-medium"
                 onClick={() => setActiveCategory(null)}
               >
                 {t("viewAll")}
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="rtl:rotate-180"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
             </div>
           </div>

@@ -205,14 +205,16 @@ export default function Products() {
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
-
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-8 flex-wrap">
           <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
             {t("home")}
           </Link>
           <span className="text-gray-200 select-none">›</span>
-          <Link href={p("/products")} className="hover:text-yellow-500 transition-colors font-medium">
+          <Link
+            href={p("/products")}
+            className="hover:text-yellow-500 transition-colors font-medium"
+          >
             {t("products")}
           </Link>
           {(selectedCategory || searchQuery) && (
@@ -249,7 +251,8 @@ export default function Products() {
                   : product.category
 
               const firstCatSlug = firstCatObj?.name || "others"
-              const catLabel = isAr && firstCatObj?.name_ar ? firstCatObj.name_ar : firstCatObj?.name
+              const catLabel =
+                isAr && firstCatObj?.name_ar ? firstCatObj.name_ar : firstCatObj?.name
               const productName = isAr && product.name_ar ? product.name_ar : product.name
 
               return (
@@ -259,24 +262,23 @@ export default function Products() {
                   className="group"
                 >
                   <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
-
                     {/* Image */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
                       <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
-                      <img
-                        src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                        alt={productName}
-                        loading="lazy"
-                        decoding="async"
-                        className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
-                      />
+                        <img
+                          src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                          alt={productName}
+                          loading="lazy"
+                          decoding="async"
+                          className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
+                        />
 
-                      {/* Category badge — only when not filtering by a single category */}
-                      {!selectedCategory && catLabel && (
-                        <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
-                          {catLabel}
-                        </span>
-                      )}
+                        {/* Category badge — only when not filtering by a single category */}
+                        {!selectedCategory && catLabel && (
+                          <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
+                            {catLabel}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -313,9 +315,18 @@ export default function Products() {
           /* Empty state */
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#d1d5db"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
             </div>
             <p className="text-gray-500 font-medium text-sm">

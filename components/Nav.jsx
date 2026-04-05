@@ -83,13 +83,14 @@ export default function Nav() {
         if (s) {
           s.style.maxHeight = "200px"
           s.style.opacity = "1"
+          s.style.overflow = ""
         }
         if (c) {
           c.style.maxHeight = "200px"
           c.style.opacity = "1"
+          c.style.overflow = ""
         }
       } else {
-        // Clear any leftover mobile styles so desktop renders naturally
         clearMobileStyles()
       }
     }
@@ -101,7 +102,6 @@ export default function Nav() {
     const hideMobile = () => {
       const s = getSearchEl()
       const c = getCatEl()
-      // Set overflow:hidden before collapsing so max-height transition works
       if (s) {
         s.style.overflow = "hidden"
         s.style.maxHeight = "0px"
@@ -114,7 +114,6 @@ export default function Nav() {
       }
     }
 
-    // 80px threshold filters out mobile address-bar jitter (~44px) with a safe margin
     const THRESHOLD = 80
     let debt = 0
 
@@ -147,7 +146,6 @@ export default function Nav() {
       lastScrollY.current = window.scrollY || 0
     }
 
-    // capture:true catches scroll fired on any container (main, body, window)
     document.addEventListener("scroll", handleScroll, { passive: true, capture: true })
     window.addEventListener("resize", handleResize, { passive: true })
     return () => {
@@ -241,23 +239,25 @@ export default function Nav() {
     setOpen(false)
     setAdminOpen(false)
   }
-
   const reloadCategories = () => setRefreshTrigger(x => x + 1)
 
   return (
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 left-0 w-full z-50 bg-black shadow-md"
-        style={{ transition: "transform 0.3s ease" }}
+        className="fixed top-0 left-0 w-full z-50 bg-[#111111]"
+        style={{
+          transition: "transform 0.3s ease",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
-        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2">
+        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 gap-2">
           {/* Top Row */}
           <div className="flex justify-between items-center w-full md:w-auto">
             <Link
               href={p("/")}
               onClick={closeMenus}
-              className="flex items-center gap-3 select-none transition-transform duration-300 ease-out w-28 md:w-40"
+              className="flex items-center select-none w-28 md:w-36"
             >
               <img
                 src="/hebat_logo.png"
@@ -267,8 +267,7 @@ export default function Nav() {
                 decoding="async"
                 loading="eager"
                 draggable={false}
-                className="h-10 sm:h-12 w-auto object-contain block select-none pointer-events-none [image-rendering:auto] [backface-visibility:hidden]"
-                style={{ transform: "none", filter: "none" }}
+                className="h-9 sm:h-11 w-auto object-contain block select-none pointer-events-none"
               />
             </Link>
 
@@ -276,30 +275,47 @@ export default function Nav() {
               {/* Language toggle (mobile) */}
               <Link
                 href={toggleHref}
-                className="text-xs font-semibold text-yellow-400 border border-yellow-400 rounded px-2 py-1"
+                className="text-xs font-bold text-yellow-400 border border-yellow-400/40 rounded-full px-3 py-1 hover:bg-yellow-400 hover:text-black transition-all duration-200"
               >
                 {isAr ? "EN" : "عربي"}
               </Link>
 
               <button
                 onClick={() => setOpen(!open)}
-                className="text-white p-2 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-lg"
+                className="text-gray-400 hover:text-white p-1.5 rounded-lg transition-colors"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+                {open ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Search Bar — wrapper collapses on mobile scroll */}
+          {/* Search Bar */}
           <div
             ref={searchSectionRef}
             className="order-3 md:order-none w-full md:flex-1"
@@ -308,21 +324,37 @@ export default function Nav() {
             <div
               ref={searchRef}
               onKeyDown={handleKeyDown}
-              className="relative w-full md:max-w-xl mx-auto mt-2 md:mt-0"
+              className="relative w-full md:max-w-xl mx-auto"
             >
-              <input
-                type="text"
-                placeholder={t("search")}
-                value={search}
-                onChange={handleSearch}
-                onFocus={() => search && setShowDropdown(true)}
-                className="w-full bg-gray-100 border border-yellow-500 text-gray-900 text-sm rounded-lg focus:ring-yellow-500 focus:border-yellow-500 p-2.5"
-              />
+              <div className="relative">
+                <svg
+                  className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder={t("search")}
+                  value={search}
+                  onChange={handleSearch}
+                  onFocus={() => search && setShowDropdown(true)}
+                  className="w-full bg-white/5 border border-white/10 focus:border-yellow-500/50 focus:bg-white/8 text-white placeholder-gray-500 text-sm rounded-xl ps-9 pe-4 py-2.5 outline-none transition-all duration-200"
+                />
+              </div>
 
               {showDropdown && (
                 <div
                   ref={resultsRef}
-                  className="absolute top-full start-0 w-full bg-white border border-gray-200 rounded-b-md shadow-lg z-[90] max-h-72 overflow-y-auto"
+                  className="absolute top-full start-0 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-[90] max-h-72 overflow-y-auto"
                 >
                   {filtered.length ? (
                     filtered.map((pr, i) => {
@@ -337,30 +369,30 @@ export default function Nav() {
                           href={p(`/products/${slugify(firstCategory)}/${pr.slug}`)}
                           onClick={closeMenus}
                           ref={el => (itemRefs.current[i] = el)}
-                          className={`group flex items-center gap-3 px-3 py-2 text-sm ${
-                            i === activeIndex ? "bg-yellow-100" : "hover:bg-yellow-100"
-                          }`}
+                          className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
+                            i === activeIndex ? "bg-white/8" : "hover:bg-white/5"
+                          } ${i !== filtered.length - 1 ? "border-b border-white/5" : ""}`}
                         >
-                          <div className="w-10 h-10 flex-shrink-0 rounded-md border border-gray-200 bg-white overflow-hidden">
+                          <div className="w-9 h-9 flex-shrink-0 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center">
                             <img
                               src={pr.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                               alt={pr.name}
-                              className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
+                              className="w-full h-full object-contain p-1"
                             />
                           </div>
-                          <div className="text-start">
-                            <p className="font-medium text-gray-900">
+                          <div className="text-start min-w-0">
+                            <p className="font-medium text-gray-200 truncate">
                               {isAr && pr.name_ar ? pr.name_ar : pr.name}
                             </p>
-                            <p className="text-xs text-gray-600 truncate">
-                              {pr.model || "No model"} — {pr.barcode || "No barcode"}
+                            <p className="text-xs text-gray-500 truncate">
+                              {pr.model || "—"} · {pr.barcode || "—"}
                             </p>
                           </div>
                         </Link>
                       )
                     })
                   ) : (
-                    <p className="text-gray-500 text-sm px-3 py-2">No products found</p>
+                    <p className="text-gray-500 text-sm px-4 py-3">No products found</p>
                   )}
                 </div>
               )}
@@ -368,35 +400,39 @@ export default function Nav() {
           </div>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href={p("/")} onClick={closeMenus} className="text-white hover:text-yellow-500">
+          <div className="hidden md:flex items-center gap-1">
+            <Link
+              href={p("/")}
+              onClick={closeMenus}
+              className="text-gray-400 hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-white/5 transition-all duration-150"
+            >
               {t("home")}
             </Link>
             <Link
               href={p("/products")}
               onClick={closeMenus}
-              className="text-white hover:text-yellow-500"
+              className="text-gray-400 hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-white/5 transition-all duration-150"
             >
               {t("products")}
             </Link>
 
-            {/* Language Toggle (desktop) */}
+            {/* Language Toggle */}
             <Link
               href={toggleHref}
-              className="text-xs font-semibold text-yellow-400 border border-yellow-400 rounded px-2 py-1 hover:bg-yellow-400 hover:text-black transition"
+              className="text-xs font-bold text-yellow-400 border border-yellow-400/40 rounded-full px-3 py-1.5 hover:bg-yellow-400 hover:text-black ms-1 transition-all duration-200"
             >
               {isAr ? "EN" : "عربي"}
             </Link>
 
             {/* Admin Controls */}
             {user && (
-              <div className="relative" ref={adminMenuRef}>
+              <div className="relative ms-1" ref={adminMenuRef}>
                 <button
                   onClick={e => {
                     e.stopPropagation()
                     setAdminOpen(prev => !prev)
                   }}
-                  className="text-white hover:text-yellow-500 flex items-center"
+                  className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-all duration-150"
                 >
                   {t("adminControls")}
                   <svg
@@ -405,78 +441,50 @@ export default function Nav() {
                     viewBox="0 0 24 24"
                     strokeWidth="2"
                     stroke="currentColor"
-                    className={`w-4 h-4 ms-1 transition-transform ${adminOpen ? "rotate-180" : ""}`}
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${adminOpen ? "rotate-180" : ""}`}
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
 
                 {adminOpen && (
-                  <ul className="absolute start-0 mt-2 bg-black border border-gray-700 rounded-lg shadow-lg min-w-[180px] z-[80]">
-                    <li>
-                      <Link
-                        href="/admin/newproduct"
-                        onClick={closeMenus}
-                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                      >
-                        New Product
-                      </Link>
-                    </li>
+                  <ul className="absolute start-0 mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl min-w-[180px] z-[80] overflow-hidden py-1">
+                    {[
+                      { href: "/admin/newproduct", label: "New Product" },
+                      { href: "/admin/newsletter", label: "Newsletter" },
+                      { href: "/admin/contacts", label: "Contact Messages" },
+                      { href: "/admin/banners", label: "Manage Banners" },
+                      { href: "/admin/homepage", label: "Homepage Settings" },
+                    ].map(item => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={closeMenus}
+                          className="block py-2 px-4 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
                     <li>
                       <button
                         onClick={() => {
                           setShowCategories(true)
                           closeMenus()
                         }}
-                        className="block w-full text-start py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        className="block w-full text-start py-2 px-4 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
                       >
                         Manage Categories
                       </button>
                     </li>
-                    <li>
-                      <Link
-                        href="/admin/newsletter"
-                        onClick={closeMenus}
-                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                      >
-                        Newsletter
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/admin/contacts"
-                        onClick={closeMenus}
-                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                      >
-                        Contact Messages
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/admin/banners"
-                        onClick={closeMenus}
-                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                      >
-                        Manage Banners
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/admin/homepage"
-                        onClick={closeMenus}
-                        className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                      >
-                        Homepage Settings
-                      </Link>
-                    </li>
-                    <li className="border-t border-gray-700">
+                    <li className="border-t border-white/8 mt-1 pt-1">
                       <button
                         onClick={async () => {
                           await logout()
                           closeMenus()
                           setTimeout(() => router.replace(p("/")), 50)
                         }}
-                        className="block w-full text-start py-2 px-4 text-sm text-white hover:text-yellow-500"
+                        className="block w-full text-start py-2 px-4 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors"
                       >
                         Logout
                       </button>
@@ -489,13 +497,13 @@ export default function Nav() {
 
           {/* Mobile Menu */}
           {open && (
-            <div className="w-full md:hidden border-t border-gray-700 mt-2 pt-2">
-              <ul className="space-y-1 text-start">
+            <div className="w-full md:hidden border-t border-white/8 mt-1 pt-3 pb-1">
+              <ul className="space-y-0.5">
                 <li>
                   <Link
                     href={p("/")}
                     onClick={closeMenus}
-                    className="block py-2 text-white hover:text-yellow-500"
+                    className="block py-2 px-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                   >
                     {t("home")}
                   </Link>
@@ -504,7 +512,7 @@ export default function Nav() {
                   <Link
                     href={p("/products")}
                     onClick={closeMenus}
-                    className="block py-2 text-white hover:text-yellow-500"
+                    className="block py-2 px-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                   >
                     {t("products")}
                   </Link>
@@ -517,7 +525,7 @@ export default function Nav() {
                         e.stopPropagation()
                         setAdminOpen(prev => !prev)
                       }}
-                      className="py-2 px-3 text-white hover:text-yellow-500 w-full text-start flex items-center justify-between"
+                      className="py-2 px-3 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-lg w-full text-start flex items-center justify-between transition-colors"
                     >
                       {t("adminControls")}
                       <svg
@@ -526,77 +534,49 @@ export default function Nav() {
                         viewBox="0 0 24 24"
                         strokeWidth={2}
                         stroke="currentColor"
-                        className={`w-4 h-4 ms-1 transition-transform ${adminOpen ? "rotate-180" : ""}`}
+                        className={`w-3.5 h-3.5 transition-transform duration-200 ${adminOpen ? "rotate-180" : ""}`}
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                       </svg>
                     </button>
 
                     {adminOpen && (
-                      <ul className="bg-black border border-gray-700 rounded-lg shadow-lg mt-1 space-y-1 z-[90] relative">
-                        <li>
-                          <Link
-                            href="/admin/newproduct"
-                            onClick={closeMenus}
-                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                          >
-                            New Product
-                          </Link>
-                        </li>
+                      <ul className="mt-1 ms-3 border-s border-white/10 ps-3 space-y-0.5">
+                        {[
+                          { href: "/admin/newproduct", label: "New Product" },
+                          { href: "/admin/newsletter", label: "Newsletter" },
+                          { href: "/admin/contacts", label: "Contact Messages" },
+                          { href: "/admin/banners", label: "Manage Banners" },
+                          { href: "/admin/homepage", label: "Homepage Settings" },
+                        ].map(item => (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              onClick={closeMenus}
+                              className="block py-2 px-3 text-sm text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
                         <li>
                           <button
                             onClick={() => {
                               setShowCategories(true)
                               closeMenus()
                             }}
-                            className="block w-full text-start py-2 px-4 text-sm text-white hover:text-yellow-500"
+                            className="block w-full text-start py-2 px-3 text-sm text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                           >
                             Manage Categories
                           </button>
                         </li>
-                        <li>
-                          <Link
-                            href="/admin/newsletter"
-                            onClick={closeMenus}
-                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                          >
-                            Newsletter
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/admin/contacts"
-                            onClick={closeMenus}
-                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                          >
-                            Contact Messages
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/admin/banners"
-                            onClick={closeMenus}
-                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                          >
-                            Manage Banners
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            href="/admin/homepage"
-                            onClick={closeMenus}
-                            className="block py-2 px-4 text-sm text-white hover:text-yellow-500"
-                          >
-                            Homepage Settings
-                          </Link>
-                        </li>
-                        <li className="border-t border-gray-700">
+                        <li className="pt-1">
                           <button
                             onClick={() => {
                               logout()
                               closeMenus()
                             }}
-                            className="block w-full text-start py-2 px-4 text-sm text-white hover:text-yellow-500"
+                            className="block w-full text-start py-2 px-3 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 rounded-lg transition-colors"
                           >
                             Logout
                           </button>
@@ -613,7 +593,7 @@ export default function Nav() {
         {/* CategoryBar */}
         <div
           ref={categoryBarWrapRef}
-          className="relative z-[40] mt-1"
+          className="relative z-[40]"
           style={{ transition: "max-height 0.3s ease, opacity 0.3s ease" }}
         >
           <CategoryBar refreshTrigger={refreshTrigger} />
@@ -622,15 +602,26 @@ export default function Nav() {
 
       {/* Manage Categories Modal */}
       {showCategories && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 p-6 relative">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Manage Categories</h2>
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative">
+            <h2 className="text-lg font-bold mb-4 text-gray-900">Manage Categories</h2>
             <EditCategories onUpdated={reloadCategories} />
             <button
               onClick={() => setShowCategories(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+              className="absolute top-4 end-4 text-gray-400 hover:text-gray-700 transition-colors"
             >
-              ✕
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
