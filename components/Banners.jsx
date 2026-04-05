@@ -15,6 +15,7 @@ let _cachedRatios = []
 export default function Banners({ images }) {
   const [banners, setBanners] = useState(_cachedBanners ?? [])
   const [ratios, setRatios] = useState(_cachedRatios)
+  const [loaded, setLoaded] = useState(!!_cachedBanners)
   // index into the extended track: 0 = clone of last, 1..len = real slides, len+1 = clone of first
   const [index, setIndex] = useState(1)
   const [paused, setPaused] = useState(false)
@@ -30,7 +31,10 @@ export default function Banners({ images }) {
       const mapped = images.map(url => ({ image: { s3Url: url }, path: "#" }))
       _cachedBanners = mapped
       setBanners(mapped)
-    } else if (!_cachedBanners) {
+      setLoaded(true)
+    } else if (_cachedBanners) {
+      setLoaded(true)
+    } else {
       Client.get("/banner")
         .then(res => {
           const data = res.data.banners || []
@@ -38,6 +42,7 @@ export default function Banners({ images }) {
           setBanners(data)
         })
         .catch(err => console.error("❌ Failed to fetch banners:", err))
+        .finally(() => setLoaded(true))
     }
   }, [images])
 
@@ -168,17 +173,26 @@ export default function Banners({ images }) {
 
   const currentAspect = ratios[toRatioIdx(index)] || "16 / 9"
 
-  // Show skeleton until banners load AND first image ratio is known
-  if (!len || !ratios[0])
+  // Still fetching — show skeleton
+  if (!loaded)
+    return (
+      <div className="w-full rounded-3xl overflow-hidden shadow-2xl">
+        <div style={{ aspectRatio: "16 / 9" }} className="bg-gray-100 animate-pulse w-full" />
+      </div>
+    )
+
+  // Loaded but no banners — render nothing
+  if (!len) return null
+
+  // Banners exist but first ratio not yet known — preload images silently then show skeleton
+  if (!ratios[0])
     return (
       <>
-        {len > 0 && (
-          <div className="hidden" aria-hidden="true">
-            {banners.map((b, i) => (
-              <img key={i} src={b.image?.s3Url} onLoad={handleImgLoad(i)} alt="" />
-            ))}
-          </div>
-        )}
+        <div className="hidden" aria-hidden="true">
+          {banners.map((b, i) => (
+            <img key={i} src={b.image?.s3Url} onLoad={handleImgLoad(i)} alt="" />
+          ))}
+        </div>
         <div className="w-full rounded-3xl overflow-hidden shadow-2xl">
           <div style={{ aspectRatio: "16 / 9" }} className="bg-gray-100 animate-pulse w-full" />
         </div>
