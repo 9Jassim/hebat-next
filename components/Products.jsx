@@ -8,7 +8,6 @@ import { useLanguage } from "@/context/LanguageContext"
 
 const PAGE_SIZE = 20
 
-// ✅ Slugify helper (EN only for URLs)
 const slugify = str =>
   str
     ?.toLowerCase()
@@ -17,7 +16,6 @@ const slugify = str =>
     .trim()
     .replace(/\s+/g, "-") || ""
 
-// ✅ Deslugify helper
 const deslugify = str =>
   str
     ?.replace(/-/g, " ")
@@ -26,19 +24,12 @@ const deslugify = str =>
 
 function ProductCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm flex flex-col h-[340px] animate-pulse">
-      <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-        <div className="w-full h-full rounded-xl bg-gray-200" />
-      </div>
-      <div className="flex flex-col justify-between px-3 pb-3 flex-grow">
-        <div className="space-y-2 mt-1">
-          <div className="h-4 bg-gray-200 rounded w-4/5" />
-          <div className="h-4 bg-gray-200 rounded w-3/5" />
-        </div>
-        <div className="space-y-[6px]">
-          <div className="h-3 bg-gray-200 rounded w-2/3" />
-          <div className="h-3 bg-gray-200 rounded w-1/2" />
-        </div>
+    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col animate-pulse">
+      <div className="aspect-square bg-gray-100 m-3 rounded-xl" />
+      <div className="px-3 pb-4 space-y-2">
+        <div className="h-4 bg-gray-100 rounded-full w-4/5" />
+        <div className="h-3 bg-gray-100 rounded-full w-3/5" />
+        <div className="h-3 bg-gray-100 rounded-full w-2/5 mt-1" />
       </div>
     </div>
   )
@@ -86,7 +77,6 @@ export default function Products() {
 
           setShowing(filtered)
 
-          // ✅ Get Arabic category name for display
           const matchedCategory =
             filtered[0]?.categories?.find(c => slugify(c.name) === selectedCategory) ||
             filtered[0]?.category
@@ -125,12 +115,10 @@ export default function Products() {
     fetchProducts()
   }, [selectedCategory, searchQuery, isAr])
 
-  // Reset visible count when results change
   useEffect(() => {
     setVisibleCount(PAGE_SIZE)
   }, [showing])
 
-  // Infinite scroll sentinel
   const handleSentinel = useCallback(
     entries => {
       if (entries[0].isIntersecting && visibleCount < showing.length) {
@@ -150,18 +138,21 @@ export default function Products() {
 
   if (loading)
     return (
-      <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
         {/* Breadcrumb skeleton */}
-        <div className="w-full max-w-6xl mb-2">
-          <div className="h-4 bg-gray-200 rounded w-48 animate-pulse" />
+        <div className="flex gap-2 mb-8">
+          <div className="h-3 bg-gray-100 rounded-full w-10 animate-pulse" />
+          <div className="h-3 bg-gray-100 rounded-full w-2 animate-pulse" />
+          <div className="h-3 bg-gray-100 rounded-full w-20 animate-pulse" />
         </div>
         {/* Header skeleton */}
-        <div className="w-full max-w-6xl mb-3 space-y-2">
-          <div className="h-8 bg-gray-200 rounded w-56 animate-pulse" />
-          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+        <div className="mb-8 space-y-2">
+          <div className="h-2 bg-gray-100 rounded-full w-16 animate-pulse" />
+          <div className="h-8 bg-gray-100 rounded w-48 animate-pulse" />
+          <div className="h-3 bg-gray-100 rounded-full w-24 animate-pulse" />
         </div>
         {/* Grid skeleton */}
-        <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))}
@@ -169,7 +160,6 @@ export default function Products() {
       </div>
     )
 
-  // ✅ Breadcrumb JSON-LD
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -214,46 +204,53 @@ export default function Products() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <div className="flex flex-col items-center justify-center pt-10 px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
+
         {/* Breadcrumb */}
-        <div className="w-full max-w-6xl mb-2 text-sm text-gray-500">
-          <nav className="flex items-center space-x-2">
-            <Link href={p("/")} className="hover:text-yellow-600 font-medium">
-              {t("home")}
-            </Link>
-            <span>/</span>
-            <Link href={p("/products")} className="hover:text-yellow-600 font-medium">
-              {t("products")}
-            </Link>
-            {(selectedCategory || searchQuery) && (
-              <>
-                <span>/</span>
-                <span className="text-gray-800 font-semibold capitalize">{displayCategory}</span>
-              </>
-            )}
-          </nav>
-        </div>
+        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-8 flex-wrap">
+          <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
+            {t("home")}
+          </Link>
+          <span className="text-gray-200 select-none">›</span>
+          <Link href={p("/products")} className="hover:text-yellow-500 transition-colors font-medium">
+            {t("products")}
+          </Link>
+          {(selectedCategory || searchQuery) && (
+            <>
+              <span className="text-gray-200 select-none">›</span>
+              <span className="text-gray-600 font-semibold capitalize">{displayCategory}</span>
+            </>
+          )}
+        </nav>
 
         {/* Header */}
-        <div className="w-full max-w-6xl mb-3">
-          <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2 capitalize">
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-0.5 w-6 bg-yellow-500 rounded-full" />
+            <span className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">
+              {selectedCategory ? t("products") : searchQuery ? "Search" : "Collection"}
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize mb-1">
             {displayCategory || t("allProducts")}
           </h1>
-          <p className="text-gray-700 text-sm font-medium text-start">
-            {t("showing")} {showing.length} {showing.length !== 1 ? t("products") : t("product")}
+          <p className="text-sm text-gray-400 font-medium">
+            {showing.length} {showing.length !== 1 ? t("products") : t("product")}
           </p>
         </div>
 
         {/* Product Grid */}
-        <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 w-full max-w-6xl">
-          {visibleProducts.length > 0 ? (
-            visibleProducts.map(product => {
+        {visibleProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {visibleProducts.map(product => {
               const firstCatObj =
                 Array.isArray(product.categories) && product.categories.length > 0
                   ? product.categories[0]
                   : product.category
 
               const firstCatSlug = firstCatObj?.name || "others"
+              const catLabel = isAr && firstCatObj?.name_ar ? firstCatObj.name_ar : firstCatObj?.name
+              const productName = isAr && product.name_ar ? product.name_ar : product.name
 
               return (
                 <Link
@@ -261,46 +258,86 @@ export default function Products() {
                   href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
                   className="group"
                 >
-                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-[340px]">
+                  <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
+
+                    {/* Image */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-md flex items-center justify-center">
-                        <img
-                          src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                          alt={isAr && product.name_ar ? product.name_ar : product.name}
-                          loading="lazy"
-                          decoding="async"
-                          className="object-contain w-full h-full scale-100 transition-transform duration-500 ease-in-out group-hover:scale-110"
-                        />
+                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
+                      <img
+                        src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                        alt={productName}
+                        loading="lazy"
+                        decoding="async"
+                        className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
+                      />
+
+                      {/* Category badge — only when not filtering by a single category */}
+                      {!selectedCategory && catLabel && (
+                        <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
+                          {catLabel}
+                        </span>
+                      )}
                       </div>
                     </div>
 
-                    <div className="flex flex-col justify-between px-3 pb-3 text-start flex-grow">
-                      <h5 className="text-sm sm:text-base font-semibold text-gray-900 leading-snug mb-1 group-hover:text-yellow-500 transition-colors line-clamp-2">
-                        {isAr && product.name_ar ? product.name_ar : product.name}
+                    {/* Info */}
+                    <div className="px-3 pb-4 flex flex-col gap-1 flex-grow">
+                      <h5 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
+                        {productName}
                       </h5>
 
-                      <div className="text-xs text-gray-600 space-y-[2px]">
-                        <p>
-                          {t("model")}: {product.model || "N/A"}
-                        </p>
-                        <p>
-                          {t("barcode")}: {product.barcode || "N/A"}
-                        </p>
+                      <div className="mt-auto pt-2 space-y-0.5">
+                        {product.model && (
+                          <p className="text-[11px] text-gray-400 truncate">
+                            <span className="font-medium text-gray-500">{t("model")}:</span>{" "}
+                            {product.model}
+                          </p>
+                        )}
+                        {product.barcode && (
+                          <p className="text-[11px] text-gray-400 truncate">
+                            <span className="font-medium text-gray-500">{t("barcode")}:</span>{" "}
+                            {product.barcode}
+                          </p>
+                        )}
                       </div>
                     </div>
+
+                    {/* Yellow accent bar on hover */}
+                    <div className="h-0.5 bg-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
                   </div>
                 </Link>
               )
-            })
-          ) : (
-            <p className="text-gray-600 text-sm text-center">
+            })}
+          </div>
+        ) : (
+          /* Empty state */
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <p className="text-gray-500 font-medium text-sm">
               {searchQuery ? `${t("noResults")} "${searchQuery}".` : t("noProducts")}
             </p>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Infinite scroll sentinel */}
-        {visibleCount < showing.length && <div ref={sentinelRef} className="w-full h-10 mt-4" />}
+        {visibleCount < showing.length && (
+          <div ref={sentinelRef} className="w-full h-16 mt-4 flex items-center justify-center">
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map(i => (
+                <div
+                  key={i}
+                  className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   )
