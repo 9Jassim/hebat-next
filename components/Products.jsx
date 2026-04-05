@@ -261,7 +261,7 @@ export default function Products() {
                   href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
                   className="group"
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
+                  <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
                     {/* Image */}
                     <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
                       <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
