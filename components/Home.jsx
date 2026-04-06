@@ -143,7 +143,7 @@ export default function Home() {
       if (isPaused.current) return
       setPageIndex(prev => (prev + 1) % numPages)
       setSpotlightPos(Math.floor(Math.random() * Math.min(FEATURED_PAGE, products.length)))
-    }, 4000)
+    }, 8000)
     return () => clearInterval(id)
   }, [products.length, numPages])
   const [expandedCat, setExpandedCat] = useState(null)
@@ -495,7 +495,7 @@ export default function Home() {
                     key={`bar-${pageIndex}`}
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ duration: 4, ease: "linear" }}
+                    transition={{ duration: 8, ease: "linear" }}
                     className="absolute -top-3 start-0 end-0 h-0.5 bg-yellow-500/40 origin-start rounded-full"
                   />
 
