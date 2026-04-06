@@ -7,7 +7,6 @@ import { useEffect, useState, useRef } from "react"
 import Client from "@/lib/api"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import { ShieldCheck, Layers, Star, ChevronDown, ArrowRight, ArrowUpRight, Zap } from "lucide-react"
-import { useDragScroll } from "@/hooks/useDragScroll"
 import PageDecorations from "@/components/PageDecorations"
 
 const slugify = str =>
@@ -129,9 +128,24 @@ export default function Home() {
   const [products, setProducts] = useState([])
   const [configHeading, setConfigHeading] = useState(null)
   const [configHeading_ar, setConfigHeading_ar] = useState(null)
+  const FEATURED_PAGE = 7
+  const [pageIndex, setPageIndex] = useState(0)
+  const [spotlightPos, setSpotlightPos] = useState(0)
+  const isPaused = useRef(false)
 
   const heading = (isAr ? configHeading_ar : configHeading) || c.heading
-  const dragScroll = useDragScroll()
+
+  const numPages = Math.max(1, Math.ceil(products.length / FEATURED_PAGE))
+
+  useEffect(() => {
+    if (products.length < 2) return
+    const id = setInterval(() => {
+      if (isPaused.current) return
+      setPageIndex(prev => (prev + 1) % numPages)
+      setSpotlightPos(Math.floor(Math.random() * Math.min(FEATURED_PAGE, products.length)))
+    }, 4000)
+    return () => clearInterval(id)
+  }, [products.length, numPages])
   const [expandedCat, setExpandedCat] = useState(null)
 
   useEffect(() => {
@@ -428,6 +442,179 @@ export default function Home() {
 
       {/* ─── Categories + Products wrapper ─── */}
       <div className="relative z-10">
+        {/* ─── Featured Products ─── */}
+        {products.length > 0 && (
+          <FadeUp className="mx-auto max-w-7xl px-6 lg:px-8 pt-10 pb-14">
+            {/* Section header */}
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-yellow-600 mb-1.5">
+                  {c.productsLabel}
+                </p>
+                <h2 className="text-3xl font-black text-gray-950 tracking-tight leading-none">
+                  {c.productsHeading}
+                </h2>
+              </div>
+              <Link
+                href={p("/products")}
+                className="group flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-yellow-600 transition-colors"
+              >
+                {c.viewAll}
+                <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+
+            {(() => {
+              const n = products.length
+              const pageOffset = (pageIndex * FEATURED_PAGE) % n
+              const page = Array.from(
+                { length: Math.min(FEATURED_PAGE, n) },
+                (_, i) => products[(pageOffset + i) % n]
+              )
+              const clampedPos = spotlightPos % page.length
+              const featured = page[clampedPos]
+              const featuredCat =
+                Array.isArray(featured?.categories) && featured.categories.length > 0
+                  ? featured.categories[0]
+                  : featured?.category
+              const featuredName = isAr && featured?.name_ar ? featured.name_ar : featured?.name
+              const gridProducts = page.filter((_, i) => i !== clampedPos)
+
+              return (
+                <div
+                  className="relative"
+                  onMouseEnter={() => {
+                    isPaused.current = true
+                  }}
+                  onMouseLeave={() => {
+                    isPaused.current = false
+                  }}
+                >
+                  {/* Progress bar */}
+                  <motion.div
+                    key={`bar-${pageIndex}`}
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 4, ease: "linear" }}
+                    className="absolute -top-3 start-0 end-0 h-0.5 bg-yellow-500/40 origin-start rounded-full"
+                  />
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={pageIndex}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                      className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+                    >
+                      {/* ── Spotlight card ── */}
+                      <Link
+                        href={p(
+                          `/products/${slugify(featuredCat?.name || "others")}/${featured?.slug}`
+                        )}
+                        onMouseEnter={() => {
+                          isPaused.current = true
+                        }}
+                        onMouseLeave={() => {
+                          isPaused.current = false
+                        }}
+                        className="group col-span-2 row-span-2 relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col min-h-[380px]"
+                      >
+                        <div className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white overflow-hidden min-h-[300px]">
+                          <div className="absolute inset-0 bg-yellow-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <img
+                            src={featured?.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                            alt={featuredName}
+                            loading="eager"
+                            className="absolute inset-0 w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500 drop-shadow-xl"
+                          />
+                          <span className="absolute top-4 start-4 bg-yellow-500 text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md shadow-yellow-500/30">
+                            {isAr ? "مميز" : "Featured"}
+                          </span>
+                        </div>
+                        <div className="px-6 py-5 border-t border-gray-100">
+                          <p className="text-base font-black text-gray-900 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
+                            {featuredName}
+                          </p>
+                          {featured?.model && (
+                            <p className="text-xs text-gray-400 font-mono mt-1">{featured.model}</p>
+                          )}
+                          <div className="mt-4 flex items-center gap-2 text-xs font-bold text-yellow-600">
+                            {isAr ? "اعرف أكثر" : "View product"}
+                            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-0 start-0 end-0 h-1 bg-yellow-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
+                      </Link>
+
+                      {/* ── Grid cards ── */}
+                      {gridProducts.map(product => {
+                        const cat =
+                          Array.isArray(product.categories) && product.categories.length > 0
+                            ? product.categories[0]
+                            : product.category
+                        const name = isAr && product.name_ar ? product.name_ar : product.name
+                        return (
+                          <Link
+                            key={product.slug}
+                            href={p(`/products/${slugify(cat?.name || "others")}/${product.slug}`)}
+                            onMouseEnter={() => {
+                              isPaused.current = true
+                            }}
+                            onMouseLeave={() => {
+                              isPaused.current = false
+                            }}
+                            className="group relative rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                          >
+                            <div className="p-3 flex-shrink-0 h-44">
+                              <div className="relative w-full h-full rounded-xl bg-white border border-gray-100 overflow-hidden flex items-center justify-center">
+                                <img
+                                  src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                                  alt={name}
+                                  loading="lazy"
+                                  decoding="async"
+                                  draggable="false"
+                                  className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
+                                />
+                              </div>
+                            </div>
+                            <div className="px-3 py-3 border-t border-gray-100 flex flex-col gap-0.5 flex-grow">
+                              <p className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
+                                {name}
+                              </p>
+                              {product.model && (
+                                <p className="text-xs text-gray-400 font-mono">{product.model}</p>
+                              )}
+                            </div>
+                            <div className="absolute bottom-0 start-0 end-0 h-0.5 bg-yellow-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
+                          </Link>
+                        )
+                      })}
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Dot indicators — one per page */}
+                  {numPages > 1 && (
+                    <div className="flex items-center justify-center gap-1.5 mt-6">
+                      {Array.from({ length: numPages }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setPageIndex(i)
+                            setSpotlightPos(Math.floor(Math.random() * FEATURED_PAGE))
+                          }}
+                          className={`rounded-full transition-all duration-300 ${pageIndex === i ? "w-5 h-1.5 bg-yellow-500" : "w-1.5 h-1.5 bg-gray-300 hover:bg-yellow-400"}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+          </FadeUp>
+        )}
+
         {/* ─── Categories ─── */}
         {categories.length > 0 && (
           <FadeUp className="mx-auto max-w-7xl px-6 lg:px-8 pb-14 pt-4">
@@ -538,87 +725,6 @@ export default function Home() {
                     )
                   })()}
               </AnimatePresence>
-            </div>
-          </FadeUp>
-        )}
-
-        {/* ─── Featured Products ─── */}
-        {products.length > 0 && (
-          <FadeUp className="mx-auto max-w-7xl px-6 lg:px-8 pb-20">
-            {/* Section header */}
-            <div className="flex items-end justify-between mb-7">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-yellow-600 mb-1.5">
-                  {c.productsLabel}
-                </p>
-                <h2 className="text-3xl font-black text-gray-950 tracking-tight leading-none">
-                  {c.productsHeading}
-                </h2>
-              </div>
-              <Link
-                href={p("/products")}
-                className="group flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-yellow-600 transition-colors"
-              >
-                {c.viewAll}
-                <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-
-            <div
-              ref={dragScroll.ref}
-              onMouseDown={dragScroll.onMouseDown}
-              onMouseUp={dragScroll.onMouseUp}
-              onMouseLeave={dragScroll.onMouseLeave}
-              onMouseMove={dragScroll.onMouseMove}
-              onClickCapture={dragScroll.onClickCapture}
-              onDragStart={e => e.preventDefault()}
-              className="flex gap-4 overflow-x-auto hide-scrollbar pb-2 cursor-grab select-none"
-              dir="ltr"
-            >
-              {products.map(product => {
-                const firstCat =
-                  Array.isArray(product.categories) && product.categories.length > 0
-                    ? product.categories[0]
-                    : product.category
-                const catSlug = firstCat?.name || "others"
-                const name = isAr && product.name_ar ? product.name_ar : product.name
-
-                return (
-                  <Link
-                    key={product.slug}
-                    href={p(`/products/${slugify(catSlug)}/${product.slug}`)}
-                    className="group flex-shrink-0 w-44 sm:w-52 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col"
-                  >
-                    {/* Image area */}
-                    <div className="p-3 flex-shrink-0 h-48">
-                      <div className="relative w-full h-full rounded-xl bg-white border border-gray-100 overflow-hidden flex items-center justify-center">
-                        <img
-                          src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                          alt={name}
-                          loading="lazy"
-                          decoding="async"
-                          draggable="false"
-                          className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
-                        />
-                        {/* Yellow slide-in bar */}
-                        <div className="absolute bottom-0 start-0 end-0 h-0.5 bg-yellow-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="px-3 py-3 flex flex-col gap-1 flex-grow">
-                      <p className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
-                        {name}
-                      </p>
-                      {product.model && (
-                        <p className="text-xs text-gray-400 font-mono tracking-tight">
-                          {product.model}
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                )
-              })}
             </div>
           </FadeUp>
         )}
