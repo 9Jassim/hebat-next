@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 import { useLanguage } from "@/context/LanguageContext"
+import PageDecorations from "@/components/PageDecorations"
 
 const PAGE_SIZE = 20
 
@@ -55,7 +56,17 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("")
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
-  const sentinelRef = useRef(null)
+  const observerRef = useRef(null)
+  const showingRef = useRef(showing)
+  const visibleCountRef = useRef(visibleCount)
+  const animatedSlugs = useRef(new Set())
+
+  useEffect(() => {
+    showingRef.current = showing
+  }, [showing])
+  useEffect(() => {
+    visibleCountRef.current = visibleCount
+  }, [visibleCount])
 
   const normalize = str =>
     str?.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "").normalize("NFKC").trim() || ""
@@ -119,26 +130,27 @@ export default function Products() {
     setVisibleCount(PAGE_SIZE)
   }, [showing])
 
-  const handleSentinel = useCallback(
-    entries => {
-      if (entries[0].isIntersecting && visibleCount < showing.length) {
-        setVisibleCount(prev => prev + PAGE_SIZE)
-      }
-    },
-    [visibleCount, showing.length]
-  )
-
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(handleSentinel, { threshold: 0.1 })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [handleSentinel])
+  const sentinelRef = useCallback(el => {
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+      observerRef.current = null
+    }
+    if (el) {
+      observerRef.current = new IntersectionObserver(
+        entries => {
+          if (entries[0].isIntersecting && visibleCountRef.current < showingRef.current.length) {
+            setVisibleCount(prev => prev + PAGE_SIZE)
+          }
+        },
+        { threshold: 0.1 }
+      )
+      observerRef.current.observe(el)
+    }
+  }, [])
 
   if (loading)
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
         {/* Breadcrumb skeleton */}
         <div className="flex gap-2 mb-8">
           <div className="h-3 bg-gray-100 rounded-full w-10 animate-pulse" />
@@ -198,13 +210,32 @@ export default function Products() {
   const visibleProducts = showing.slice(0, visibleCount)
 
   return (
-    <>
+    <div className="relative">
+      <style>{`
+        @keyframes product-in {
+          0%   { opacity: 0; transform: translateY(24px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .product-card-enter {
+          animation: product-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .product-card-enter:nth-child(2)  { animation-delay: 0.05s; }
+        .product-card-enter:nth-child(3)  { animation-delay: 0.10s; }
+        .product-card-enter:nth-child(4)  { animation-delay: 0.15s; }
+        .product-card-enter:nth-child(5)  { animation-delay: 0.20s; }
+        .product-card-enter:nth-child(6)  { animation-delay: 0.05s; }
+        .product-card-enter:nth-child(7)  { animation-delay: 0.10s; }
+        .product-card-enter:nth-child(8)  { animation-delay: 0.15s; }
+        .product-card-enter:nth-child(9)  { animation-delay: 0.20s; }
+        .product-card-enter:nth-child(10) { animation-delay: 0.05s; }
+      `}</style>
+      <PageDecorations />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-8 flex-wrap">
           <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
@@ -254,60 +285,63 @@ export default function Products() {
               const catLabel =
                 isAr && firstCatObj?.name_ar ? firstCatObj.name_ar : firstCatObj?.name
               const productName = isAr && product.name_ar ? product.name_ar : product.name
+              const isNew = !animatedSlugs.current.has(product.slug)
+              if (isNew) animatedSlugs.current.add(product.slug)
 
               return (
-                <Link
-                  key={product.slug}
-                  href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
-                  className="group"
-                >
-                  <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
-                    {/* Image */}
-                    <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                      <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
-                        <img
-                          src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                          alt={productName}
-                          loading="lazy"
-                          decoding="async"
-                          className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
-                        />
+                <div key={product.slug} className={isNew ? "product-card-enter" : ""}>
+                  <Link
+                    href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
+                    className="group"
+                  >
+                    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
+                      {/* Image */}
+                      <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
+                        <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
+                          <img
+                            src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                            alt={productName}
+                            loading="lazy"
+                            decoding="async"
+                            className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
+                          />
 
-                        {/* Category badge — only when not filtering by a single category */}
-                        {!selectedCategory && catLabel && (
-                          <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
-                            {catLabel}
-                          </span>
-                        )}
+                          {/* Category badge — only when not filtering by a single category */}
+                          {!selectedCategory && catLabel && (
+                            <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
+                              {catLabel}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Info */}
-                    <div className="px-3 pb-4 flex flex-col gap-1 flex-grow">
-                      <h5 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
-                        {productName}
-                      </h5>
+                      {/* Info */}
+                      <div className="px-3 pb-4 flex flex-col gap-1 flex-grow">
+                        <h5 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
+                          {productName}
+                        </h5>
 
-                      <div className="mt-auto pt-2 space-y-0.5">
-                        {product.model && (
-                          <p className="text-[11px] text-gray-400 truncate">
-                            <span className="font-medium text-gray-500">{t("model")}:</span>{" "}
-                            {product.model}
-                          </p>
-                        )}
-                        {product.barcode && (
-                          <p className="text-[11px] text-gray-400 truncate">
-                            <span className="font-medium text-gray-500">{t("barcode")}:</span>{" "}
-                            {product.barcode}
-                          </p>
-                        )}
+                        <div className="mt-auto pt-2 space-y-0.5">
+                          {product.model && (
+                            <p className="text-[11px] text-gray-400 truncate">
+                              <span className="font-medium text-gray-500">{t("model")}:</span>{" "}
+                              {product.model}
+                            </p>
+                          )}
+                          {product.barcode && (
+                            <p className="text-[11px] text-gray-400 truncate">
+                              <span className="font-medium text-gray-500">{t("barcode")}:</span>{" "}
+                              {product.barcode}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Yellow accent bar on hover */}
-                    <div className="h-0.5 bg-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
-                  </div>
-                </Link>
+                      {/* Yellow accent bar on hover */}
+                      <div className="h-0.5 bg-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
+                    </div>
+                  </Link>
+                </div>
               )
             })}
           </div>
@@ -350,6 +384,6 @@ export default function Products() {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }

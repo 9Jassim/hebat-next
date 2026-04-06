@@ -2,13 +2,15 @@
 
 import Link from "next/link"
 import { useLanguage } from "@/context/LanguageContext"
+import PageDecorations from "@/components/PageDecorations"
 
 export default function About() {
   const { isAr, t, p } = useLanguage()
 
   return (
-    <section className="pt-[50px] pb-20 bg-white text-gray-900">
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="relative pt-[50px] pb-20 text-gray-900">
+      <PageDecorations />
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Heading */}
         <h1 className="text-4xl sm:text-5xl font-bold text-black mb-6 text-center">
           {t("aboutTitle")} <span className="text-yellow-500">{isAr ? "هيبات" : "Hebat"}</span>
