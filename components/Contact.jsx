@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
 import { useLanguage } from "@/context/LanguageContext"
+import PageDecorations from "@/components/PageDecorations"
 
 export default function Contact() {
   const router = useRouter()
@@ -43,8 +44,9 @@ export default function Contact() {
   }
 
   return (
-    <section className="pt-[50px] pb-20 bg-white text-gray-900">
-      <div className="max-w-5xl mx-auto px-6">
+    <section className="relative pt-[50px] pb-20 text-gray-900">
+      <PageDecorations />
+      <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Header */}
         <h1 className="text-4xl sm:text-5xl font-bold text-black text-center mb-6">
           {t("contact")}

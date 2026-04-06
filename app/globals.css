@@ -16,10 +16,14 @@ body {
   min-height: 100%;
   overflow-x: hidden;
   overscroll-behavior-x: none;
+  overflow-anchor: none;
 }
 
 body {
-  @apply bg-white text-gray-900;
+  @apply text-gray-900;
+  background-color: #fffdf5;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* brand helpers */

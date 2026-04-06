@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Client from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
 import { useLanguage } from "@/context/LanguageContext"
+import PageDecorations from "@/components/PageDecorations"
 import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogTitle from "@mui/material/DialogTitle"
@@ -247,8 +248,9 @@ export default function ProductDetails({ params }) {
       : product.categories[0]?.name
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="relative min-h-screen">
+      <PageDecorations />
+      <div className="relative z-10 max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-6 flex items-center flex-wrap gap-1.5">
           <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
