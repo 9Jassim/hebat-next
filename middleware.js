@@ -43,6 +43,11 @@ export function middleware(req) {
     return NextResponse.next()
   }
 
+  // QR redirect routes: pass through as-is
+  if (pathname.startsWith("/go/")) {
+    return NextResponse.next()
+  }
+
   // English paths: rewrite /foo → /en/foo (internal)
   const url = req.nextUrl.clone()
   url.pathname = `/en${pathname}`

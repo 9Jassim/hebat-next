@@ -37,7 +37,17 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const manualRef = useRef(null)
   const youtubeUrlRef = useRef(null)
 
+  const [copied, setCopied] = useState(false)
+
   const markDirty = () => setIsDirty(true)
+
+  const redirectUrl = product?._id ? `${process.env.NEXT_PUBLIC_URL}/go/${product._id}` : ""
+
+  const copyRedirectUrl = () => {
+    navigator.clipboard.writeText(redirectUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   // Fetch categories
   useEffect(() => {
@@ -327,6 +337,27 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     <div className="max-h-[75vh] overflow-y-auto px-1 sm:px-2">
       <form onSubmit={editProduct} className="bg-white rounded-xl p-4 sm:p-6">
         <h1 className="text-xl font-bold text-yellow-500 mb-4 text-center">Edit Product</h1>
+
+        {/* QR Redirect URL */}
+        {redirectUrl && (
+          <div className="mb-4">
+            <label className="block mb-1 text-sm font-medium text-gray-500">QR Redirect URL</label>
+            <div className="flex items-center gap-2">
+              <input
+                readOnly
+                value={redirectUrl}
+                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500 cursor-default select-all"
+              />
+              <button
+                type="button"
+                onClick={copyRedirectUrl}
+                className="shrink-0 px-3 py-2 text-xs rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-colors"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
