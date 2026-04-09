@@ -47,7 +47,7 @@ export default function Footer() {
           </p>
 
           {/* Social Icons */}
-          <div className="flex space-x-4 mt-2">
+          <div className="flex gap-4 mt-2">
             <a
               href="https://www.instagram.com/morslon.bh"
               target="_blank"
@@ -111,7 +111,7 @@ export default function Footer() {
               href="https://www.snapchat.com/add/morslon.bh"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-yellow-500 transition relative top-[3px]"
+              className="hover:text-yellow-500 transition"
               aria-label="Snapchat"
             >
               <svg
