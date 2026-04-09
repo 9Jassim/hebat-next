@@ -17,17 +17,6 @@ const slugify = str =>
     .trim()
     .replace(/\s+/g, "-") || ""
 
-const GRADIENTS = [
-  "from-yellow-400 to-amber-500",
-  "from-sky-400 to-blue-500",
-  "from-emerald-400 to-teal-500",
-  "from-rose-400 to-pink-500",
-  "from-violet-400 to-purple-500",
-  "from-orange-400 to-red-400",
-  "from-cyan-400 to-indigo-400",
-  "from-lime-400 to-green-500",
-]
-
 function FadeUp({ children, delay = 0, className = "" }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "0px 0px -40px 0px" })
@@ -615,116 +604,132 @@ export default function Home() {
           </FadeUp>
         )}
 
-        {/* ─── Categories ─── */}
+        {/* ─── Categories — closing section ─── */}
         {categories.length > 0 && (
-          <FadeUp className="mx-auto max-w-7xl px-6 lg:px-8 pb-14 pt-4">
-            {/* Section header */}
-            <div className="flex items-end justify-between mb-7">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-yellow-600 mb-1.5">
-                  {c.categoriesLabel}
-                </p>
-                <h2 className="text-3xl font-black text-gray-950 tracking-tight leading-none">
-                  {c.categoriesHeading}
-                </h2>
+          <FadeUp className="px-4 sm:px-6 lg:px-8 pb-10 pt-4">
+            <div className="mx-auto max-w-7xl bg-gray-950 rounded-3xl overflow-hidden ring-1 ring-white/[0.06]">
+              {/* Header */}
+              <div className="px-8 lg:px-12 pt-10 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/[0.07]">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.45em] text-yellow-500/80 mb-2">
+                    {c.categoriesLabel}
+                  </p>
+                  <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
+                    {c.categoriesHeading}
+                  </h2>
+                </div>
+                <Link
+                  href={p("/products")}
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/15 text-white/60 hover:text-white hover:border-yellow-500/50 hover:bg-yellow-500/10 transition-all duration-200 text-sm font-semibold flex-shrink-0"
+                >
+                  {c.viewAll}
+                  <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
+                </Link>
               </div>
-              <Link
-                href={p("/products")}
-                className="group flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-yellow-600 transition-colors"
-              >
-                {c.viewAll}
-                <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {categories.slice(0, 10).map((cat, i) => {
-                const name = isAr && cat.name_ar ? cat.name_ar : cat.name
-                const gradient = GRADIENTS[i % GRADIENTS.length]
-                const hasChildren = cat.children?.length > 0
-                const isExpanded = expandedCat === cat._id
+              {/* Category rows */}
+              <div>
+                {categories.slice(0, 10).map((cat, i) => {
+                  const name = isAr && cat.name_ar ? cat.name_ar : cat.name
+                  const hasChildren = cat.children?.length > 0
+                  const isExpanded = expandedCat === cat._id
 
-                return (
-                  <Link
-                    key={cat._id}
-                    href={p(`/products/${slugify(cat.name)}`)}
-                    onClick={e => {
-                      if (hasChildren) {
-                        e.preventDefault()
-                        setExpandedCat(isExpanded ? null : cat._id)
-                      }
-                    }}
-                    className={`group relative flex flex-col justify-between rounded-2xl overflow-hidden h-32 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br ${gradient} ${isExpanded ? "ring-2 ring-offset-2 ring-yellow-400" : ""}`}
-                  >
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300" />
-
-                    {/* Index number */}
-                    <span className="relative z-10 px-3 pt-3 text-white/30 font-black text-2xl leading-none tabular-nums select-none">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-
-                    {/* Name + icon */}
-                    <div className="relative z-10 px-3 pb-3 flex items-end justify-between gap-1">
-                      <span className="text-white font-bold text-sm leading-tight drop-shadow-sm">
-                        {name}
-                      </span>
-                      {hasChildren ? (
-                        <ChevronDown
-                          className={`w-4 h-4 text-white/70 flex-shrink-0 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
-                        />
-                      ) : (
-                        <ArrowRight className="w-3.5 h-3.5 text-white/50 flex-shrink-0 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
-                      )}
-                    </div>
-                  </Link>
-                )
-              })}
-
-              {/* Subcategory expand panel */}
-              <AnimatePresence>
-                {expandedCat &&
-                  (() => {
-                    const expandedIdx = categories.findIndex(c => c._id === expandedCat)
-                    const cat = categories[expandedIdx]
-                    if (!cat?.children?.length) return null
-                    const gradient = GRADIENTS[expandedIdx % GRADIENTS.length]
-                    return (
-                      <motion.div
-                        key={expandedCat}
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="col-span-full overflow-hidden"
+                  return (
+                    <div key={cat._id}>
+                      <Link
+                        href={p(`/products/${slugify(cat.name)}`)}
+                        onClick={e => {
+                          if (hasChildren) {
+                            e.preventDefault()
+                            setExpandedCat(isExpanded ? null : cat._id)
+                          }
+                        }}
+                        className={`group flex items-center gap-5 px-8 lg:px-12 py-5 border-b border-white/[0.06] hover:bg-yellow-500/[0.07] transition-all duration-300 ${isExpanded ? "bg-white/5" : ""}`}
                       >
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 pt-2 pb-1">
-                          {cat.children.map((sub, si) => {
-                            const subName = isAr && sub.name_ar ? sub.name_ar : sub.name
-                            return (
-                              <motion.div
-                                key={sub._id}
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2, delay: si * 0.04 }}
-                              >
-                                <Link
-                                  href={p(`/products/${slugify(sub.name)}`)}
-                                  className={`group relative flex items-center justify-between gap-2 px-4 py-3 rounded-xl overflow-hidden bg-gradient-to-br ${gradient} shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}
-                                >
-                                  <div className="absolute inset-0 bg-white/50 group-hover:bg-white/40 transition-colors" />
-                                  <span className="relative z-10 text-gray-800 font-semibold text-sm leading-snug">
-                                    {subName}
-                                  </span>
-                                  <ArrowRight className="relative z-10 w-3.5 h-3.5 text-gray-600 flex-shrink-0 rtl:rotate-180 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-all" />
-                                </Link>
-                              </motion.div>
-                            )
-                          })}
-                        </div>
-                      </motion.div>
-                    )
-                  })()}
-              </AnimatePresence>
+                        {/* Index */}
+                        <span className="text-white/20 font-black text-xs tabular-nums w-6 select-none flex-shrink-0">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+
+                        {/* Name */}
+                        <span className="text-white/80 group-hover:text-white font-bold text-lg sm:text-xl flex-1 transition-colors duration-200 leading-tight">
+                          {name}
+                        </span>
+
+                        {/* Child count */}
+                        {hasChildren && (
+                          <span className="text-white/30 text-xs font-medium hidden sm:block flex-shrink-0">
+                            {cat.children.length} {isAr ? "تصنيف فرعي" : "subcategories"}
+                          </span>
+                        )}
+
+                        {/* Arrow / chevron */}
+                        {hasChildren ? (
+                          <ChevronDown
+                            className={`w-4 h-4 text-white/30 group-hover:text-white/60 flex-shrink-0 transition-all duration-300 ${isExpanded ? "rotate-180" : ""}`}
+                          />
+                        ) : (
+                          <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-yellow-400 flex-shrink-0 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-all duration-200" />
+                        )}
+                      </Link>
+
+                      {/* Subcategory expand */}
+                      <AnimatePresence>
+                        {isExpanded && cat.children?.length > 0 && (
+                          <motion.div
+                            key={cat._id + "-sub"}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="overflow-hidden bg-white/[0.03]"
+                          >
+                            <div className="px-8 lg:px-12 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                              {cat.children.map((sub, si) => {
+                                const subName = isAr && sub.name_ar ? sub.name_ar : sub.name
+                                return (
+                                  <motion.div
+                                    key={sub._id}
+                                    initial={{ opacity: 0, x: isAr ? 8 : -8 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.2, delay: si * 0.03 }}
+                                  >
+                                    <Link
+                                      href={p(`/products/${slugify(sub.name)}`)}
+                                      className="group flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border border-white/10 hover:border-yellow-500/40 hover:bg-yellow-500/10 transition-all duration-200"
+                                    >
+                                      <span className="text-white/60 group-hover:text-white text-sm font-medium transition-colors truncate">
+                                        {subName}
+                                      </span>
+                                      <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-yellow-400 flex-shrink-0 rtl:rotate-180 transition-colors" />
+                                    </Link>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Bottom CTA */}
+              <div className="px-8 lg:px-12 py-8 flex items-center justify-between gap-4 flex-wrap">
+                <p className="text-white/30 text-sm">
+                  {isAr
+                    ? `${categories.length} تصنيف متاح`
+                    : `${categories.length} categories available`}
+                </p>
+                <Link
+                  href={p("/products")}
+                  className="group inline-flex items-center gap-2.5 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-black rounded-2xl transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-yellow-500/20 text-sm"
+                >
+                  {c.browseCta}
+                  <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
+                </Link>
+              </div>
             </div>
           </FadeUp>
         )}

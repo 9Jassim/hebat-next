@@ -53,6 +53,7 @@ export default function Products() {
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
 
   const [showing, setShowing] = useState([])
+  const [sortBy, setSortBy] = useState("default")
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("")
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
@@ -207,7 +208,15 @@ export default function Products() {
     ],
   }
 
-  const visibleProducts = showing.slice(0, visibleCount)
+  const sorted = [...showing].sort((a, b) => {
+    const nameA = (isAr && a.name_ar ? a.name_ar : a.name) || ""
+    const nameB = (isAr && b.name_ar ? b.name_ar : b.name) || ""
+    if (sortBy === "az") return nameA.localeCompare(nameB)
+    if (sortBy === "za") return nameB.localeCompare(nameA)
+    return 0
+  })
+
+  const visibleProducts = sorted.slice(0, visibleCount)
 
   return (
     <div className="relative">
@@ -264,12 +273,40 @@ export default function Products() {
               {selectedCategory ? t("products") : searchQuery ? "Search" : "Collection"}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize mb-1">
-            {displayCategory || t("allProducts")}
-          </h1>
-          <p className="text-sm text-gray-400 font-medium">
-            {showing.length} {showing.length !== 1 ? t("products") : t("product")}
-          </p>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize mb-1">
+                {displayCategory || t("allProducts")}
+              </h1>
+              <p className="text-sm text-gray-400 font-medium">
+                {showing.length} {showing.length !== 1 ? t("products") : t("product")}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs text-gray-400 font-medium hidden sm:block">
+                {isAr ? "ترتيب:" : "Sort:"}
+              </span>
+              <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-semibold">
+                {[
+                  { key: "default", label: isAr ? "افتراضي" : "Default" },
+                  { key: "az", label: isAr ? "أ–ي" : "A–Z" },
+                  { key: "za", label: isAr ? "ي–أ" : "Z–A" },
+                ].map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setSortBy(opt.key)}
+                    className={`px-3 py-1.5 transition-colors ${
+                      sortBy === opt.key
+                        ? "bg-yellow-500 text-black"
+                        : "bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Product Grid */}
