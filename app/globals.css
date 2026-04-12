@@ -26,6 +26,13 @@ body {
   background-size: 28px 28px;
 }
 
+.dark body {
+  @apply text-gray-100;
+  background-color: #111111;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
 /* brand helpers */
 .text-brand-yellow {
   color: #fcbb17;

@@ -346,7 +346,7 @@ export default function ProductDetails({ params }) {
             </div>
 
             {/* Product name */}
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-snug">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 leading-snug">
               {displayName}
             </h1>
 
@@ -354,32 +354,36 @@ export default function ProductDetails({ params }) {
             {(product.barcode || product.model) && (
               <div className="flex flex-wrap gap-2 mb-5">
                 {product.barcode && (
-                  <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
+                  <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                       {t("barcode")}
                     </span>
-                    <span className="text-sm font-semibold text-gray-700">{product.barcode}</span>
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      {product.barcode}
+                    </span>
                   </div>
                 )}
                 {product.model && (
-                  <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
+                  <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                       {t("model")}
                     </span>
-                    <span className="text-sm font-semibold text-gray-700">{product.model}</span>
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      {product.model}
+                    </span>
                   </div>
                 )}
               </div>
             )}
 
             {/* Description */}
-            <div className="border-t border-gray-100 pt-5 mb-2">
+            <div className="border-t border-gray-100 dark:border-gray-700/50 pt-5 mb-2">
               <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
                 {t("description")}
               </h2>
               <p
                 ref={descRef}
-                className={`text-gray-700 text-sm leading-relaxed transition-all duration-300 ${
+                className={`text-gray-700 dark:text-gray-300 text-sm leading-relaxed transition-all duration-300 ${
                   clamped ? "line-clamp-4" : ""
                 }`}
               >
@@ -409,7 +413,7 @@ export default function ProductDetails({ params }) {
             <ProductSpecifications specifications={product.specifications} isAr={isAr} />
 
             {/* Manual */}
-            <div className="mt-6 border-t border-gray-100 pt-5">
+            <div className="mt-6 border-t border-gray-100 dark:border-gray-700/50 pt-5">
               <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
                 {t("manual")}
               </h2>
@@ -418,7 +422,7 @@ export default function ProductDetails({ params }) {
                   href={product.manual.s3Url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
                 >
                   <svg
                     width="14"

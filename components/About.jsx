@@ -8,16 +8,16 @@ export default function About() {
   const { isAr, t, p } = useLanguage()
 
   return (
-    <section className="relative pt-[50px] pb-20 text-gray-900">
+    <section className="relative pt-[50px] pb-20 text-gray-900 dark:text-gray-100">
       <PageDecorations />
       <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Heading */}
-        <h1 className="text-4xl sm:text-5xl font-bold text-black mb-6 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-6 text-center">
           {t("aboutTitle")} <span className="text-yellow-500">{isAr ? "هيبات" : "Hebat"}</span>
         </h1>
 
         {/* Intro */}
-        <p className="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-12">
+        <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto text-center mb-12">
           {t("aboutIntro")}
         </p>
 
@@ -35,10 +35,10 @@ export default function About() {
           {/* Content */}
           <div>
             <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t("ourMission")}</h2>
-            <p className="text-gray-700 mb-6">{t("missionText")}</p>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">{t("missionText")}</p>
 
             <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t("ourValues")}</h2>
-            <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
+            <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-6">
               <li>
                 <strong>{t("qualityFirst")}</strong> {t("qualityFirstText")}
               </li>
@@ -51,7 +51,7 @@ export default function About() {
             </ul>
 
             <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t("ourPromise")}</h2>
-            <p className="text-gray-700 mb-6">{t("promiseText")}</p>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">{t("promiseText")}</p>
 
             <Link
               href={p("/products")}
@@ -64,7 +64,9 @@ export default function About() {
 
         {/* CTA */}
         <div className="text-center mt-20">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">{t("aboutCta")}</h3>
+          <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+            {t("aboutCta")}
+          </h3>
           <Link
             href={p("/contact")}
             className="inline-block bg-black text-white hover:bg-yellow-500 hover:text-black transition-all px-6 py-3 rounded-lg font-medium"

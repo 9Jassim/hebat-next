@@ -275,7 +275,7 @@ export default function Products() {
           </div>
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white capitalize mb-1">
                 {displayCategory || t("allProducts")}
               </h1>
               <p className="text-sm text-gray-400 font-medium">
@@ -286,7 +286,7 @@ export default function Products() {
               <span className="text-xs text-gray-400 font-medium hidden sm:block">
                 {isAr ? "ترتيب:" : "Sort:"}
               </span>
-              <div className="flex rounded-xl border border-gray-200 overflow-hidden text-xs font-semibold">
+              <div className="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-semibold">
                 {[
                   { key: "default", label: isAr ? "افتراضي" : "Default" },
                   { key: "az", label: isAr ? "أ–ي" : "A–Z" },
@@ -298,7 +298,7 @@ export default function Products() {
                     className={`px-3 py-1.5 transition-colors ${
                       sortBy === opt.key
                         ? "bg-yellow-500 text-black"
-                        : "bg-white text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                        : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                     }`}
                   >
                     {opt.label}
@@ -331,10 +331,10 @@ export default function Products() {
                     href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
                     className="group"
                   >
-                    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 transition-all duration-300 flex flex-col h-full">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700/50 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 flex flex-col h-full">
                       {/* Image */}
                       <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                        <div className="relative w-full h-full rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm flex items-center justify-center">
+                        <div className="relative w-full h-full rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white overflow-hidden shadow-sm flex items-center justify-center">
                           <img
                             src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                             alt={productName}
@@ -354,7 +354,7 @@ export default function Products() {
 
                       {/* Info */}
                       <div className="px-3 pb-4 flex flex-col gap-1 flex-grow">
-                        <h5 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
+                        <h5 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
                           {productName}
                         </h5>
 

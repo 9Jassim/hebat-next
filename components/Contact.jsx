@@ -44,33 +44,35 @@ export default function Contact() {
   }
 
   return (
-    <section className="relative pt-[50px] pb-20 text-gray-900">
+    <section className="relative pt-[50px] pb-20 text-gray-900 dark:text-gray-100">
       <PageDecorations />
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Header */}
-        <h1 className="text-4xl sm:text-5xl font-bold text-black text-center mb-6">
+        <h1 className="text-4xl sm:text-5xl font-bold text-black dark:text-white text-center mb-6">
           {t("contact")}
         </h1>
-        <p className="text-center text-gray-700 mb-12 max-w-2xl mx-auto">{t("contactIntro")}</p>
+        <p className="text-center text-gray-700 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+          {t("contactIntro")}
+        </p>
 
         {/* Contact Grid */}
         <div className="grid md:grid-cols-2 gap-12">
           {/* Contact Info */}
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold text-yellow-500 mb-4">{t("getInTouch")}</h2>
-            <p className="text-gray-700">{t("supportText")}</p>
+            <p className="text-gray-700 dark:text-gray-300">{t("supportText")}</p>
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-800">{t("phone")}</h3>
-                <p className="text-gray-700 text-left rtl:text-right" dir="ltr">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">{t("phone")}</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-left rtl:text-right" dir="ltr">
                   +973 66600457
                 </p>
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-800">{t("office")}</h3>
-                <p className="text-gray-700">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">{t("office")}</h3>
+                <p className="text-gray-700 dark:text-gray-300">
                   {t("location")}
                   <br />
                 </p>
@@ -79,7 +81,9 @@ export default function Contact() {
 
             {/* Follow Us */}
             <div className="mt-8">
-              <h3 className="font-semibold text-gray-800 mb-2">{t("followUs")}</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                {t("followUs")}
+              </h3>
               <div className="flex justify-start gap-3 flex-wrap">
                 {/* Instagram */}
                 <Link
@@ -159,12 +163,12 @@ export default function Contact() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white shadow-lg rounded-2xl p-8 border border-yellow-200">
+          <div className="bg-white dark:bg-gray-900 shadow-lg rounded-2xl p-8 border border-yellow-200 dark:border-yellow-500/20">
             <h2 className="text-2xl font-semibold text-yellow-500 mb-6">{t("sendUsMessage")}</h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   {t("namePlaceholder")}
                 </label>
                 <input
@@ -173,12 +177,12 @@ export default function Contact() {
                   required
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   {t("emailPlaceholder")}
                 </label>
                 <input
@@ -187,12 +191,12 @@ export default function Contact() {
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
                   {t("messagePlaceholder")}
                 </label>
                 <textarea
@@ -201,7 +205,7 @@ export default function Contact() {
                   required
                   value={form.message}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg px-4 py-2 focus:ring-yellow-500 focus:border-yellow-500"
                 ></textarea>
               </div>
 
