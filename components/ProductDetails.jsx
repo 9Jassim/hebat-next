@@ -252,19 +252,19 @@ export default function ProductDetails({ params }) {
       <PageDecorations />
       <div className="relative z-10 max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <nav className="text-sm text-gray-500 mb-6 flex items-center flex-wrap gap-1.5">
+        <nav className="text-sm text-gray-500 dark:text-gray-400 mb-6 flex items-center flex-wrap gap-1.5">
           <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
             {t("home")}
           </Link>
-          <span className="text-gray-300 select-none">›</span>
+          <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
           <Link
             href={p(`/products/${category}`)}
             className="hover:text-yellow-500 transition-colors font-medium"
           >
             {categoryLabel}
           </Link>
-          <span className="text-gray-300 select-none">›</span>
-          <span className="text-gray-800 font-semibold">{displayName}</span>
+          <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
+          <span className="text-gray-800 dark:text-gray-200 font-semibold">{displayName}</span>
         </nav>
 
         {/* Admin Controls */}

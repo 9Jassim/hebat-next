@@ -250,7 +250,7 @@ export default function Products() {
           <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
             {t("home")}
           </Link>
-          <span className="text-gray-200 select-none">›</span>
+          <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
           <Link
             href={p("/products")}
             className="hover:text-yellow-500 transition-colors font-medium"
@@ -259,8 +259,10 @@ export default function Products() {
           </Link>
           {(selectedCategory || searchQuery) && (
             <>
-              <span className="text-gray-200 select-none">›</span>
-              <span className="text-gray-600 font-semibold capitalize">{displayCategory}</span>
+              <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
+              <span className="text-gray-600 dark:text-gray-300 font-semibold capitalize">
+                {displayCategory}
+              </span>
             </>
           )}
         </nav>
