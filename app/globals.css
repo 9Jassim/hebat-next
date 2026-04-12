@@ -56,3 +56,23 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: rgba(100, 100, 100, 0.6);
 }
+
+/* Dark themed scrollbar for nav search dropdown */
+.scrollbar-dark::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-dark::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-dark::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(252, 187, 23, 0.5);
+}
+/* Firefox */
+.scrollbar-dark {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
