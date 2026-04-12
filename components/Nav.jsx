@@ -9,6 +9,8 @@ import Client from "@/lib/api"
 import EditCategories from "@/components/EditCategories"
 import CategoryBar from "@/components/CategoryBar"
 import Fuse from "fuse.js"
+import { useTheme } from "@/context/ThemeContext"
+import { Sun, Moon } from "lucide-react"
 
 const slugify = str =>
   str
@@ -22,6 +24,7 @@ export default function Nav() {
   const router = useRouter()
   const { user, logout } = useAuth()
   const { t, p, isAr, toggleHref } = useLanguage()
+  const { dark, toggle: toggleTheme } = useTheme()
 
   const [open, setOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
@@ -285,6 +288,15 @@ export default function Nav() {
                 {isAr ? "EN" : "عربي"}
               </Link>
 
+              {/* Dark mode toggle (mobile) */}
+              <button
+                onClick={toggleTheme}
+                aria-label="Toggle dark mode"
+                className="w-7 h-7 flex items-center justify-center rounded-full border border-white/15 text-gray-400 hover:text-white transition-all duration-200"
+              >
+                {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              </button>
+
               <button
                 onClick={() => setOpen(!open)}
                 className="text-gray-400 hover:text-white p-1.5 rounded-lg transition-colors"
@@ -430,6 +442,15 @@ export default function Nav() {
             >
               {isAr ? "EN" : "عربي"}
             </Link>
+
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-white/15 text-gray-400 hover:text-white hover:border-white/30 transition-all duration-200"
+            >
+              {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
 
             {/* Admin Controls */}
             {user && (

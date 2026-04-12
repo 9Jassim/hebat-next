@@ -8,11 +8,11 @@ export default function ProductFeatures({ features = [], features_ar = [], isAr 
     <div className="mt-6">
       <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">{heading}</h2>
 
-      <div className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+      <div className="border border-gray-200 dark:border-gray-700/50 rounded-xl bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
         {list.map((feature, i) => (
           <div
             key={`${feature}-${i}`}
-            className="flex items-start gap-3 px-4 py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
+            className="flex items-start gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-700/50 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors duration-150"
           >
             <svg
               className="mt-0.5 flex-shrink-0"
@@ -30,7 +30,9 @@ export default function ProductFeatures({ features = [], features_ar = [], isAr 
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-sm text-gray-700 leading-relaxed">{feature}</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              {feature}
+            </span>
           </div>
         ))}
       </div>

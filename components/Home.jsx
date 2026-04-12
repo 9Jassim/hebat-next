@@ -291,7 +291,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <h1 className="text-5xl sm:text-6xl font-black text-gray-950 leading-[1.04] tracking-tight whitespace-pre-line">
+              <h1 className="text-5xl sm:text-6xl font-black text-gray-950 dark:text-white leading-[1.04] tracking-tight whitespace-pre-line">
                 {heading}
               </h1>
               <div className="mt-4 flex items-center gap-2">
@@ -310,12 +310,14 @@ export default function Home() {
                   transition={{ delay: 0.2 + i * 0.1, duration: 0.5, ease: "easeOut" }}
                   className="flex items-start gap-3.5"
                 >
-                  <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-yellow-50 border border-yellow-100 flex items-center justify-center shadow-sm">
+                  <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-100 dark:border-yellow-500/20 flex items-center justify-center shadow-sm">
                     <Icon className="w-4 h-4 text-yellow-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-900">{title}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
+                      {desc}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -368,13 +370,15 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.5, ease: "easeOut" }}
-                className="absolute bottom-2 ltr:left-0 rtl:right-0 bg-white rounded-2xl shadow-xl px-4 py-3 border border-gray-100/80 flex items-center gap-3 z-10"
+                className="absolute bottom-2 ltr:left-0 rtl:right-0 bg-white dark:bg-gray-800 rounded-2xl shadow-xl px-4 py-3 border border-gray-100/80 dark:border-gray-700 flex items-center gap-3 z-10"
               >
                 <div className="w-9 h-9 rounded-xl bg-yellow-500 flex items-center justify-center flex-shrink-0 shadow-md shadow-yellow-500/30">
                   <ShieldCheck className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-900 leading-snug">{c.badge1}</p>
+                  <p className="text-xs font-bold text-gray-900 dark:text-white leading-snug">
+                    {c.badge1}
+                  </p>
                   <div className="flex gap-0.5 mt-1">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
@@ -440,7 +444,7 @@ export default function Home() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-yellow-600 mb-1.5">
                   {c.productsLabel}
                 </p>
-                <h2 className="text-3xl font-black text-gray-950 tracking-tight leading-none">
+                <h2 className="text-3xl font-black text-gray-950 dark:text-white tracking-tight leading-none">
                   {c.productsHeading}
                 </h2>
               </div>
@@ -508,7 +512,7 @@ export default function Home() {
                         onMouseLeave={() => {
                           isPaused.current = false
                         }}
-                        className="group col-span-2 row-span-2 relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col min-h-[380px]"
+                        className="group col-span-2 row-span-2 relative rounded-3xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col min-h-[380px]"
                       >
                         <div className="relative flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white overflow-hidden min-h-[300px]">
                           <div className="absolute inset-0 bg-yellow-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -522,8 +526,8 @@ export default function Home() {
                             {isAr ? "مميز" : "Featured"}
                           </span>
                         </div>
-                        <div className="px-6 py-5 border-t border-gray-100">
-                          <p className="text-base font-black text-gray-900 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
+                        <div className="px-6 py-5 border-t border-gray-100 dark:border-gray-700/50">
+                          <p className="text-base font-black text-gray-900 dark:text-white line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
                             {featuredName}
                           </p>
                           {featured?.model && (
@@ -554,10 +558,10 @@ export default function Home() {
                             onMouseLeave={() => {
                               isPaused.current = false
                             }}
-                            className="group relative rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                            className="group relative rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                           >
                             <div className="p-3 flex-shrink-0 h-44">
-                              <div className="relative w-full h-full rounded-xl bg-white border border-gray-100 overflow-hidden flex items-center justify-center">
+                              <div className="relative w-full h-full rounded-xl bg-white border border-gray-100 dark:border-gray-700/30 overflow-hidden flex items-center justify-center">
                                 <img
                                   src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                                   alt={name}
@@ -568,8 +572,8 @@ export default function Home() {
                                 />
                               </div>
                             </div>
-                            <div className="px-3 py-3 border-t border-gray-100 flex flex-col gap-0.5 flex-grow">
-                              <p className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
+                            <div className="px-3 py-3 border-t border-gray-100 dark:border-gray-700/50 flex flex-col gap-0.5 flex-grow">
+                              <p className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
                                 {name}
                               </p>
                               {product.model && (

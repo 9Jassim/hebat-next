@@ -5,7 +5,7 @@
  */
 export default function PageDecorations() {
   return (
-    <div className="pointer-events-none select-none absolute inset-0 overflow-hidden z-0">
+    <div className="pointer-events-none select-none absolute inset-0 overflow-hidden z-0 dark:opacity-30">
       {/* ── Soft glow blobs ── */}
       {/* left edge */}
       <div className="absolute left-[-4%] top-[8%]  w-56 h-56 rounded-full bg-yellow-400/10 blur-3xl" />
