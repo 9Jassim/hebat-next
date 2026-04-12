@@ -8,6 +8,7 @@ import { useLanguage } from "@/context/LanguageContext"
 import Client from "@/lib/api"
 import EditCategories from "@/components/EditCategories"
 import CategoryBar from "@/components/CategoryBar"
+import Fuse from "fuse.js"
 
 const slugify = str =>
   str
@@ -40,12 +41,21 @@ export default function Nav() {
   const adminMenuRef = useRef(null)
   const navRef = useRef(null)
   const itemRefs = useRef([])
+  const fuseRef = useRef(null)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await Client.get("/products", { withCredentials: true })
-        setProducts(res.data.products || [])
+        const prods = res.data.products || []
+        setProducts(prods)
+        fuseRef.current = new Fuse(prods, {
+          keys: ["name", "name_ar", "model", "barcode"],
+          threshold: 0.4,
+          distance: 100,
+          minMatchCharLength: 2,
+          includeScore: true,
+        })
       } catch (err) {
         console.error("❌ Products fetch error:", err)
       }
@@ -187,14 +197,9 @@ export default function Nav() {
       setShowDropdown(false)
       return
     }
-    const q = value.toLowerCase()
-    const match = products.filter(
-      pr =>
-        pr.name.toLowerCase().includes(q) ||
-        pr.name_ar?.includes(q) ||
-        pr.model?.toLowerCase().includes(q) ||
-        pr.barcode?.toLowerCase().includes(q)
-    )
+    const match = fuseRef.current
+      ? fuseRef.current.search(value).map(r => r.item)
+      : products.filter(pr => pr.name.toLowerCase().includes(value.toLowerCase()))
     setFiltered(match)
     setShowDropdown(match.length > 0)
     setActiveIndex(-1)
@@ -354,7 +359,7 @@ export default function Nav() {
               {showDropdown && (
                 <div
                   ref={resultsRef}
-                  className="absolute top-full start-0 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-[90] max-h-72 overflow-y-auto"
+                  className="absolute top-full start-0 w-full mt-1 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-[90] max-h-72 overflow-y-auto scrollbar-dark"
                 >
                   {filtered.length ? (
                     filtered.map((pr, i) => {
@@ -370,14 +375,16 @@ export default function Nav() {
                           onClick={closeMenus}
                           ref={el => (itemRefs.current[i] = el)}
                           className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
-                            i === activeIndex ? "bg-white/8" : "hover:bg-white/5"
+                            i === activeIndex
+                              ? "bg-yellow-500/20 border-s-2 border-yellow-500"
+                              : "hover:bg-white/5"
                           } ${i !== filtered.length - 1 ? "border-b border-white/5" : ""}`}
                         >
-                          <div className="w-9 h-9 flex-shrink-0 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center">
+                          <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-white overflow-hidden">
                             <img
                               src={pr.images?.[0]?.s3Url || "/hebat_product_fill.png"}
                               alt={pr.name}
-                              className="w-full h-full object-contain p-1"
+                              className="w-full h-full object-contain"
                             />
                           </div>
                           <div className="text-start min-w-0">
