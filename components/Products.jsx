@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef, useCallback } from "react"
+import { ArrowUp } from "lucide-react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Client from "@/lib/api"
@@ -51,6 +52,14 @@ export default function Products() {
 
   const selectedCategoryFromPath = params?.category
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
+
+  const [showTop, setShowTop] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   const [showing, setShowing] = useState([])
   const [sortBy, setSortBy] = useState("default")
@@ -423,6 +432,17 @@ export default function Products() {
           </div>
         )}
       </div>
+
+      {/* Scroll to top */}
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 end-6 z-50 w-10 h-10 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg shadow-yellow-500/30 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </button>
+      )}
     </div>
   )
 }
