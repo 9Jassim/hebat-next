@@ -114,6 +114,7 @@ export default function Home() {
   const c = translations[locale] || translations.en
 
   const [categories, setCategories] = useState([])
+  const [catMap, setCatMap] = useState({})
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [configHeading, setConfigHeading] = useState(null)
@@ -124,6 +125,23 @@ export default function Home() {
   const isPaused = useRef(false)
 
   const heading = (isAr ? configHeading_ar : configHeading) || c.heading
+
+  const getRootCat = product => {
+    const cats = Array.isArray(product?.categories) ? product.categories : []
+    for (const cat of cats) {
+      const catId = cat?._id?.toString?.() ?? (typeof cat === "string" ? cat : null)
+      if (!catId) continue
+      let node = catMap[catId]
+      if (!node) continue
+      while (node.parent) {
+        const parentId = node.parent?._id?.toString?.() ?? node.parent?.toString?.()
+        if (!parentId || !catMap[parentId]) break
+        node = catMap[parentId]
+      }
+      return node
+    }
+    return cats[0] || null
+  }
 
   const numPages = Math.max(1, Math.ceil(products.length / FEATURED_PAGE))
 
@@ -152,21 +170,23 @@ export default function Home() {
       if (config?.heroHeading_ar) setConfigHeading_ar(config.heroHeading_ar)
 
       const allCats = catRes.data.categories || []
-      const catMap = {}
+      const localCatMap = {}
       allCats.forEach(cat => {
-        catMap[cat._id] = { ...cat, children: [] }
+        localCatMap[cat._id] = { ...cat, children: [] }
       })
       allCats.forEach(cat => {
         const parentId = cat.parent?._id || cat.parent
-        if (parentId && catMap[parentId]) catMap[parentId].children.push(catMap[cat._id])
+        if (parentId && localCatMap[parentId])
+          localCatMap[parentId].children.push(localCatMap[cat._id])
       })
-      const rootsWithChildren = allCats.filter(cat => !cat.parent).map(cat => catMap[cat._id])
+      setCatMap(localCatMap)
+      const rootsWithChildren = allCats.filter(cat => !cat.parent).map(cat => localCatMap[cat._id])
 
       if (config?.featuredCategories?.length) {
         const configIds = new Set(config.featuredCategories.map(c => c._id || c))
         setCategories(rootsWithChildren.filter(cat => configIds.has(cat._id)))
       } else {
-        setCategories(rootsWithChildren)
+        setCategories(rootsWithChildren.filter(Boolean))
       }
 
       if (config?.featuredProducts?.length) {
@@ -489,10 +509,7 @@ export default function Home() {
                 )
                 const clampedPos = spotlightPos % page.length
                 const featured = page[clampedPos]
-                const featuredCat =
-                  Array.isArray(featured?.categories) && featured.categories.length > 0
-                    ? featured.categories[0]
-                    : featured?.category
+                const featuredCat = getRootCat(featured) || featured?.category
                 const featuredName = isAr && featured?.name_ar ? featured.name_ar : featured?.name
                 const gridProducts = page.filter((_, i) => i !== clampedPos)
 
@@ -568,10 +585,7 @@ export default function Home() {
 
                         {/* ── Grid cards ── */}
                         {gridProducts.map(product => {
-                          const cat =
-                            Array.isArray(product.categories) && product.categories.length > 0
-                              ? product.categories[0]
-                              : product.category
+                          const cat = getRootCat(product) || product.category
                           const name = isAr && product.name_ar ? product.name_ar : product.name
                           return (
                             <Link
