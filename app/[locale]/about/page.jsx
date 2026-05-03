@@ -7,12 +7,12 @@ export async function generateMetadata({ params }) {
     : `${process.env.NEXT_PUBLIC_URL}/about`
 
   return {
-    title: isAr ? "عن هيبات" : "About Hebat",
+    title: isAr ? "من نحن" : "About Us",
     description: isAr
       ? "تعرف على المزيد حول هيبات — مصدرك الموثوق للمنتجات المتميزة والإكسسوارات في الشرق الأوسط."
       : "Learn more about Hebat — a trusted source for premium products and accessories in the Middle East.",
     openGraph: {
-      title: isAr ? "عن هيبات | منتجات عالية الجودة" : "About Hebat | Premium Quality Products",
+      title: isAr ? "من نحن | هيبات" : "About Hebat | Premium Quality Products",
       description: isAr
         ? "اكتشف قصة هيبات — مهمتنا وقيمنا وتعهدنا بتقديم منتجات متميزة."
         : "Discover Hebat's story — our mission, our values, and our promise to deliver premium products.",
