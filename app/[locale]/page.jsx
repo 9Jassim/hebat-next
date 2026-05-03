@@ -5,7 +5,7 @@ export async function generateMetadata({ params }) {
   const canonical = isAr ? `${process.env.NEXT_PUBLIC_URL}/ar` : `${process.env.NEXT_PUBLIC_URL}`
 
   return {
-    title: isAr ? "هيبات | منتجات متميزة" : "Hebat | Premium Products",
+    title: { absolute: isAr ? "هيبات | منتجات متميزة" : "Hebat | Premium Products" },
     description: isAr
       ? "اكتشف هيبات — مصدرك الموثوق للمنتجات المتميزة والإكسسوارات في الشرق الأوسط."
       : "Discover Hebat — your trusted source for premium products and accessories in the Middle East.",
