@@ -15,6 +15,11 @@ export default function AdminHomepagePage() {
   const [heroHeading, setHeroHeading] = useState("")
   const [heroHeading_ar, setHeroHeading_ar] = useState("")
 
+  const [naHeading, setNaHeading] = useState("")
+  const [naHeading_ar, setNaHeading_ar] = useState("")
+  const [selectedNewArrivalIds, setSelectedNewArrivalIds] = useState([])
+  const [naSearch, setNaSearch] = useState("")
+
   const [allCategories, setAllCategories] = useState([])
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([])
 
@@ -38,8 +43,11 @@ export default function AdminHomepagePage() {
       if (config) {
         setHeroHeading(config.heroHeading || "")
         setHeroHeading_ar(config.heroHeading_ar || "")
+        setNaHeading(config.newArrivalsHeading || "")
+        setNaHeading_ar(config.newArrivalsHeading_ar || "")
         setSelectedCategoryIds((config.featuredCategories || []).map(c => c._id || c))
         setSelectedProductIds((config.featuredProducts || []).map(p => p._id || p))
+        setSelectedNewArrivalIds((config.newArrivals || []).map(p => p._id || p))
       }
 
       const cats = (catRes.data.categories || []).filter(c => !c.parent)
@@ -61,6 +69,12 @@ export default function AdminHomepagePage() {
     setSelectedProductIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]))
   }
 
+  const toggleNewArrival = id => {
+    setSelectedNewArrivalIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    )
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setSaved(false)
@@ -70,8 +84,11 @@ export default function AdminHomepagePage() {
         {
           heroHeading,
           heroHeading_ar,
+          newArrivalsHeading: naHeading,
+          newArrivalsHeading_ar: naHeading_ar,
           featuredCategoryIds: selectedCategoryIds,
           featuredProductIds: selectedProductIds,
+          newArrivalIds: selectedNewArrivalIds,
         },
         { withCredentials: true }
       )
@@ -85,15 +102,14 @@ export default function AdminHomepagePage() {
     }
   }
 
-  const filteredProducts = allProducts.filter(p => {
-    const q = productSearch.toLowerCase()
-    return (
-      !q ||
-      p.name?.toLowerCase().includes(q) ||
-      p.name_ar?.includes(q) ||
-      p.model?.toLowerCase().includes(q)
-    )
-  })
+  const matchesQuery = (p, q) =>
+    !q ||
+    p.name?.toLowerCase().includes(q) ||
+    p.name_ar?.includes(q) ||
+    p.model?.toLowerCase().includes(q)
+
+  const filteredProducts = allProducts.filter(p => matchesQuery(p, productSearch.toLowerCase()))
+  const filteredNaProducts = allProducts.filter(p => matchesQuery(p, naSearch.toLowerCase()))
 
   return (
     <section className="min-h-screen bg-white p-6 sm:p-10">
@@ -142,6 +158,99 @@ export default function AdminHomepagePage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* ── New Arrivals ── */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 ring-1 ring-yellow-100">
+          <h2 className="text-xl font-semibold text-gray-800 mb-1">✨ New Arrivals</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Products showcased in the New Arrivals hero at the top of the homepage. If none are
+            selected, the most recently added products are shown automatically. Up to 8 are
+            displayed.
+          </p>
+
+          {/* Heading overrides */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                English Heading
+              </label>
+              <input
+                type="text"
+                value={naHeading}
+                onChange={e => setNaHeading(e.target.value)}
+                placeholder="New Arrivals"
+                className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-yellow-400 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
+                Arabic Heading
+              </label>
+              <input
+                type="text"
+                dir="rtl"
+                value={naHeading_ar}
+                onChange={e => setNaHeading_ar(e.target.value)}
+                placeholder="أحدث المنتجات"
+                className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-yellow-400 outline-none text-right"
+              />
+            </div>
+          </div>
+
+          <input
+            type="text"
+            placeholder="Search by name, model..."
+            value={naSearch}
+            onChange={e => setNaSearch(e.target.value)}
+            className="w-full sm:w-80 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-yellow-400 outline-none mb-4"
+          />
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[480px] overflow-y-auto pr-1">
+            {filteredNaProducts.map(product => {
+              const selected = selectedNewArrivalIds.includes(product._id)
+              const name = product.name
+              return (
+                <button
+                  key={product._id}
+                  onClick={() => toggleNewArrival(product._id)}
+                  className={`relative flex flex-col rounded-xl border overflow-hidden text-left transition-all ${
+                    selected
+                      ? "border-yellow-500 shadow-md ring-2 ring-yellow-400"
+                      : "border-gray-200 hover:border-yellow-300"
+                  }`}
+                >
+                  {selected && (
+                    <span className="absolute top-1.5 right-1.5 z-10 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
+                      ✓
+                    </span>
+                  )}
+                  <div className="h-28 bg-gray-50 flex items-center justify-center p-2">
+                    <img
+                      src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                      alt={name}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                  <div className="px-2 py-2">
+                    <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-snug">
+                      {name}
+                    </p>
+                    {product.model && (
+                      <p className="text-xs text-gray-400 mt-0.5">{product.model}</p>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {selectedNewArrivalIds.length > 0 && (
+            <p className="text-xs text-yellow-600 mt-3 font-medium">
+              {selectedNewArrivalIds.length} product
+              {selectedNewArrivalIds.length === 1 ? "" : "s"} selected
+            </p>
+          )}
         </div>
 
         {/* ── Featured Categories ── */}

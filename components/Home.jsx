@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import Banners from "@/components/Banners"
+import NewArrivals from "@/components/NewArrivals"
 import { useLanguage } from "@/context/LanguageContext"
 import { useEffect, useState, useRef } from "react"
 import Client from "@/lib/api"
@@ -119,6 +120,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [configHeading, setConfigHeading] = useState(null)
   const [configHeading_ar, setConfigHeading_ar] = useState(null)
+  const [newArrivals, setNewArrivals] = useState([])
+  const [naHeading, setNaHeading] = useState(null)
+  const [naHeading_ar, setNaHeading_ar] = useState(null)
   const FEATURED_PAGE = 7
   const [pageIndex, setPageIndex] = useState(0)
   const [spotlightPos, setSpotlightPos] = useState(0)
@@ -168,6 +172,8 @@ export default function Home() {
 
       if (config?.heroHeading) setConfigHeading(config.heroHeading)
       if (config?.heroHeading_ar) setConfigHeading_ar(config.heroHeading_ar)
+      if (config?.newArrivalsHeading) setNaHeading(config.newArrivalsHeading)
+      if (config?.newArrivalsHeading_ar) setNaHeading_ar(config.newArrivalsHeading_ar)
 
       const allCats = catRes.data.categories || []
       const localCatMap = {}
@@ -189,12 +195,25 @@ export default function Home() {
         setCategories(rootsWithChildren.filter(Boolean))
       }
 
+      const allProducts = prodRes.data.products || []
+      const uniqueProducts = Array.from(
+        new Map(allProducts.map(pr => [pr._id || pr.slug, pr])).values()
+      )
+
       if (config?.featuredProducts?.length) {
         setProducts(config.featuredProducts)
       } else {
-        const all = prodRes.data.products || []
-        const unique = Array.from(new Map(all.map(pr => [pr._id || pr.slug, pr])).values())
-        setProducts(unique.slice(0, 12))
+        setProducts(uniqueProducts.slice(0, 12))
+      }
+
+      // New arrivals: admin-picked, else fall back to the most recently created
+      if (config?.newArrivals?.length) {
+        setNewArrivals(config.newArrivals)
+      } else {
+        const recent = [...uniqueProducts].sort(
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        )
+        setNewArrivals(recent.slice(0, 8))
       }
     }
 
@@ -280,6 +299,21 @@ export default function Home() {
           <Banners />
         </div>
       </div>
+
+      {/* ─── New Arrivals showcase ─── */}
+      {!loading && newArrivals.length > 0 && (
+        <div className="relative z-10">
+          <NewArrivals
+            products={newArrivals}
+            isAr={isAr}
+            heading={(isAr ? naHeading_ar : naHeading) || undefined}
+            buildHref={product => {
+              const cat = getRootCat(product) || product.category
+              return p(`/products/${slugify(cat?.name || "others")}/${product.slug}`)
+            }}
+          />
+        </div>
+      )}
 
       {/* ─── Hero ─── */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 pt-14 pb-10">
