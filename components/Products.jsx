@@ -1,12 +1,24 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
-import { ArrowUp } from "lucide-react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
+import {
+  ArrowUp,
+  ArrowRight,
+  ArrowUpRight,
+  Zap,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 import Client from "@/lib/api"
 import { useLanguage } from "@/context/LanguageContext"
 import PageDecorations from "@/components/PageDecorations"
+import ProductsHeroAurora from "@/components/ProductsHeroAurora"
+import ProductsHeroProducts from "@/components/ProductsHeroProducts"
+import ProductCard from "@/components/ProductCard"
 
 const PAGE_SIZE = 20
 
@@ -24,14 +36,56 @@ const deslugify = str =>
     .replace(/\band\b/g, "&")
     .replace(/\b\w/g, c => c.toUpperCase()) || ""
 
+const HERO = {
+  en: {
+    eyebrow: "The Full Collection",
+    heading: "Everything Hebat makes.",
+    sub: "Electronics, home appliances, accessories, tools and sports gear — engineered to one standard, gathered in one place. Explore the range built to impress.",
+    browse: "Browse all products",
+    shop: "Shop on Morslon",
+    qualityChecked: "Quality checked",
+    categories: "Categories",
+    spotlightLabel: "Featured",
+    spotlightHeading: "Spotlight picks",
+    featured: "Featured",
+    viewProduct: "View product",
+  },
+  ar: {
+    eyebrow: "المجموعة الكاملة",
+    heading: "كل ما تصنعه هيبات.",
+    sub: "إلكترونيات، أجهزة منزلية، إكسسوارات، أدوات ومعدات رياضية — مصنوعة وفق معيار واحد، مجموعة في مكان واحد. استكشف التشكيلة المصممة لتبهر.",
+    browse: "تصفح كل المنتجات",
+    shop: "تسوق على مورسلون",
+    qualityChecked: "مفحوص الجودة",
+    categories: "التصنيفات",
+    spotlightLabel: "مميز",
+    spotlightHeading: "اختيارات مميزة",
+    featured: "مميز",
+    viewProduct: "عرض المنتج",
+  },
+}
+
+const TICKER_ITEMS = [
+  "HEBAT",
+  "هيبات",
+  "QUALITY",
+  "جودة",
+  "INNOVATION",
+  "ابتكار",
+  "EXCELLENCE",
+  "تميز",
+  "DIVERSITY",
+  "تنوع",
+]
+
 function ProductCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col animate-pulse">
-      <div className="aspect-square bg-gray-100 m-3 rounded-xl" />
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col animate-pulse">
+      <div className="aspect-square bg-gray-100 dark:bg-gray-800 m-3 rounded-xl" />
       <div className="px-3 pb-4 space-y-2">
-        <div className="h-4 bg-gray-100 rounded-full w-4/5" />
-        <div className="h-3 bg-gray-100 rounded-full w-3/5" />
-        <div className="h-3 bg-gray-100 rounded-full w-2/5 mt-1" />
+        <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full w-4/5" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-3/5" />
+        <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full w-2/5 mt-1" />
       </div>
     </div>
   )
@@ -40,6 +94,7 @@ function ProductCardSkeleton() {
 export default function Products() {
   const params = useParams()
   const { isAr, p, t } = useLanguage()
+  const c = isAr ? HERO.ar : HERO.en
 
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategoryFromQuery, setSelectedCategoryFromQuery] = useState(null)
@@ -52,6 +107,7 @@ export default function Products() {
 
   const selectedCategoryFromPath = params?.category
   const selectedCategory = selectedCategoryFromPath || selectedCategoryFromQuery
+  const isLanding = !selectedCategory && !searchQuery
 
   const [showTop, setShowTop] = useState(false)
 
@@ -62,6 +118,7 @@ export default function Products() {
   }, [])
 
   const [showing, setShowing] = useState([])
+  const [allCats, setAllCats] = useState([])
   const [sortBy, setSortBy] = useState("default")
   const [loading, setLoading] = useState(true)
   const [displayCategory, setDisplayCategory] = useState("")
@@ -70,6 +127,23 @@ export default function Products() {
   const showingRef = useRef(showing)
   const visibleCountRef = useRef(visibleCount)
   const animatedSlugs = useRef(new Set())
+  const gridRef = useRef(null)
+  const [spotlight, setSpotlight] = useState([])
+  const [spotIndex, setSpotIndex] = useState(0)
+  const spotPausedRef = useRef(false)
+
+  // Randomized product thumbnails for the floating hero tiles. Keyed on the
+  // dataset identity (length + active filter) rather than the array reference,
+  // so Strict Mode's double-fetch in dev doesn't reshuffle and flip the tiles.
+  const heroImages = useMemo(() => {
+    const arr = showing.map(pr => pr.images?.[0]?.s3Url).filter(Boolean)
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr.slice(0, 18)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showing.length, selectedCategory, searchQuery])
 
   useEffect(() => {
     showingRef.current = showing
@@ -87,19 +161,36 @@ export default function Products() {
         const res = await Client.get("/products")
         const fetched = res.data.products || []
 
+        // Collect every distinct top category for the quick-filter chips
+        const catBySlug = new Map()
+        fetched.forEach(pr => {
+          const obj =
+            Array.isArray(pr.categories) && pr.categories.length > 0
+              ? pr.categories[0]
+              : pr.category
+          if (obj?.name) {
+            const s = slugify(obj.name)
+            if (!catBySlug.has(s))
+              catBySlug.set(s, { slug: s, name: obj.name, name_ar: obj.name_ar })
+          }
+        })
+        setAllCats(
+          [...catBySlug.values()].sort((a, b) => a.name.localeCompare(b.name)).slice(0, 14)
+        )
+
         if (selectedCategory) {
           const normalizedQuery = normalize(selectedCategory)
 
           const filtered = fetched.filter(pr =>
             Array.isArray(pr.categories)
-              ? pr.categories.some(c => normalize(slugify(c?.name)) === normalizedQuery)
+              ? pr.categories.some(cat => normalize(slugify(cat?.name)) === normalizedQuery)
               : pr.category && normalize(slugify(pr.category.name)) === normalizedQuery
           )
 
           setShowing(filtered)
 
           const matchedCategory =
-            filtered[0]?.categories?.find(c => slugify(c.name) === selectedCategory) ||
+            filtered[0]?.categories?.find(cat => slugify(cat.name) === selectedCategory) ||
             filtered[0]?.category
 
           setDisplayCategory(
@@ -117,7 +208,7 @@ export default function Products() {
           )
 
           setShowing(filtered)
-          setDisplayCategory(`Search results for "${searchQuery}"`)
+          setDisplayCategory(`${isAr ? "نتائج البحث عن" : "Search results for"} "${searchQuery}"`)
         } else {
           const uniqueProducts = Array.from(
             new Map(fetched.map(pr => [pr._id || pr.slug, pr])).values()
@@ -140,6 +231,32 @@ export default function Products() {
     setVisibleCount(PAGE_SIZE)
   }, [showing])
 
+  // Pick a fresh random set of spotlight products whenever the list loads
+  useEffect(() => {
+    if (selectedCategory || searchQuery || showing.length === 0) {
+      setSpotlight([])
+      return
+    }
+    const pool = [...showing]
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[pool[i], pool[j]] = [pool[j], pool[i]]
+    }
+    setSpotlight(pool.slice(0, Math.min(5, pool.length)))
+    setSpotIndex(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- key on dataset identity so Strict Mode's double-fetch doesn't reshuffle
+  }, [showing.length, selectedCategory, searchQuery])
+
+  // Auto-advance the spotlight showcase
+  useEffect(() => {
+    const n = spotlight.length
+    if (n < 2) return
+    const id = setInterval(() => {
+      if (!spotPausedRef.current) setSpotIndex(i => (i + 1) % n)
+    }, 8000)
+    return () => clearInterval(id)
+  }, [spotlight.length])
+
   const sentinelRef = useCallback(el => {
     if (observerRef.current) {
       observerRef.current.disconnect()
@@ -158,26 +275,25 @@ export default function Products() {
     }
   }, [])
 
+  const scrollToGrid = () => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+
   if (loading)
     return (
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
-        {/* Breadcrumb skeleton */}
-        <div className="flex gap-2 mb-8">
-          <div className="h-3 bg-gray-100 rounded-full w-10 animate-pulse" />
-          <div className="h-3 bg-gray-100 rounded-full w-2 animate-pulse" />
-          <div className="h-3 bg-gray-100 rounded-full w-20 animate-pulse" />
+      <div className="relative">
+        {/* Hero skeleton */}
+        <div className="relative bg-gray-950 h-[340px] sm:h-[420px] flex items-end overflow-hidden">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full space-y-4">
+            <div className="h-3 w-32 bg-white/10 rounded-full animate-pulse" />
+            <div className="h-12 w-2/3 bg-white/10 rounded-2xl animate-pulse" />
+            <div className="h-3 w-1/2 bg-white/10 rounded-full animate-pulse" />
+          </div>
         </div>
-        {/* Header skeleton */}
-        <div className="mb-8 space-y-2">
-          <div className="h-2 bg-gray-100 rounded-full w-16 animate-pulse" />
-          <div className="h-8 bg-gray-100 rounded w-48 animate-pulse" />
-          <div className="h-3 bg-gray-100 rounded-full w-24 animate-pulse" />
-        </div>
-        {/* Grid skeleton */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -227,6 +343,17 @@ export default function Products() {
 
   const visibleProducts = sorted.slice(0, visibleCount)
 
+  const firstCatOf = product => {
+    const obj =
+      Array.isArray(product.categories) && product.categories.length > 0
+        ? product.categories[0]
+        : product.category
+    return obj
+  }
+  const hrefOf = product =>
+    p(`/products/${slugify(firstCatOf(product)?.name || "others")}/${product.slug}`)
+  const nameOf = product => (isAr && product.name_ar ? product.name_ar : product.name)
+
   return (
     <div className="relative">
       <style>{`
@@ -234,88 +361,414 @@ export default function Products() {
           0%   { opacity: 0; transform: translateY(24px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        .product-card-enter {
-          animation: product-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        .product-card-enter { animation: product-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes hebat-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .hebat-ticker-track { animation: hebat-ticker 26s linear infinite; will-change: transform; }
+        .marquee-strip:hover .hebat-ticker-track { animation-play-state: paused; }
+        @media (prefers-reduced-motion: reduce) {
+          .product-card-enter { animation: none; }
+          .hebat-ticker-track { animation: none; }
         }
-        .product-card-enter:nth-child(2)  { animation-delay: 0.05s; }
-        .product-card-enter:nth-child(3)  { animation-delay: 0.10s; }
-        .product-card-enter:nth-child(4)  { animation-delay: 0.15s; }
-        .product-card-enter:nth-child(5)  { animation-delay: 0.20s; }
-        .product-card-enter:nth-child(6)  { animation-delay: 0.05s; }
-        .product-card-enter:nth-child(7)  { animation-delay: 0.10s; }
-        .product-card-enter:nth-child(8)  { animation-delay: 0.15s; }
-        .product-card-enter:nth-child(9)  { animation-delay: 0.20s; }
-        .product-card-enter:nth-child(10) { animation-delay: 0.05s; }
       `}</style>
-      <PageDecorations />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16 w-full">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-8 flex-wrap">
-          <Link href={p("/")} className="hover:text-yellow-500 transition-colors font-medium">
-            {t("home")}
-          </Link>
-          <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
-          <Link
-            href={p("/products")}
-            className="hover:text-yellow-500 transition-colors font-medium"
-          >
-            {t("products")}
-          </Link>
-          {(selectedCategory || searchQuery) && (
-            <>
-              <span className="text-gray-300 dark:text-gray-600 select-none">›</span>
-              <span className="text-gray-600 dark:text-gray-300 font-semibold capitalize">
-                {displayCategory}
-              </span>
-            </>
-          )}
-        </nav>
+      {/* ─────────────── HERO ─────────────── */}
+      <header className="relative z-10 overflow-hidden bg-gray-950 text-white isolate">
+        {/* Aurora + soft glow blobs sit BEHIND the floating product tiles */}
+        <ProductsHeroAurora variant={isLanding ? "full" : "compact"} />
+        <div className="pointer-events-none absolute -top-40 ltr:-right-32 rtl:-left-32 w-[520px] h-[520px] rounded-full bg-yellow-400/20 blur-[80px]" />
+        <div className="pointer-events-none absolute -bottom-44 ltr:-left-24 rtl:-right-24 w-[420px] h-[420px] rounded-full bg-amber-500/12 blur-[80px]" />
+        <ProductsHeroProducts
+          variant={isLanding ? "full" : "compact"}
+          images={heroImages}
+          mirror={isAr}
+        />
+        {/* text-side scrim — keeps the headline crisp over the floating tiles */}
+        <div className="pointer-events-none absolute inset-0 z-[2] ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-gray-950 via-gray-950/60 to-transparent" />
+        {/* fade to page */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-gray-950 to-transparent z-[2]" />
 
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-0.5 w-6 bg-yellow-500 rounded-full" />
-            <span className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">
-              {selectedCategory ? t("products") : searchQuery ? "Search" : "Collection"}
-            </span>
-          </div>
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white capitalize mb-1">
+        <div
+          className={`relative z-[3] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${
+            isLanding ? "pt-16 pb-20 sm:pt-20 sm:pb-24" : "pt-10 pb-12"
+          }`}
+        >
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 text-sm text-white/40 mb-6 flex-wrap">
+            <Link href={p("/")} className="hover:text-yellow-400 transition-colors font-medium">
+              {t("home")}
+            </Link>
+            <span className="text-white/25 select-none">›</span>
+            <Link
+              href={p("/products")}
+              className="hover:text-yellow-400 transition-colors font-medium"
+            >
+              {t("products")}
+            </Link>
+            {(selectedCategory || searchQuery) && (
+              <>
+                <span className="text-white/25 select-none">›</span>
+                <span className="text-white/80 font-semibold capitalize">{displayCategory}</span>
+              </>
+            )}
+          </nav>
+
+          {isLanding ? (
+            <>
+              <motion.span
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2.5 border border-yellow-500/30 bg-yellow-500/10 rounded-full px-4 py-1.5"
+              >
+                <Zap className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-yellow-400">
+                  {c.eyebrow}
+                </span>
+              </motion.span>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] max-w-3xl [text-wrap:balance]"
+              >
+                {c.heading}
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-5 max-w-xl text-white/70 text-sm sm:text-base leading-relaxed"
+              >
+                {c.sub}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.32 }}
+                className="mt-8 flex flex-wrap gap-3"
+              >
+                <button
+                  onClick={scrollToGrid}
+                  className="group inline-flex items-center gap-2 px-7 py-3.5 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-2xl shadow-lg shadow-yellow-500/25 transition-all duration-200 hover:-translate-y-0.5 text-sm"
+                >
+                  {c.browse}
+                  <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                </button>
+                <button
+                  onClick={() => window.open("https://morslon.com/", "_blank")}
+                  className="group inline-flex items-center gap-2 px-7 py-3.5 bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold rounded-2xl transition-all duration-200 hover:-translate-y-0.5 text-sm"
+                >
+                  {c.shop}
+                  <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </motion.div>
+
+              {/* Stats */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="mt-12 flex gap-10 flex-wrap"
+              >
+                <div>
+                  <div className="text-3xl font-black tracking-tight">
+                    {showing.length}
+                    <span className="text-yellow-500">+</span>
+                  </div>
+                  <div className="text-xs text-white/50 mt-0.5">{t("products")}</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-black tracking-tight">{allCats.length}</div>
+                  <div className="text-xs text-white/50 mt-0.5">{c.categories}</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-black tracking-tight">
+                    100<span className="text-yellow-500">%</span>
+                  </div>
+                  <div className="text-xs text-white/50 mt-0.5">{c.qualityChecked}</div>
+                </div>
+              </motion.div>
+            </>
+          ) : (
+            /* Compact hero band (category / search) */
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-0.5 w-6 bg-yellow-500 rounded-full" />
+                <span className="text-[11px] font-bold uppercase tracking-widest text-yellow-400">
+                  {searchQuery ? (isAr ? "بحث" : "Search") : t("products")}
+                </span>
+              </div>
+              <motion.h1
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className={`text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight [text-wrap:balance] flex items-center gap-3 ${
+                  searchQuery ? "" : "capitalize"
+                }`}
+              >
+                {searchQuery && <Search className="w-7 h-7 text-yellow-500 flex-shrink-0" />}
                 {displayCategory || t("allProducts")}
-              </h1>
-              <p className="text-sm text-gray-400 font-medium">
+              </motion.h1>
+              <p className="mt-3 text-sm text-white/60 font-medium">
                 {showing.length} {showing.length !== 1 ? t("products") : t("product")}
               </p>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-xs text-gray-400 font-medium hidden sm:block">
-                {isAr ? "ترتيب:" : "Sort:"}
-              </span>
-              <div className="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-semibold">
-                {[
-                  { key: "default", label: isAr ? "افتراضي" : "Default" },
-                  { key: "az", label: isAr ? "أ–ي" : "A–Z" },
-                  { key: "za", label: isAr ? "ي–أ" : "Z–A" },
-                ].map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setSortBy(opt.key)}
-                    className={`px-3 py-1.5 transition-colors ${
-                      sortBy === opt.key
-                        ? "bg-yellow-500 text-black"
-                        : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+            </>
+          )}
+        </div>
+      </header>
+
+      {/* ─────────────── MARQUEE (landing only) ─────────────── */}
+      {isLanding && (
+        <div className="marquee-strip relative z-10 w-full overflow-hidden bg-yellow-500 py-3.5 border-y-2 border-black">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-yellow-500 to-transparent z-10" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-yellow-500 to-transparent z-10" />
+          <div className="hebat-ticker-track flex whitespace-nowrap w-max" dir="ltr">
+            {Array.from({ length: 4 }, () => TICKER_ITEMS)
+              .flat()
+              .map((item, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-4 px-4 text-[11px] font-black uppercase tracking-[0.25em] text-black/70"
+                >
+                  {item}
+                  <span className="w-1 h-1 rounded-full bg-black/40 flex-shrink-0" />
+                </span>
+              ))}
+          </div>
+        </div>
+      )}
+
+      <PageDecorations />
+
+      {/* ─────────────── SPOTLIGHT — rotating showcase (landing only) ─────────────── */}
+      {isLanding &&
+        spotlight.length >= 3 &&
+        (() => {
+          const n = spotlight.length
+          const idx = spotIndex % n
+          const active = spotlight[idx]
+          const activeCat = firstCatOf(active)
+          const catLabel = isAr && activeCat?.name_ar ? activeCat.name_ar : activeCat?.name
+          const go = dir => setSpotIndex(i => (((i + dir) % n) + n) % n)
+
+          return (
+            <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
+              {/* Header + stepper */}
+              <div className="flex items-end justify-between gap-4 mb-7 flex-wrap">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.34em] text-yellow-600 mb-2 flex items-center gap-2">
+                    <span className="h-0.5 w-5 bg-yellow-500 rounded-full" />
+                    {c.spotlightLabel}
+                  </p>
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                    {c.spotlightHeading}
+                  </h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-sm text-gray-400 tabular-nums">
+                    {String(idx + 1).padStart(2, "0")}
+                    <span className="text-gray-300 dark:text-gray-600">
+                      {" "}
+                      / {String(n).padStart(2, "0")}
+                    </span>
+                  </span>
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => go(-1)}
+                      aria-label="Previous"
+                      className="w-9 h-9 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-yellow-400 hover:text-yellow-600 hover:-translate-y-0.5 transition-all"
+                    >
+                      <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+                    </button>
+                    <button
+                      onClick={() => go(1)}
+                      aria-label="Next"
+                      className="w-9 h-9 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-yellow-400 hover:text-yellow-600 hover:-translate-y-0.5 transition-all"
+                    >
+                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                    </button>
+                  </div>
+                </div>
               </div>
+
+              {/* Showcase panel */}
+              <div
+                onMouseEnter={() => (spotPausedRef.current = true)}
+                onMouseLeave={() => (spotPausedRef.current = false)}
+                className="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-xl shadow-gray-200/40 dark:shadow-black/40 grid md:grid-cols-2 md:h-[440px]"
+              >
+                {/* Stage — product image (clickable) */}
+                <Link
+                  href={hrefOf(active)}
+                  prefetch={false}
+                  aria-label={nameOf(active)}
+                  className="group relative bg-white h-72 md:h-full overflow-hidden flex items-center justify-center cursor-pointer"
+                >
+                  <div className="pointer-events-none absolute -top-1/4 ltr:-right-1/4 rtl:-left-1/4 w-2/3 h-2/3 rounded-full bg-yellow-400/10 blur-3xl" />
+                  <span className="absolute top-5 start-5 z-10 bg-yellow-500 text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md shadow-yellow-500/30">
+                    {c.featured}
+                  </span>
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={active.slug}
+                      src={active.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                      alt={nameOf(active)}
+                      loading="eager"
+                      initial={{ opacity: 0, scale: 0.92, filter: "blur(6px)" }}
+                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, scale: 1.04, filter: "blur(6px)" }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative z-[1] w-full h-full object-contain p-10 md:p-14 drop-shadow-2xl"
+                    />
+                  </AnimatePresence>
+                  <span className="pointer-events-none absolute inset-0 z-[2] group-hover:bg-yellow-400/[0.06] transition-colors duration-300" />
+                </Link>
+
+                {/* Info panel — dark, editorial */}
+                <div className="relative bg-gray-950 text-white p-8 lg:p-11 flex flex-col justify-between overflow-hidden h-full">
+                  {/* Ghost index */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -bottom-10 ltr:-right-2 rtl:-left-2 font-black text-white/[0.04] leading-none select-none"
+                    style={{ fontSize: "190px" }}
+                  >
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={active.slug}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative z-[1]"
+                    >
+                      {catLabel && (
+                        <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-400 border border-yellow-500/25 bg-yellow-500/10 rounded-full px-3 py-1">
+                          {catLabel}
+                        </span>
+                      )}
+                      <h3 className="mt-5 text-2xl sm:text-3xl lg:text-[2rem] font-black leading-tight tracking-tight [text-wrap:balance] line-clamp-3">
+                        {nameOf(active)}
+                      </h3>
+                      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                        {active.model && (
+                          <p className="text-white/50">
+                            <span className="text-white/35">{t("model")}:</span>{" "}
+                            <span className="font-mono text-white/80">{active.model}</span>
+                          </p>
+                        )}
+                        {active.barcode && (
+                          <p className="text-white/50">
+                            <span className="text-white/35">{t("barcode")}:</span>{" "}
+                            <span className="font-mono text-white/80">{active.barcode}</span>
+                          </p>
+                        )}
+                      </div>
+                      <Link
+                        href={hrefOf(active)}
+                        prefetch={false}
+                        className="group mt-7 inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-2xl shadow-lg shadow-yellow-500/25 transition-all duration-200 hover:-translate-y-0.5 text-sm"
+                      >
+                        {c.viewProduct}
+                        <ArrowRight className="w-4 h-4 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
+                      </Link>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Thumbnail rail */}
+                  <div className="relative z-[1] mt-8 flex items-center gap-2.5">
+                    {spotlight.map((prod, i) => {
+                      const on = i === idx
+                      return (
+                        <button
+                          key={prod.slug}
+                          onClick={() => setSpotIndex(i)}
+                          aria-label={nameOf(prod)}
+                          className={`relative w-12 h-12 rounded-xl overflow-hidden bg-white flex-shrink-0 transition-all duration-200 ${
+                            on
+                              ? "ring-2 ring-yellow-500 ring-offset-2 ring-offset-gray-950"
+                              : "opacity-50 hover:opacity-100"
+                          }`}
+                        >
+                          <img
+                            src={prod.images?.[0]?.s3Url || "/hebat_product_fill.png"}
+                            alt=""
+                            loading="lazy"
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Auto-advance progress bar */}
+                <motion.div
+                  key={idx}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 8, ease: "linear" }}
+                  className="absolute bottom-0 start-0 end-0 h-1 bg-yellow-500 origin-start z-10"
+                />
+              </div>
+            </section>
+          )
+        })()}
+
+      {/* ─────────────── CONTROLS + GRID ─────────────── */}
+      <div
+        ref={gridRef}
+        className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 w-full scroll-mt-20"
+      >
+        {/* Section header + sort */}
+        <div className="flex items-end justify-between gap-4 flex-wrap mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-0.5 w-6 bg-yellow-500 rounded-full" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">
+                {isLanding ? (isAr ? "التشكيلة" : "Collection") : t("products")}
+              </span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white capitalize">
+              {displayCategory || t("allProducts")}
+            </h2>
+            <p className="text-sm text-gray-400 font-medium mt-1">
+              {showing.length} {showing.length !== 1 ? t("products") : t("product")}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-xs text-gray-400 font-medium hidden sm:block">
+              {isAr ? "ترتيب:" : "Sort:"}
+            </span>
+            <div className="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-semibold">
+              {[
+                { key: "default", label: isAr ? "افتراضي" : "Default" },
+                { key: "az", label: isAr ? "أ–ي" : "A–Z" },
+                { key: "za", label: isAr ? "ي–أ" : "Z–A" },
+              ].map(opt => (
+                <button
+                  key={opt.key}
+                  onClick={() => setSortBy(opt.key)}
+                  className={`px-3 py-1.5 transition-colors ${
+                    sortBy === opt.key
+                      ? "bg-yellow-500 text-black"
+                      : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -323,95 +776,37 @@ export default function Products() {
         {/* Product Grid */}
         {visibleProducts.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {visibleProducts.map(product => {
-              const firstCatObj =
-                Array.isArray(product.categories) && product.categories.length > 0
-                  ? product.categories[0]
-                  : product.category
-
-              const firstCatSlug = firstCatObj?.name || "others"
+            {visibleProducts.map((product, i) => {
+              const firstCatObj = firstCatOf(product)
               const catLabel =
-                isAr && firstCatObj?.name_ar ? firstCatObj.name_ar : firstCatObj?.name
-              const productName = isAr && product.name_ar ? product.name_ar : product.name
+                !selectedCategory && firstCatObj
+                  ? isAr && firstCatObj?.name_ar
+                    ? firstCatObj.name_ar
+                    : firstCatObj?.name
+                  : null
               const isNew = !animatedSlugs.current.has(product.slug)
               if (isNew) animatedSlugs.current.add(product.slug)
 
               return (
-                <div key={product.slug} className={isNew ? "product-card-enter" : ""}>
-                  <Link
-                    href={p(`/products/${slugify(firstCatSlug)}/${product.slug}`)}
-                    className="group"
-                  >
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700/50 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 flex flex-col h-full">
-                      {/* Image */}
-                      <div className="p-3 flex-shrink-0 h-44 sm:h-48 md:h-52">
-                        <div className="relative w-full h-full rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white overflow-hidden shadow-sm flex items-center justify-center">
-                          <img
-                            src={product.images?.[0]?.s3Url || "/hebat_product_fill.png"}
-                            alt={productName}
-                            loading="lazy"
-                            decoding="async"
-                            className="object-contain w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
-                          />
-
-                          {/* Category badge — only when not filtering by a single category */}
-                          {!selectedCategory && catLabel && (
-                            <span className="absolute top-2 start-2 text-[10px] font-semibold bg-white/90 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-full shadow-sm">
-                              {catLabel}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Info */}
-                      <div className="px-3 pb-4 flex flex-col gap-1 flex-grow">
-                        <h5 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-yellow-500 transition-colors duration-200">
-                          {productName}
-                        </h5>
-
-                        <div className="mt-auto pt-2 space-y-0.5">
-                          {product.model && (
-                            <p className="text-[11px] text-gray-400 truncate">
-                              <span className="font-medium text-gray-500">{t("model")}:</span>{" "}
-                              {product.model}
-                            </p>
-                          )}
-                          {product.barcode && (
-                            <p className="text-[11px] text-gray-400 truncate">
-                              <span className="font-medium text-gray-500">{t("barcode")}:</span>{" "}
-                              {product.barcode}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Yellow accent bar on hover */}
-                      <div className="h-0.5 bg-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-start" />
-                    </div>
-                  </Link>
-                </div>
+                <ProductCard
+                  key={product.slug}
+                  product={product}
+                  href={hrefOf(product)}
+                  catLabel={catLabel}
+                  productName={nameOf(product)}
+                  isNew={isNew}
+                  index={i}
+                  t={t}
+                />
               )
             })}
           </div>
         ) : (
-          /* Empty state */
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#d1d5db"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
+            <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center mb-4">
+              <Search className="w-7 h-7 text-gray-300 dark:text-gray-600" />
             </div>
-            <p className="text-gray-500 font-medium text-sm">
+            <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">
               {searchQuery ? `${t("noResults")} "${searchQuery}".` : t("noProducts")}
             </p>
           </div>
@@ -434,15 +829,20 @@ export default function Products() {
       </div>
 
       {/* Scroll to top */}
-      {showTop && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 end-6 z-50 w-10 h-10 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg shadow-yellow-500/30 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      )}
+      <AnimatePresence>
+        {showTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 14 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-6 end-6 z-50 w-10 h-10 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg shadow-yellow-500/30 flex items-center justify-center transition-colors duration-200"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
