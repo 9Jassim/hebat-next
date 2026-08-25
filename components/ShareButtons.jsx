@@ -3,8 +3,10 @@
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Share2, Copy, Check } from "lucide-react"
+import { useLanguage } from "@/context/LanguageContext"
 
 export default function ShareButtons({ product }) {
+  const { t } = useLanguage()
   const pathname = usePathname()
   const [currentUrl, setCurrentUrl] = useState("")
   const [copied, setCopied] = useState(false)
@@ -42,7 +44,9 @@ export default function ShareButtons({ product }) {
 
   return (
     <div className="mt-5">
-      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Share Via</h2>
+      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+        {t("shareVia")}
+      </h2>
       <div className="flex items-center gap-2">
         {/* WhatsApp */}
         <a
