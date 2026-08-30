@@ -1,5 +1,9 @@
 import Client from "@/lib/api"
 
+// Regenerate the sitemap at most once per hour so newly added products
+// appear without a redeploy.
+export const revalidate = 3600
+
 const baseUrl = "https://hebatofficial.com"
 
 const slugify = str =>
