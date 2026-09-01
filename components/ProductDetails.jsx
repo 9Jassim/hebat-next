@@ -256,6 +256,34 @@ export default function ProductDetails({ params }) {
 
   const videoId = youtubeId(product.youtubeUrl)
 
+  // Overview infographics: prefer the Arabic set in Arabic, fall back to English.
+  const overviewImages =
+    isAr && product.featureImages_ar?.length
+      ? product.featureImages_ar
+      : product.featureImages || []
+
+  // Manual block — shown in the aside on desktop, moved under specs on phones.
+  const manualContent = (
+    <>
+      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+        {t("manual")}
+      </h2>
+      {product.manual ? (
+        <a
+          href={product.manual.s3Url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
+        >
+          <FileText size={14} />
+          {t("viewManual")}
+        </a>
+      ) : (
+        <p className="text-gray-400 text-sm">{t("noManual")}</p>
+      )}
+    </>
+  )
+
   return (
     <div className="relative min-h-screen">
       {/* ===================== CINEMATIC HERO ===================== */}
@@ -322,6 +350,15 @@ export default function ProductDetails({ params }) {
                   )}
                 </motion.div>
               )}
+
+              {/* Share */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <ShareButtons product={product} onDark />
+              </motion.div>
             </div>
 
             {/* Gallery stage */}
@@ -416,10 +453,19 @@ export default function ProductDetails({ params }) {
                 features_ar={product.features_ar}
                 isAr={isAr}
               />
+            </div>
+
+            {/* Right column — manual (desktop) + video */}
+            <aside
+              className="lg:sticky self-start"
+              style={{ top: "calc(var(--nav-height) + 24px)" }}
+            >
+              {/* Manual — desktop only; on phones it moves under the specs */}
+              <div className="hidden lg:block">{manualContent}</div>
 
               {/* Video */}
               {videoId && (
-                <div className="mt-8">
+                <div className="lg:mt-6">
                   <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
                     {isAr ? "الفيديو" : "Video"}
                   </h2>
@@ -437,42 +483,41 @@ export default function ProductDetails({ params }) {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Sticky aside */}
-            <aside
-              className="lg:sticky self-start space-y-6"
-              style={{ top: "calc(var(--nav-height) + 24px)" }}
-            >
-              {/* Specifications */}
-              <ProductSpecifications specifications={product.specifications} isAr={isAr} />
-
-              {/* Manual */}
-              <div className="border-t border-gray-100 dark:border-gray-700/50 pt-5">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-                  {t("manual")}
-                </h2>
-                {product.manual ? (
-                  <a
-                    href={product.manual.s3Url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors"
-                  >
-                    <FileText size={14} />
-                    {t("viewManual")}
-                  </a>
-                ) : (
-                  <p className="text-gray-400 text-sm">{t("noManual")}</p>
-                )}
-              </div>
-
-              {/* Share */}
-              <div className="border-t border-gray-100 dark:border-gray-700/50 pt-5">
-                <ShareButtons product={product} />
-              </div>
             </aside>
           </div>
+
+          {/* Product Highlights — full-width infographic.
+              Renders only when the backend provides product.featureImages. */}
+          {overviewImages.length > 0 && (
+            <section className="mt-14">
+              <div className="flex flex-col items-center gap-2.5 mb-6 text-center">
+                <div className="h-0.5 w-8 bg-yellow-500 rounded-full" />
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  {t("highlights")}
+                </h2>
+              </div>
+              <div className="space-y-6">
+                {overviewImages.map((img, i) => (
+                  <img
+                    key={img.s3Key || img.s3Url || i}
+                    src={img.s3Url}
+                    alt={`${displayName} — ${t("highlights")} ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-auto rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm bg-white"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Specifications — full width */}
+          <div className="mt-12">
+            <ProductSpecifications specifications={product.specifications} isAr={isAr} />
+          </div>
+
+          {/* Manual — phones only; on desktop it lives in the aside above */}
+          <div className="lg:hidden mt-10">{manualContent}</div>
         </div>
       </div>
 
