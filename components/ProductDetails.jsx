@@ -517,9 +517,7 @@ export default function ProductDetails({ params }) {
           </div>
 
           {/* Manual — phones only; on desktop it lives in the aside above */}
-          <div className="lg:hidden mt-10">
-            {manualContent}
-          </div>
+          <div className="lg:hidden mt-10">{manualContent}</div>
         </div>
       </div>
 

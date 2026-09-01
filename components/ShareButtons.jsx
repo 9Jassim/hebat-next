@@ -103,7 +103,10 @@ export default function ShareButtons({ product, onDark = false }) {
           {copied ? (
             <Check size={15} className="text-yellow-500" />
           ) : (
-            <Copy size={15} className={onDark ? "text-gray-200" : "text-gray-500 dark:text-gray-400"} />
+            <Copy
+              size={15}
+              className={onDark ? "text-gray-200" : "text-gray-500 dark:text-gray-400"}
+            />
           )}
         </button>
 
