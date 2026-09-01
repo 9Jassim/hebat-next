@@ -16,10 +16,12 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   const [removeManual, setRemoveManual] = useState(false)
 
   // Feature / overview images (tall marketing infographics)
-  const [featureImages, setFeatureImages] = useState([]) // existing [{ s3Url, s3Key, name }]
-  const [featureRemove, setFeatureRemove] = useState([]) // s3Keys queued for removal
-  const [newFeatures, setNewFeatures] = useState([]) // [{ file, preview }]
+  // Feature images keyed by language: { en: [...], ar: [...] }
+  const [featureImages, setFeatureImages] = useState({ en: [], ar: [] }) // existing [{ s3Url, s3Key, name }]
+  const [featureRemove, setFeatureRemove] = useState({ en: [], ar: [] }) // s3Keys queued for removal
+  const [newFeatures, setNewFeatures] = useState({ en: [], ar: [] }) // [{ file, preview }]
   const featureInputRef = useRef(null)
+  const featureInputArRef = useRef(null)
 
   // ✅ NEW
   const [specifications, setSpecifications] = useState([])
@@ -88,13 +90,14 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
     setExistingManual(product.manual?.s3Url ? product.manual : null)
     setRemoveManual(false)
 
-    setFeatureImages(product.featureImages || [])
-    setFeatureRemove([])
+    setFeatureImages({ en: product.featureImages || [], ar: product.featureImages_ar || [] })
+    setFeatureRemove({ en: [], ar: [] })
     setNewFeatures(prev => {
-      prev.forEach(f => URL.revokeObjectURL(f.preview))
-      return []
+      ;[...prev.en, ...prev.ar].forEach(f => URL.revokeObjectURL(f.preview))
+      return { en: [], ar: [] }
     })
     if (featureInputRef.current) featureInputRef.current.value = ""
+    if (featureInputArRef.current) featureInputArRef.current.value = ""
 
     if (manualRef.current) manualRef.current.value = ""
 
@@ -244,35 +247,110 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
   // ============================
   // Feature / overview images
   // ============================
-  const handleFeatureSelect = e => {
+  const handleFeatureSelect = (lang, e) => {
     markDirty()
     const files = Array.from(e.target.files || [])
     if (!files.length) return
-    setNewFeatures(prev => [
+    setNewFeatures(prev => ({
       ...prev,
-      ...files.map(file => ({ file, preview: URL.createObjectURL(file) })),
-    ])
+      [lang]: [...prev[lang], ...files.map(file => ({ file, preview: URL.createObjectURL(file) }))],
+    }))
     e.target.value = ""
   }
 
-  const removeNewFeature = index => {
+  const removeNewFeature = (lang, index) => {
     markDirty()
     setNewFeatures(prev => {
-      const updated = [...prev]
+      const updated = [...prev[lang]]
       URL.revokeObjectURL(updated[index].preview)
       updated.splice(index, 1)
-      return updated
+      return { ...prev, [lang]: updated }
     })
   }
 
-  const removeExistingFeature = s3Key => {
+  const removeExistingFeature = (lang, s3Key) => {
     markDirty()
-    setFeatureRemove(prev => (prev.includes(s3Key) ? prev : [...prev, s3Key]))
+    setFeatureRemove(prev =>
+      prev[lang].includes(s3Key) ? prev : { ...prev, [lang]: [...prev[lang], s3Key] }
+    )
   }
 
-  const undoRemoveFeature = s3Key => {
+  const undoRemoveFeature = (lang, s3Key) => {
     markDirty()
-    setFeatureRemove(prev => prev.filter(k => k !== s3Key))
+    setFeatureRemove(prev => ({ ...prev, [lang]: prev[lang].filter(k => k !== s3Key) }))
+  }
+
+  const renderFeatureImages = (lang, label, inputRef) => {
+    const existing = featureImages[lang]
+    const pending = newFeatures[lang]
+    const removeList = featureRemove[lang]
+    return (
+      <div className="mb-3">
+        <label className="block mb-1 text-xs font-medium text-gray-500">{label}</label>
+
+        {(existing.length > 0 || pending.length > 0) && (
+          <div className="flex flex-wrap gap-3 mb-2">
+            {existing.map(img => {
+              const removed = removeList.includes(img.s3Key)
+              return (
+                <div
+                  key={img.s3Key || img.s3Url}
+                  className={`relative w-20 h-28 rounded-lg border overflow-hidden bg-gray-50 ${
+                    removed ? "opacity-40 border-red-300" : "border-gray-200"
+                  }`}
+                >
+                  <img src={img.s3Url} alt="" className="w-full h-full object-cover" />
+                  {removed ? (
+                    <button
+                      type="button"
+                      onClick={() => undoRemoveFeature(lang, img.s3Key)}
+                      className="absolute inset-x-1 bottom-1 bg-gray-700 text-white text-[10px] rounded py-0.5 hover:bg-gray-800"
+                    >
+                      Undo
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => removeExistingFeature(lang, img.s3Key)}
+                      className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600"
+                      title="Remove"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              )
+            })}
+
+            {pending.map((nf, i) => (
+              <div
+                key={i}
+                className="relative w-20 h-28 rounded-lg border border-green-300 overflow-hidden bg-gray-50"
+              >
+                <img src={nf.preview} alt={`New ${i + 1}`} className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeNewFeature(lang, i)}
+                  className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600"
+                  title="Remove"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <input
+          ref={inputRef}
+          onChange={e => handleFeatureSelect(lang, e)}
+          type="file"
+          accept="image/*"
+          multiple
+          className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
+        />
+      </div>
+    )
   }
 
   // ============================
@@ -311,12 +389,14 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
       formData.append("manual", manualRef.current.files[0])
     }
 
-    // Feature / overview images.
-    // Backend contract: store on product.featureImages: [{ s3Url, s3Key, name }].
-    //  - new files arrive under the repeated "featureImages" field
-    //  - "removeFeatureImages" is a JSON array of s3Keys to delete
-    formData.append("removeFeatureImages", JSON.stringify(featureRemove))
-    newFeatures.forEach(nf => formData.append("featureImages", nf.file))
+    // Feature / overview images (English + Arabic).
+    // Backend stores product.featureImages / product.featureImages_ar: [{ s3Url, s3Key, name }].
+    //  - new files arrive under the "featureImages" / "featureImages_ar" fields
+    //  - "removeFeatureImages" / "removeFeatureImages_ar" are JSON arrays of s3Keys to delete
+    formData.append("removeFeatureImages", JSON.stringify(featureRemove.en))
+    formData.append("removeFeatureImages_ar", JSON.stringify(featureRemove.ar))
+    newFeatures.en.forEach(nf => formData.append("featureImages", nf.file))
+    newFeatures.ar.forEach(nf => formData.append("featureImages_ar", nf.file))
 
     // Variants
     const plainVariants = {
@@ -625,73 +705,15 @@ export default function EditProductForm({ product, setProduct, handleCloseE }) {
         </div>
 
         {/* Feature / Overview Images */}
-        <div className="mb-4">
+        <div className="border-t border-gray-200 pt-4 mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-900">Feature Images</label>
-          <p className="text-xs text-gray-400 mb-2">
-            Tall marketing / infographic images shown in the &quot;Overview&quot; section.
+          <p className="text-xs text-gray-400 mb-3">
+            Tall marketing / infographic images shown in the &quot;Overview&quot; section. The
+            Arabic set falls back to English when empty.
           </p>
 
-          {(featureImages.length > 0 || newFeatures.length > 0) && (
-            <div className="flex flex-wrap gap-3 mb-2">
-              {featureImages.map(img => {
-                const removed = featureRemove.includes(img.s3Key)
-                return (
-                  <div
-                    key={img.s3Key || img.s3Url}
-                    className={`relative w-20 h-28 rounded-lg border overflow-hidden bg-gray-50 ${
-                      removed ? "opacity-40 border-red-300" : "border-gray-200"
-                    }`}
-                  >
-                    <img src={img.s3Url} alt="" className="w-full h-full object-cover" />
-                    {removed ? (
-                      <button
-                        type="button"
-                        onClick={() => undoRemoveFeature(img.s3Key)}
-                        className="absolute inset-x-1 bottom-1 bg-gray-700 text-white text-[10px] rounded py-0.5 hover:bg-gray-800"
-                      >
-                        Undo
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => removeExistingFeature(img.s3Key)}
-                        className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600"
-                        title="Remove"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                )
-              })}
-
-              {newFeatures.map((nf, i) => (
-                <div
-                  key={i}
-                  className="relative w-20 h-28 rounded-lg border border-green-300 overflow-hidden bg-gray-50"
-                >
-                  <img src={nf.preview} alt={`New feature ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeNewFeature(i)}
-                    className="absolute top-1 right-1 bg-black/60 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600"
-                    title="Remove"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <input
-            ref={featureInputRef}
-            onChange={handleFeatureSelect}
-            type="file"
-            accept="image/*"
-            multiple
-            className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
-          />
+          {renderFeatureImages("en", "English", featureInputRef)}
+          {renderFeatureImages("ar", "Arabic", featureInputArRef)}
         </div>
 
         {/* Variants */}

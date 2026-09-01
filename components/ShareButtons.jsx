@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { Share2, Copy, Check } from "lucide-react"
 import { useLanguage } from "@/context/LanguageContext"
 
-export default function ShareButtons({ product }) {
+export default function ShareButtons({ product, onDark = false }) {
   const { t } = useLanguage()
   const pathname = usePathname()
   const [currentUrl, setCurrentUrl] = useState("")
@@ -39,12 +39,17 @@ export default function ShareButtons({ product }) {
     })
   }
 
-  const btnClass =
-    "w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-yellow-500/50 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
+  const btnClass = onDark
+    ? "w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:border-yellow-500/50 hover:bg-white/10 transition-all duration-200"
+    : "w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-yellow-500/50 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-all duration-200"
 
   return (
     <div className="mt-5">
-      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+      <h2
+        className={`text-xs font-bold uppercase tracking-widest mb-3 ${
+          onDark ? "text-white/50" : "text-gray-400"
+        }`}
+      >
         {t("shareVia")}
       </h2>
       <div className="flex items-center gap-2">
@@ -87,7 +92,7 @@ export default function ShareButtons({ product }) {
             width="16"
             height="16"
             viewBox="0 0 24 24"
-            className="fill-gray-900 dark:fill-gray-100"
+            className={onDark ? "fill-white" : "fill-gray-900 dark:fill-gray-100"}
           >
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
@@ -98,7 +103,7 @@ export default function ShareButtons({ product }) {
           {copied ? (
             <Check size={15} className="text-yellow-500" />
           ) : (
-            <Copy size={15} className="text-gray-500 dark:text-gray-400" />
+            <Copy size={15} className={onDark ? "text-gray-200" : "text-gray-500 dark:text-gray-400"} />
           )}
         </button>
 
