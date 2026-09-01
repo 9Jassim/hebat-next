@@ -355,6 +355,31 @@ export default function ProductDetails({ params }) {
       <div className="relative">
         <PageDecorations />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+          {/* Feature / overview infographic — tall marketing images, centered.
+              Renders only when the backend provides product.featureImages. */}
+          {product.featureImages?.length > 0 && (
+            <section className="mb-12 max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 mb-5">
+                <div className="h-0.5 w-6 bg-yellow-500 rounded-full" />
+                <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                  {t("overview")}
+                </h2>
+              </div>
+              <div className="space-y-6">
+                {product.featureImages.map((img, i) => (
+                  <img
+                    key={img.s3Key || img.s3Url || i}
+                    src={img.s3Url}
+                    alt={`${displayName} — ${t("overview")} ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-auto rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm bg-white"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Admin Controls */}
           {user && (
             <div className="mb-8 flex flex-wrap gap-3">
