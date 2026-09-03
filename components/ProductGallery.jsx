@@ -122,7 +122,7 @@ export default function ProductGallery({
       {/* MAIN IMAGE */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-2xl overflow-hidden shadow-md bg-white border border-gray-200"
+        className="relative w-full rounded-2xl overflow-hidden shadow-md"
         onMouseDown={onPointerDown}
         onMouseUp={onPointerUp}
         onTouchStart={onPointerDown}
@@ -132,6 +132,17 @@ export default function ProductGallery({
           touchAction: "pan-y",
         }}
       >
+        {/* Blurred backdrop fill — a zoomed copy of the same image sits behind the
+            contained image so the letterbox area is filled instead of showing white */}
+        <img
+          src={mainImage || "/hebat_product_fill.png"}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-80 pointer-events-none select-none"
+        />
+        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
         <img
           src={mainImage || "/hebat_product_fill.png"}
           alt="Product main image"
@@ -139,7 +150,7 @@ export default function ProductGallery({
           decoding="async"
           loading="eager"
           onDragStart={e => e.preventDefault()}
-          className="w-full h-full object-contain p-2 pointer-events-none select-none"
+          className="relative w-full h-full object-contain p-2 pointer-events-none select-none"
         />
 
         {/* Zoom button */}
