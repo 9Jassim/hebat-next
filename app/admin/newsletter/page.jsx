@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Client from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
+import RichTextEditor from "@/components/RichTextEditor"
 import Button from "@mui/material/Button"
 import Dialog from "@mui/material/Dialog"
 import DialogTitle from "@mui/material/DialogTitle"
@@ -13,10 +14,26 @@ export default function NewsletterPage() {
   const { user } = useAuth()
   const [subscribers, setSubscribers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [message, setMessage] = useState("")
+  const [subject, setSubject] = useState("")
+  const [body, setBody] = useState("")
+  const [previewEmail, setPreviewEmail] = useState("")
   const [openConfirm, setOpenConfirm] = useState(false)
   const [selectedSub, setSelectedSub] = useState(null)
   const [sending, setSending] = useState(false)
+  const [previewing, setPreviewing] = useState(false)
+  // Bumped to force the rich-text editor to remount and clear after a send.
+  const [editorKey, setEditorKey] = useState(0)
+
+  // The body is HTML from the editor; it counts as content if it has text or
+  // an image (a newsletter can be just an image with all the info in it).
+  const bodyIsEmpty = () => {
+    const hasImage = /<img\b/i.test(body)
+    const hasText = body
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim()
+    return !hasImage && !hasText
+  }
 
   // ✅ Fetch subscribers
   const fetchSubscribers = async () => {
@@ -34,19 +51,51 @@ export default function NewsletterPage() {
     fetchSubscribers()
   }, [])
 
-  // ✅ Send message to all subscribers
+  // Default the preview address to the logged-in admin's own email
+  useEffect(() => {
+    if (user?.email) setPreviewEmail(prev => prev || user.email)
+  }, [user])
+
+  // 👁️ Send a single preview email before the full send
+  const handlePreview = async () => {
+    if (!subject.trim()) return alert("Please enter a subject before previewing.")
+    if (bodyIsEmpty()) return alert("Please enter a body before previewing.")
+    if (!previewEmail.trim()) return alert("Please enter an email address to send the preview to.")
+
+    setPreviewing(true)
+    try {
+      await Client.post(
+        "/newsletter/preview",
+        { subject, body, email: previewEmail },
+        { withCredentials: true }
+      )
+      alert(`✅ Preview sent to ${previewEmail}`)
+    } catch (err) {
+      console.error("❌ Failed to send preview:", err)
+      alert("Failed to send preview. Please try again.")
+    } finally {
+      setPreviewing(false)
+    }
+  }
+
+  // ✅ Send newsletter to all subscribers
   const handleSend = async e => {
     e.preventDefault()
-    if (!message.trim()) return alert("Please enter a message before sending.")
+    if (!subject.trim()) return alert("Please enter a subject before sending.")
+    if (bodyIsEmpty()) return alert("Please enter a body before sending.")
+
+    if (!window.confirm(`Send this newsletter to all ${subscribers.length} subscribers?`)) return
 
     setSending(true)
     try {
-      await Client.post("/newsletter/send", { message }, { withCredentials: true })
-      alert("✅ Message sent successfully to all subscribers!")
-      setMessage("")
+      await Client.post("/newsletter/send", { subject, body }, { withCredentials: true })
+      alert("✅ Newsletter sent successfully to all subscribers!")
+      setSubject("")
+      setBody("")
+      setEditorKey(k => k + 1)
     } catch (err) {
       console.error("❌ Failed to send newsletter:", err)
-      alert("Failed to send message. Please try again.")
+      alert("Failed to send newsletter. Please try again.")
     } finally {
       setSending(false)
     }
@@ -79,29 +128,75 @@ export default function NewsletterPage() {
       {/* Header */}
       <h1 className="text-2xl font-bold text-yellow-500 mb-6">Newsletter Management</h1>
 
-      {/* Send message section */}
+      {/* Compose section */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">
-          Send Message to All Subscribers
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3">Compose Newsletter</h2>
 
         <form onSubmit={handleSend} className="space-y-4">
-          <textarea
-            rows="4"
-            placeholder="Write your newsletter message..."
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:ring-yellow-500 focus:border-yellow-500"
-          ></textarea>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+            <input
+              type="text"
+              placeholder="Email subject line..."
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:ring-yellow-500 focus:border-yellow-500"
+            />
+          </div>
 
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={sending}
-            className="!bg-yellow-500 hover:!bg-yellow-600 text-white font-semibold"
-          >
-            {sending ? "Sending..." : "Send to All Subscribers"}
-          </Button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
+            <RichTextEditor
+              key={editorKey}
+              value={body}
+              onChange={setBody}
+              allowImages
+              placeholder="Write your newsletter body... use RTL for Arabic and LTR for English."
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Use the toolbar to format text and set alignment. Switch a line to RTL for Arabic or
+              LTR for English.
+            </p>
+          </div>
+
+          {/* Preview section */}
+          <div className="border-t border-gray-100 pt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Send a preview first
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Send this email to a single address to check how it looks before sending to everyone.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                placeholder="preview@example.com"
+                value={previewEmail}
+                onChange={e => setPreviewEmail(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:ring-yellow-500 focus:border-yellow-500"
+              />
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={handlePreview}
+                disabled={previewing}
+                className="!border-yellow-500 !text-yellow-600 hover:!bg-yellow-50 font-semibold whitespace-nowrap"
+              >
+                {previewing ? "Sending..." : "Send Preview"}
+              </Button>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-100 pt-4">
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={sending}
+              className="!bg-yellow-500 hover:!bg-yellow-600 text-white font-semibold"
+            >
+              {sending ? "Sending..." : "Send to All Subscribers"}
+            </Button>
+          </div>
         </form>
       </div>
 
