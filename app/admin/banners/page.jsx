@@ -87,7 +87,7 @@ export default function AdminBannersPage() {
   }
 
   return (
-    <section className="min-h-screen bg-white p-10">
+    <section className="min-h-screen bg-white dark:bg-neutral-950 p-10">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-yellow-500 mb-8">🛠️ Manage Banners</h1>
 
@@ -97,8 +97,10 @@ export default function AdminBannersPage() {
         </div>
 
         {/* ✅ Add Banner Form */}
-        <div className="bg-white p-6 rounded-2xl shadow-md mb-10">
-          <h2 className="text-2xl font-semibold mb-4">Add New Banner</h2>
+        <div className="bg-white dark:bg-neutral-900 dark:border dark:border-neutral-800 p-6 rounded-2xl shadow-md mb-10">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+            Add New Banner
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <input
@@ -106,27 +108,27 @@ export default function AdminBannersPage() {
               placeholder="Title"
               value={newBanner.title}
               onChange={e => setNewBanner({ ...newBanner, title: e.target.value })}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
+              className="border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
             />
             <input
               type="text"
               placeholder="Path (e.g. /products/hebat)"
               value={newBanner.path}
               onChange={e => setNewBanner({ ...newBanner, path: e.target.value })}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
+              className="border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
             />
             <input
               type="number"
               placeholder="Order"
               value={newBanner.order}
               onChange={e => setNewBanner({ ...newBanner, order: e.target.value })}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
+              className="border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 outline-none"
             />
             <input
               type="file"
               accept="image/*"
               onChange={e => setFile(e.target.files[0])}
-              className="border border-gray-300 rounded-lg px-4 py-2 cursor-pointer"
+              className="border border-gray-300 dark:border-neutral-700 dark:text-gray-300 rounded-lg px-4 py-2 cursor-pointer"
             />
           </div>
 
@@ -140,36 +142,40 @@ export default function AdminBannersPage() {
         </div>
 
         {/* ✅ Banner List */}
-        <div className="bg-white p-6 rounded-2xl shadow-md">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">Current Banners:</h3>
+        <div className="bg-white dark:bg-neutral-900 dark:border dark:border-neutral-800 p-6 rounded-2xl shadow-md">
+          <h3 className="text-lg font-semibold mb-3 text-gray-700 dark:text-gray-200">
+            Current Banners:
+          </h3>
 
           {loading && banners.length === 0 ? (
-            <p className="text-gray-500">Loading banners...</p>
+            <p className="text-gray-500 dark:text-gray-400">Loading banners...</p>
           ) : banners.length === 0 ? (
-            <p className="text-gray-500">No banners available.</p>
+            <p className="text-gray-500 dark:text-gray-400">No banners available.</p>
           ) : (
             <ul className="space-y-3">
               {banners.map(banner => (
                 <li
                   key={banner._id}
-                  className="flex items-center justify-between bg-gray-100 p-3 rounded-lg"
+                  className="flex items-center justify-between bg-gray-100 dark:bg-neutral-800 p-3 rounded-lg"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
                     <img
                       src={banner.image.s3Url}
                       alt={banner.title}
-                      className="w-16 h-16 object-contain rounded-md border border-gray-300 bg-white"
+                      className="w-16 h-16 object-contain rounded-md border border-gray-300 dark:border-neutral-700 bg-white"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-gray-800">{banner.title}</span>
-                      <span className="text-xs text-gray-500 truncate max-w-[14rem]">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        {banner.title}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[14rem]">
                         {banner.path}
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={() => handleDelete(banner._id)}
-                    className="text-red-500 hover:text-red-700 font-semibold"
+                    className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-semibold"
                   >
                     Remove ✕
                   </button>
