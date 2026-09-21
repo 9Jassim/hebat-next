@@ -228,9 +228,9 @@ export default function RichTextEditor({
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-yellow-500 focus-within:border-yellow-500">
+    <div className="border border-gray-300 dark:border-neutral-700 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-yellow-500 focus-within:border-yellow-500">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 px-2 py-1.5">
+      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 px-2 py-1.5">
         <ToolbarButton title="Bold" onClick={() => exec("bold")}>
           <Bold size={16} />
         </ToolbarButton>
@@ -303,7 +303,7 @@ export default function RichTextEditor({
         onInput={emit}
         onBlur={emit}
         data-placeholder={placeholder}
-        className="rte-content min-h-[180px] px-4 py-3 text-gray-800 text-sm leading-relaxed focus:outline-none"
+        className="rte-content min-h-[180px] px-4 py-3 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-100 text-sm leading-relaxed focus:outline-none"
       />
 
       <style jsx>{`
@@ -348,7 +348,7 @@ function ToolbarButton({ title, onClick, children, disabled = false }) {
       // Prevent the editor from losing its selection when the button is clicked.
       onMouseDown={e => e.preventDefault()}
       onClick={onClick}
-      className="flex items-center justify-center h-8 min-w-8 px-1.5 rounded text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      className="flex items-center justify-center h-8 min-w-8 px-1.5 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     >
       {children}
     </button>
@@ -356,5 +356,5 @@ function ToolbarButton({ title, onClick, children, disabled = false }) {
 }
 
 function Divider() {
-  return <span className="mx-1 h-5 w-px bg-gray-300" />
+  return <span className="mx-1 h-5 w-px bg-gray-300 dark:bg-neutral-600" />
 }
