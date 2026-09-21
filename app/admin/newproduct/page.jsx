@@ -223,7 +223,7 @@ export default function NewProduct() {
 
   if (!user)
     return (
-      <div className="flex justify-center items-center min-h-[60vh] text-gray-600">
+      <div className="flex justify-center items-center min-h-[60vh] text-gray-600 dark:text-gray-400">
         You must be logged in as an admin to access this page.
       </div>
     )
@@ -234,8 +234,10 @@ export default function NewProduct() {
       <h1 className="text-2xl font-bold text-yellow-500 mb-6">Add New Product</h1>
 
       {/* Main Form */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">Product Information</h2>
+      <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl shadow-sm p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
+          Product Information
+        </h2>
 
         <form onSubmit={addProduct} className="space-y-5">
           {/* Basic Fields */}
@@ -245,7 +247,7 @@ export default function NewProduct() {
               <input
                 ref={modelRef}
                 type="text"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                 placeholder="Product model"
               />
             </div>
@@ -255,7 +257,7 @@ export default function NewProduct() {
               <input
                 ref={barcodeRef}
                 type="text"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                 placeholder="Product barcode"
               />
             </div>
@@ -266,7 +268,7 @@ export default function NewProduct() {
             <input
               ref={nameRef}
               type="text"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product name"
             />
           </div>
@@ -277,7 +279,7 @@ export default function NewProduct() {
               ref={nameArRef}
               type="text"
               dir="rtl"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product name (AR)"
             />
           </div>
@@ -287,7 +289,7 @@ export default function NewProduct() {
             <textarea
               ref={descriptionRef}
               rows="4"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product description"
             ></textarea>
           </div>
@@ -298,7 +300,7 @@ export default function NewProduct() {
               ref={descriptionArRef}
               rows="4"
               dir="rtl"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="Product description (Arabic)"
             ></textarea>
           </div>
@@ -306,12 +308,14 @@ export default function NewProduct() {
           {/* Features */}
           <div>
             <label className="block mb-1 text-sm font-medium">Features (English)</label>
-            <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Write features separated by commas.
+            </p>
             <textarea
               rows="3"
               value={featuresText}
               onChange={e => setFeaturesText(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder=""
             />
           </div>
@@ -319,33 +323,37 @@ export default function NewProduct() {
           {/* Arabic Features */}
           <div>
             <label className="block mb-1 text-sm font-medium">Features (Arabic)</label>
-            <p className="text-xs text-gray-500 mb-2">Write features separated by commas.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Write features separated by commas.
+            </p>
             <textarea
               rows="3"
               dir="rtl"
               value={featuresArText}
               onChange={e => setFeaturesArText(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder=""
             />
           </div>
 
           {/* Specifications */}
           <div>
-            <h2 className="text-md font-semibold text-gray-800 mb-2">Specifications</h2>
+            <h2 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
+              Specifications
+            </h2>
 
             <div className="space-y-3">
               {specifications.map((spec, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 rounded-lg p-3 bg-gray-50"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 border border-gray-200 dark:border-neutral-700 rounded-lg p-3 bg-gray-50 dark:bg-neutral-800/60"
                 >
                   <input
                     type="text"
                     value={spec.name}
                     onChange={e => updateSpecification(i, "name", e.target.value)}
                     placeholder="Name (EN)"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                    className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                   />
                   <input
                     type="text"
@@ -353,14 +361,14 @@ export default function NewProduct() {
                     onChange={e => updateSpecification(i, "name_ar", e.target.value)}
                     placeholder="Name (AR)"
                     dir="rtl"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                    className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                   />
                   <input
                     type="text"
                     value={spec.value}
                     onChange={e => updateSpecification(i, "value", e.target.value)}
                     placeholder="Value (EN)"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                    className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                   />
                   <div className="flex gap-2">
                     <input
@@ -369,7 +377,7 @@ export default function NewProduct() {
                       onChange={e => updateSpecification(i, "value_ar", e.target.value)}
                       placeholder="Value (AR)"
                       dir="rtl"
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                      className="flex-1 border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                     />
                     <button
                       type="button"
@@ -396,10 +404,12 @@ export default function NewProduct() {
 
           {/* Categories */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900">Categories</label>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+              Categories
+            </label>
             <select
               onChange={handleSelectCategory}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-neutral-800 dark:text-gray-100 focus:ring-yellow-500 focus:border-yellow-500"
             >
               <option value="">--Select Category--</option>
               {categories.map(cat => (
@@ -435,8 +445,10 @@ export default function NewProduct() {
 
           {/* Images (Parent Product) */}
           <div>
-            <h2 className="text-md font-semibold text-gray-800 mb-2">Product Images</h2>
-            <p className="text-sm text-gray-600 mb-2">
+            <h2 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">
+              Product Images
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               Upload main images for the parent product before adding variant images.
             </p>
             <input
@@ -445,7 +457,7 @@ export default function NewProduct() {
               multiple
               accept="image/*"
               onChange={handleImageSelect}
-              className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
             />
 
             {imagePreviews.length > 0 && (
@@ -455,7 +467,7 @@ export default function NewProduct() {
                     <img
                       src={src}
                       alt={`preview-${i}`}
-                      className="w-24 h-24 object-cover rounded border border-gray-300"
+                      className="w-24 h-24 object-cover rounded border border-gray-300 dark:border-neutral-700"
                     />
                     <button
                       type="button"
@@ -477,26 +489,26 @@ export default function NewProduct() {
             <input
               ref={youtubeUrlRef}
               type="url"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:ring-yellow-500 focus:border-yellow-500"
               placeholder="https://www.youtube.com/watch?v=..."
             />
           </div>
 
           {/* Manual */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-900">
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">
               Manual (Optional)
             </label>
             <input
               ref={manualRef}
               type="file"
               name="manual"
-              className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
+              className="w-full border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-300 rounded-lg p-2 text-sm bg-gray-50 cursor-pointer"
             />
           </div>
 
           {/* Variants Section */}
-          <div className="border-t border-gray-200 pt-6 mt-6">
+          <div className="border-t border-gray-200 dark:border-neutral-800 pt-6 mt-6">
             <button
               type="button"
               onClick={() => setShowVariants(!showVariants)}
@@ -509,19 +521,24 @@ export default function NewProduct() {
               <div className="mt-4 space-y-6">
                 {/* Color Variants */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Color Variants</h3>
-                  <p className="text-xs text-gray-500 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
+                    Color Variants
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     Each color variant can have its own image.
                   </p>
                   {variants.colors.map((color, i) => (
-                    <div key={i} className="border border-gray-200 rounded-lg p-3 bg-gray-50 mb-3">
+                    <div
+                      key={i}
+                      className="border border-gray-200 dark:border-neutral-700 rounded-lg p-3 bg-gray-50 dark:bg-neutral-800/60 mb-3"
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         <input
                           type="text"
                           value={color.name}
                           onChange={e => updateColorVariant(i, "name", e.target.value)}
                           placeholder="Color name"
-                          className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                          className="flex-1 border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                         />
                         <input
                           type="file"
@@ -532,7 +549,7 @@ export default function NewProduct() {
                         <button
                           type="button"
                           onClick={() => removeColorVariant(i)}
-                          className="text-red-600 font-bold"
+                          className="text-red-600 dark:text-red-400 font-bold"
                         >
                           ✕
                         </button>
@@ -542,7 +559,7 @@ export default function NewProduct() {
                           <img
                             src={color.preview}
                             alt={`${color.name} preview`}
-                            className="w-20 h-20 object-cover rounded border border-gray-300"
+                            className="w-20 h-20 object-cover rounded border border-gray-300 dark:border-neutral-700"
                           />
                         </div>
                       )}
@@ -560,18 +577,20 @@ export default function NewProduct() {
 
                 {/* Model Variants */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Model Variants</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
+                    Model Variants
+                  </h3>
                   {variants.models.map((m, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 mb-2 border border-gray-200 rounded-lg p-2 bg-gray-50"
+                      className="flex items-center gap-2 mb-2 border border-gray-200 dark:border-neutral-700 rounded-lg p-2 bg-gray-50 dark:bg-neutral-800/60"
                     >
                       <input
                         type="text"
                         value={m.name}
                         onChange={e => updateModelVariant(i, e.target.value)}
                         placeholder="Model name"
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
+                        className="flex-1 border border-gray-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-100 dark:placeholder-gray-500 rounded-lg px-3 py-1.5 text-sm focus:ring-yellow-500 focus:border-yellow-500"
                       />
                       <button
                         type="button"
