@@ -64,6 +64,13 @@ export default async function sitemap() {
       priority: 0.9,
     }),
     ...entry({
+      enPath: "/new-arrivals",
+      arPath: "/ar/new-arrivals",
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }),
+    ...entry({
       enPath: "/about",
       arPath: "/ar/about",
       lastModified: now,

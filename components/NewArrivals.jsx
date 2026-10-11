@@ -11,6 +11,7 @@ const T = {
     heading: "New Arrivals",
     subtext: "The freshest additions to the Hebat lineup — be the first to explore them.",
     view: "View product",
+    viewAll: "View all new arrivals",
     latest: "Latest drop",
   },
   ar: {
@@ -18,13 +19,20 @@ const T = {
     heading: "أحدث المنتجات",
     subtext: "أحدث الإضافات إلى تشكيلة هيبات — كن أول من يكتشفها.",
     view: "عرض المنتج",
+    viewAll: "عرض كل المنتجات الجديدة",
     latest: "أحدث وصول",
   },
 }
 
 const AUTO_MS = 5000
 
-export default function NewArrivals({ products = [], isAr = false, heading, buildHref }) {
+export default function NewArrivals({
+  products = [],
+  isAr = false,
+  heading,
+  buildHref,
+  viewAllHref,
+}) {
   const t = T[isAr ? "ar" : "en"]
   const list = products.slice(0, 8)
 
@@ -115,10 +123,20 @@ export default function NewArrivals({ products = [], isAr = false, heading, buil
               </div>
 
               <p className="max-w-md text-sm leading-relaxed text-white/50">{t.subtext}</p>
+
+              {viewAllHref && (
+                <Link
+                  href={viewAllHref}
+                  className="group/all inline-flex items-center gap-2 self-start rounded-xl border border-white/15 px-5 py-2.5 text-sm font-semibold text-white/60 transition-all duration-200 hover:border-yellow-500/50 hover:bg-yellow-500/10 hover:text-white"
+                >
+                  {t.viewAll}
+                  <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 transition-transform group-hover/all:translate-x-0.5 rtl:group-hover/all:-translate-x-0.5" />
+                </Link>
+              )}
             </div>
 
             {/* Active product meta — animates with the spotlight */}
-            <div className="min-h-[128px]">
+            <div className="min-h-[76px] sm:min-h-[128px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`meta-${active}`}
@@ -142,7 +160,7 @@ export default function NewArrivals({ products = [], isAr = false, heading, buil
                   )}
                   <Link
                     href={href}
-                    className="group/cta mt-1 inline-flex items-center gap-2 self-start rounded-2xl bg-yellow-500 px-6 py-3 text-sm font-black text-black shadow-lg shadow-yellow-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-yellow-400"
+                    className="group/cta mt-1 hidden sm:inline-flex items-center gap-2 self-start rounded-2xl bg-yellow-500 px-6 py-3 text-sm font-black text-black shadow-lg shadow-yellow-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-yellow-400"
                   >
                     {t.view}
                     <ArrowRight className="w-4 h-4 rtl:rotate-180 transition-transform group-hover/cta:translate-x-1 rtl:group-hover/cta:-translate-x-1" />
