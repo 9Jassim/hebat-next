@@ -307,6 +307,7 @@ export default function Home() {
             products={newArrivals}
             isAr={isAr}
             heading={(isAr ? naHeading_ar : naHeading) || undefined}
+            viewAllHref={p("/new-arrivals")}
             buildHref={product => {
               const cat = getRootCat(product) || product.category
               return p(`/products/${slugify(cat?.name || "others")}/${product.slug}`)
